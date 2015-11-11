@@ -1,0 +1,15 @@
+<layout version="0.1.0">
+  <default>
+    <reference name="head">
+      <action method="addCss"><stylesheet>css/radweb/stripe/radweb_stripe.css</stylesheet></action>
+      <action method="addJs" ifconfig="payment/stripe/jquery_enabled"><script>district/stripe/jquery.min.js</script></action>
+      <action method="addJs" ifconfig="payment/stripe/jquery_enabled"><script>district/stripe/jquery.noconflict.js</script></action>
+      <action method="addJs"><script>district/stripe/jquery.payment.min.js</script></action>
+      <action method="addJs"><script>district/stripe/stripe.api.js</script></action>
+    </reference>
+  </default>
+  
+  <opc_index_index>
+    <reference name="head"></reference>
+  </opc_index_index>
+</layout>

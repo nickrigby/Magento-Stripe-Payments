@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <modules>
+    <District_Stripe>
+      <version>1.0.0.0</version>
+    </District_Stripe>
+  </modules>
+  <global>
+    <models>
+      <stripe>
+        <class>District_Stripe_Model</class>
+      </stripe>
+    </models>
+    <helpers>
+      <stripe>
+        <class>District_Stripe_Helper</class>
+      </stripe>
+    </helpers>
+    <blocks>
+      <stripe>
+        <class>District_Stripe_Block</class>
+      </stripe>
+    </blocks>
+    <events>
+      <controller_front_init_before>
+        <observers>
+          <stripe>
+            <class>District_Stripe_Model_Observer_Autoloader</class>
+            <type>singleton</type>
+            <method>controllerFrontInitBefore</method>
+          </stripe>
+        </observers>
+      </controller_front_init_before>
+    </events>
+    <payment>
+      <cc>
+        <types>
+          <DC>
+            <code>DC</code>
+            <name>Diners Club</name>
+            <order>60</order>
+          </DC>
+        </types>
+      </cc>
+    </payment>
+  </global>
+  <default>
+    <payment>
+      <stripe>
+        <model>stripe/stripe</model>
+        <title>Stripe</title>
+        <api_secret_key backend_model="adminhtml/system_config_backend_encrypted" />
+        <api_publishable_key backend_model="adminhtml/system_config_backend_encrypted" />
+        <payment_action>authorize_capture</payment_action>
+        <cctype>AE,DI,DC,JCB,MC,VI</cctype>
+        <jquery_enabled>0</jquery_enabled>
+      </stripe>
+    </payment>
+  </default>
+  <frontend>
+    <layout>
+      <updates>
+        <stripe>
+          <file>district/stripe/stripe.xml</file>
+        </stripe>
+      </updates>
+    </layout>
+  </frontend>
+</config>
