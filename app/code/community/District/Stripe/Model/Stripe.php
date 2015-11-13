@@ -48,7 +48,7 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
    * @return Mage_Payment_Model_Abstract
    */
   public function capture(Varien_Object $payment, $amount)
-  {
+  { 
     //Call parent capture function
     parent::capture($payment, $amount);
     
@@ -58,13 +58,14 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
     }
 
     //Create the charge (authorization and capture)
-    $charge = $this->_createCharge($payment, $amount, true);
+    if($payment->getLastTransId()) {
+      $charge = $this->_retrieveCharge($payment->getLastTransId());
+    } else {
+      $charge = $this->_createCharge($payment, $amount, true);
+    }
     
-    //Set payment information
-    $this->_setPaymentInfo($payment, $charge);
-    
-    //Add the transaction
-    $payment->addTransaction(Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE, null, true, '');
+    //Create the payment in Magento
+    $this->_createPayment($payment, $charge, $amount, Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE);
     
     //Skip transaction creation
     $payment->setSkipTransactionCreation(true);
@@ -82,6 +83,8 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
    */
   public function authorize(Varien_Object $payment, $amount)
   {
+     Mage::log('auth');
+    
     //Call parent authorize function
     parent::authorize($payment, $amount);
     
@@ -89,20 +92,27 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
     if ($amount <= 0) {
       Mage::throwException(Mage::helper('payment')->__('Invalid amount for authorization.'));
     }
-
+    
     //Create the charge (authorization only)
     $charge = $this->_createCharge($payment, $amount, false);
     
-    //Set payment information
-    $this->_setPaymentInfo($payment, $charge);
-    
-    //Add the transaction
-    $payment->addTransaction(Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH, null, true, '');
+    //Create the payment in Magento
+    $this->_createPayment($payment, $charge, $amount, Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH);
     
     //Skip transaction creation
     $payment->setSkipTransactionCreation(true);
-
+    
     return $this;
+  }
+  
+  public function processInvoice($invoice, $payment)
+  {
+    parent::processInvoice($invoice, $payment);
+    
+    Mage::log('processInvoice');
+    
+    return $this;
+    
   }
   
   /**
@@ -121,7 +131,6 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
     
     //If the token isn't empty
     if(!empty($tokenString)) {
-      $this->_setApiKey();
       $this->_getToken($tokenString);
     } else {
       Mage::throwException(Mage::helper('payment')->__('Token is empty.'));
@@ -136,18 +145,20 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
    * @param   none
    * @return  none
    */
-  private function _setPaymentInfo($payment, $charge)
+  protected function _createPayment(Varien_Object $payment, $charge, $amount, $requestType)
   {
     //Transaction id
     $payment->setTransactionId($charge->id);
+    $payment->setIsTransactionClosed(0);
+    $payment->setAmount($amount);
     
     //Add payment cc information
-    $payment->setcc_trans_id($charge->id); //Transaction id
     $payment->setcc_exp_month($charge->source->exp_month);
     $payment->setcc_exp_year($charge->source->exp_year);
     $payment->setcc_last4($charge->source->last4);
     $payment->setcc_owner($charge->source->name);
     $payment->setcc_type($charge->source->brand);
+    $payment->setcc_trans_id($charge->source->id);
 
     //Add payment fraud information
     $payment->setcc_avs_status($charge->source->address_line1_check . '/' . $charge->source->address_zip_check);
@@ -158,6 +169,9 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
       'funding' => $charge->source->funding,
       'country' => $charge->source->country
     ));
+    
+    //Add the transaction
+    $payment->addTransaction($requestType, null, true);
   }
   
   /**
@@ -166,7 +180,7 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
    * @param   none
    * @return  none
    */
-  private function _setApiKey()
+  protected function _setApiKey()
   {
     try {
       \Stripe\Stripe::setApiKey($this->_apiSecretKey);
@@ -181,8 +195,10 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
    * @param   stripe token string
    * @return  none
    */
-  private function _getToken($tokenString)
+  protected function _getToken($tokenString)
   {
+    $this->_setApiKey();
+    
     try {
       $this->_token = \Stripe\Token::retrieve($tokenString);
     } catch (Exception $e) {
@@ -196,8 +212,10 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
    * @param   stripe token string
    * @return  none
    */
-  private function _createCharge($payment, $amount, $capture = true)
+  protected function _createCharge(Varien_Object $payment, $amount, $capture = true)
   {
+    $this->_setApiKey();
+    
     try {
       $charge = \Stripe\Charge::create(array(
         'amount' => $amount * 100,
@@ -206,7 +224,22 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
         'capture' => $capture,
         'description' => sprintf('Payment for order #%s on %s', $payment->getOrder()->getIncrementId(), $payment->getOrder()->getStore()->getFrontendName())
       ));
-      } catch (\Stripe\Error\InvalidRequest $e) {
+    } catch (\Stripe\Error\InvalidRequest $e) {
+      Mage::throwException($e);
+    } catch (\Stripe\Error\Card $e) {
+      Mage::throwException($e);
+    }
+    
+    return $charge;
+  }
+  
+  protected function _retrieveCharge($transactionId)
+  {
+    $this->_setApiKey();
+    
+    try {
+      $charge = \Stripe\Charge::retrieve($transactionId);
+    } catch (\Stripe\Error\InvalidRequest $e) {
       Mage::throwException($e);
     } catch (\Stripe\Error\Card $e) {
       Mage::throwException($e);
