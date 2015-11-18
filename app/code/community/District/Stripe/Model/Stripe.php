@@ -15,7 +15,7 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
   protected $_canAuthorize                = true;
   protected $_canCapture                  = true;
   protected $_canRefund                   = true;
-  protected $_canRefundInvoicePartial     = true;
+  protected $_canRefundInvoicePartial     = false;
   protected $_canVoid                     = true;
   protected $_canUseInternal              = true;
   protected $_canUseCheckout              = true;
@@ -57,10 +57,10 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
       Mage::throwException(Mage::helper('payment')->__('Invalid amount for authorization.'));
     }
 
-    //Create the charge (authorization and capture)
-    if($payment->getLastTransId()) {
+    //Create the charge
+    if($payment->getLastTransId()) { //If previously authorized
       $charge = $this->_retrieveCharge($payment->getLastTransId());
-    } else {
+    } else { //Auth and capture
       $charge = $this->_createCharge($payment, $amount, true);
     }
     
@@ -83,8 +83,6 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
    */
   public function authorize(Varien_Object $payment, $amount)
   {
-     Mage::log('auth');
-    
     //Call parent authorize function
     parent::authorize($payment, $amount);
     
@@ -105,14 +103,21 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
     return $this;
   }
   
-  public function processInvoice($invoice, $payment)
+  public function refund(Varien_Object $payment, $amount)
   {
-    parent::processInvoice($invoice, $payment);
+    //Get transaction id
+    $transactionId = $payment->getLastTransId();
     
-    Mage::log('processInvoice');
+    //Create the refund
+    $refund = $this->_createRefund($transactionId, $amount);
+    
+    //Close payment
+    $this->_closePayment($payment, $refund, Mage_Sales_Model_Order_Payment_Transaction::TYPE_REFUND);
+    
+    //Skip transaction creation
+    $payment->setSkipTransactionCreation(true);
     
     return $this;
-    
   }
   
   /**
@@ -169,6 +174,22 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
       'funding' => $charge->source->funding,
       'country' => $charge->source->country
     ));
+    
+    //Add the transaction
+    $payment->addTransaction($requestType, null, true);
+  }
+  
+  /**
+   * Closes a payment
+   *
+   * @param   none
+   * @return  none
+   */
+  protected function _closePayment(Varien_Object $payment, $refund, $requestType)
+  {
+    $payment->setTransactionId($refund->id);
+    $payment->setIsTransactionClosed(true);
+    $payment->setShouldCloseParentTransaction(true);
     
     //Add the transaction
     $payment->addTransaction($requestType, null, true);
@@ -233,6 +254,12 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
     return $charge;
   }
   
+  /**
+   * Retrieve a charge
+   *
+   * @param   transaction id
+   * @return  none
+   */
   protected function _retrieveCharge($transactionId)
   {
     $this->_setApiKey();
@@ -246,6 +273,31 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
     }
     
     return $charge;
+  }
+  
+  /**
+   * Create a refund
+   *
+   * @param   transaction id
+   * @param   amount
+   * @return  none
+   */
+  protected function _createRefund($transactionId, $amount)
+  {
+    $this->_setApiKey();
+    
+    try {
+      $refund = \Stripe\Refund::create(array(
+        'charge' => $transactionId,
+        'amount' => $amount * 100
+      ));
+    } catch (\Stripe\Error\InvalidRequest $e) {
+      Mage::throwException($e);
+    } catch (\Stripe\Error\Card $e) {
+      Mage::throwException($e);
+    }
+    
+    return $refund;
   }
 
 }

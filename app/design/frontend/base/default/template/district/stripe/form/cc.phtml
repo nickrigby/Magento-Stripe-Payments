@@ -15,6 +15,35 @@
   #payment_form_stripe .has-error input {
     border-color: #f00;
   }
+  
+  #payment_form_stripe .reader-visible {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  
+  #payment_form_stripe input[type=tel] {
+    height: 37px;
+    border-radius: 4px;
+    padding: 0 6px 2px 6px;
+    font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
+    font-size: 15px;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid #cececf;
+  }
+  
+  #payment_form_stripe ol {
+    overflow: hidden;
+  }
+  
+  .float {
+    float: left;
+  }
+  
 </style>
 
 <div class="form-list" id="payment_form_<?php echo $this->getMethodCode() ?>" style="display:none;">
@@ -22,15 +51,15 @@
   <div id="stripe-error-messages"></div>
   <ol>
     <li>
-      <label for="stripe-card-number">Card Number</label>
+      <label for="stripe-card-number" class="reader-visible">Card Number</label>
       <input id="stripe-card-number" type="tel" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="Card number" data-stripe="number" size="20">
     </li>
     <li class="float">
-      <label for="stripe-cc-exp">Expiry Date</label>
+      <label for="stripe-cc-exp" class="reader-visible">Expiry Date</label>
       <input id="stripe-cc-exp" type="tel" x-autocompletetype="off" autocompletetype="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="MM / YY" size="5" data-stripe="exp">
     </li>
     <li class="float">
-      <label for="stripe-cc-cvc">CVC</label>
+      <label for="stripe-cc-cvc" class="reader-visible">CVC</label>
       <input id="stripe-cc-cvc" type="tel" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="CVC" data-stripe="cvc" size="4" maxlength="4">
     </li>
   </ol>
@@ -41,24 +70,7 @@
 Stripe.setPublishableKey('<?php echo Mage::getStoreConfig('payment/stripe/api_publishable_key'); ?>');
   
 (function() {
-  
-  var scripts = document.getElementsByTagName('script'),
-      districtStripeAdded = false,
-      districtStripeSrc = '<?php echo Mage::getBaseUrl('js') . 'district/stripe/stripe.js'; ?>';
-  
-  for (var i=0;i<scripts.length;i++) {
-    if(scripts[i].src == districtStripeSrc) {
-      districtStripeAdded = true;
-    }
-  }
-  
-  if (!districtStripeAdded) {
-    var head = document.getElementsByTagName('head')[0];
-    var script = document.createElement('script');
-    script.src = districtStripeSrc;
-    head.appendChild(script);
-  }
-  
+  district.stripeCc.init();
 })();
   
 </script>

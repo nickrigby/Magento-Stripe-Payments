@@ -56,11 +56,13 @@ district.stripeCc = (function($) {
         address.line1 = data.street1;
         address.zip = data.postcode;
         address.country = data.country_id;
+        address.name = data.firstname + ' ' + data.lastname
       });
     } else {
       address.line1 = $('#billing\\:street1').val();
       address.zip = $('#billing\\:postcode').val();
       address.country = $('#billing\\:country_id').val();
+      addtess.name = $('billing\\:firstname').val() + ' ' + $('billing\\:lastname').val();
     }
     
   };
@@ -129,5 +131,3 @@ district.stripeCc = (function($) {
   return self;
   
 }(district.$));
-
-district.stripeCc.init();
