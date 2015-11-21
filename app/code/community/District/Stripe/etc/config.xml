@@ -2,14 +2,23 @@
 <config>
   <modules>
     <District_Stripe>
-      <version>1.0.0.0</version>
+      <version>1.0.0</version>
     </District_Stripe>
   </modules>
   <global>
     <models>
       <stripe>
         <class>District_Stripe_Model</class>
+        <resourceModel>stripe_mysql4</resourceModel>
       </stripe>
+      <stripe_mysql4>
+        <class>District_Stripe_Model_Mysql4</class>
+        <entities>
+          <customer>
+            <table>district_stripe_customer</table>
+          </customer>
+        </entities>
+      </stripe_mysql4>
     </models>
     <helpers>
       <stripe>
@@ -32,6 +41,27 @@
         </observers>
       </controller_front_init_before>
     </events>
+    <resources>
+      <district_stripe_setup>
+        <setup>
+          <module>District_Stripe</module>
+          <class>District_Stripe_Model_Resource_Mysql4_Setup</class>
+        </setup>
+        <connection>
+          <use>core_setup</use>
+        </connection>
+      </district_stripe_setup>
+      <stripe_write>
+        <connection>
+          <use>core_setup</use>
+        </connection>
+      </stripe_write>
+      <stripe_read>
+        <connection>
+          <use>core_setup</use>
+        </connection>
+      </stripe_read>
+    </resources>
     <payment>
       <cc>
         <types>

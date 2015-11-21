@@ -22,6 +22,7 @@ district.stripeCc = (function($) {
     $inputs.cardExpiry = $('#stripe-cc-exp');
     $inputs.cardCVC = $('#stripe-cc-cvc');
     $inputs.cardToken = $('#stripe-token');
+    $inputs.savedCard = $('#stripe-saved-card');
 
     //Set input mask for each field
     $inputs.cardNumber.payment('formatCardNumber');
@@ -33,6 +34,15 @@ district.stripeCc = (function($) {
       this.parent().toggleClass('has-error', error);
       return this;
     };
+    
+    //Toggle new card form
+    $('#stripe-saved-card').change(function() {
+      if($(this).val() == '0') {
+        $('#stripe-new-card').show();
+      } else {
+        $('#stripe-new-card').hide();
+      }
+    });
     
     //Wrap magento save method
     Payment.prototype.save = Payment.prototype.save.wrap(self.validateForm);
@@ -75,22 +85,31 @@ district.stripeCc = (function($) {
 
     //Save ref to magento save function (we need it in stripe callback)
     mageSave = save;
+    
+    if($inputs.savedCard.length && $inputs.savedCard.val() != '0') { //Existing card to be used
 
-    //Check that credit card details are valid
-    var validCardNumber = $.payment.validateCardNumber($inputs.cardNumber.val());
-    var validCardExpiry = $.payment.validateCardExpiry($.payment.cardExpiryVal($inputs.cardExpiry.val()));
-    var validCardCVC = $.payment.validateCardCVC($inputs.cardCVC.val(), $.payment.cardType($inputs.cardNumber.val()));
+      $inputs.cardToken.val($inputs.savedCard.val());
+      mageSave();
+      
+    } else { //New card to be used
+      
+      //Check that credit card details are valid
+      var validCardNumber = $.payment.validateCardNumber($inputs.cardNumber.val());
+      var validCardExpiry = $.payment.validateCardExpiry($.payment.cardExpiryVal($inputs.cardExpiry.val()));
+      var validCardCVC = $.payment.validateCardCVC($inputs.cardCVC.val(), $.payment.cardType($inputs.cardNumber.val()));
 
-    //Toggle error class for invalud fields
-    $inputs.cardNumber.toggleInputError(!validCardNumber);
-    $inputs.cardExpiry.toggleInputError(!validCardExpiry);
-    $inputs.cardCVC.toggleInputError(!validCardCVC);
+      //Toggle error class for invalud fields
+      $inputs.cardNumber.toggleInputError(!validCardNumber);
+      $inputs.cardExpiry.toggleInputError(!validCardExpiry);
+      $inputs.cardCVC.toggleInputError(!validCardCVC);
 
-    //If valid, call original save method, else return
-    if(validCardNumber && validCardExpiry && validCardCVC) {
-      self.createToken();
-    } else {
-      return false;
+      //If valid, call original save method, else return
+      if(validCardNumber && validCardExpiry && validCardCVC) {
+        self.createToken();
+      } else {
+        return false;
+      }
+      
     }
 
   };

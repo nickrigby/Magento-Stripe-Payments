@@ -11,6 +11,20 @@
  */
 ?>
 
+<?php
+$savedCards = false;
+
+if($token = Mage::helper('stripe')->getCustomer()->getToken()) {
+  $cust = Mage::helper('stripe')->retrieveCustomer($token);
+  $cards = $cust->sources->data;
+  
+  if(sizeof($cards) > 0) {
+    $savedCards = true;
+  }
+}
+
+?>
+
 <style>
   #payment_form_stripe .has-error input {
     border-color: #f00;
@@ -40,8 +54,12 @@
     overflow: hidden;
   }
   
-  .float {
+  #payment_form_stripe .float {
     float: left;
+  }
+  
+  #payment_form_stripe .checkbox {
+    clear: left;
   }
   
 </style>
@@ -49,7 +67,20 @@
 <div class="form-list" id="payment_form_<?php echo $this->getMethodCode() ?>" style="display:none;">
   <input type="hidden" name="stripeToken" id="stripe-token">
   <div id="stripe-error-messages"></div>
+  <?php if($savedCards): ?>
   <ol>
+    <li>
+      <label for="stripe-saved-card" class="reader-visible">Choose card</label>
+      <select id="stripe-saved-card" name="stripeSavedCard">
+        <?php foreach($cards as $card): ?>
+        <option value="<?php echo $card->id; ?>"><?php echo $card->brand; ?> **** **** **** <?php echo $card->last4; ?></option>
+        <?php endforeach; ?>
+        <option value="0">New card</option>
+      </select>
+    </li>
+  </ol>
+  <?php endif; ?>
+  <ol id="stripe-new-card" <?php if($savedCards): ?> style="display:none;"<?php endif; ?>>
     <li>
       <label for="stripe-card-number" class="reader-visible">Card Number</label>
       <input id="stripe-card-number" type="tel" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="Card number" data-stripe="number" size="20">
@@ -62,6 +93,11 @@
       <label for="stripe-cc-cvc" class="reader-visible">CVC</label>
       <input id="stripe-cc-cvc" type="tel" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="CVC" data-stripe="cvc" size="4" maxlength="4">
     </li>
+    <?php if(Mage::getSingleton('customer/session')->isLoggedIn()): ?>
+    <li class="checkbox">
+      <label><input type="checkbox" name="stripeSaveCard" /> Save card for future purchases</label>
+    </li>
+    <?php endif; ?>
   </ol>
 </div>
 

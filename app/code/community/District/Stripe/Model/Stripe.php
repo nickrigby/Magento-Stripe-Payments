@@ -29,14 +29,12 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
   protected $_isAvailable                 = true;
   
   //Stripe specific
-  private $_apiSecretKey;
   private $_token;
+  private $_useSavedCard = false;
   
   public function __construct()
   {
     parent::__construct();
-    
-    $this->_apiSecretKey = $this->getConfigData('api_secret_key');
   }
   
   /**
@@ -103,6 +101,12 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
     return $this;
   }
   
+  /**
+   * Refund
+   *
+   * @param Varien_Object $payment
+   * @param float $amount
+   */
   public function refund(Varien_Object $payment, $amount)
   {
     //Get transaction id
@@ -133,12 +137,22 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
     
     //Get the token from the form
     $tokenString = trim($_POST['stripeToken']);
+    $savedCard = trim($_POST['stripeSavedCard']);
     
-    //If the token isn't empty
-    if(!empty($tokenString)) {
-      $this->_getToken($tokenString);
+    //Saved card or new card?
+    if(!empty($savedCard) && $savedCard != '0') { //Saved
+      $this->_token = $_POST['stripeSavedCard'];
+      $this->_useSavedCard = true;
+    } else if(!empty($tokenString)) { //New
+      $this->_retrieveToken($tokenString);
     } else {
       Mage::throwException(Mage::helper('payment')->__('Token is empty.'));
+    }
+    
+    //Save card
+    if(isset($_POST['stripeSaveCard']))
+    {
+      $this->_saveCard();
     }
     
     return $this;
@@ -196,29 +210,14 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
   }
   
   /**
-   * Sets the API key for interfacing with Stripe API
-   *
-   * @param   none
-   * @return  none
-   */
-  protected function _setApiKey()
-  {
-    try {
-      \Stripe\Stripe::setApiKey($this->_apiSecretKey);
-    } catch (Exception $e) {
-      Mage::throwException('Stripe: Could not set API key');
-    }
-  }
-  
-  /**
    * Get the token from Stripe based on passed in tokenString
    *
    * @param   stripe token string
    * @return  none
    */
-  protected function _getToken($tokenString)
+  protected function _retrieveToken($tokenString)
   {
-    $this->_setApiKey();
+    Mage::helper('stripe')->setApiKey();
     
     try {
       $this->_token = \Stripe\Token::retrieve($tokenString);
@@ -235,16 +234,26 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
    */
   protected function _createCharge(Varien_Object $payment, $amount, $capture = true)
   {
-    $this->_setApiKey();
+    //Set API key
+    Mage::helper('stripe')->setApiKey();
+    
+    //Set data
+    $chargeData = array(
+      'amount' => $amount * 100,
+      'currency' => $payment->getOrder()->getBaseCurrencyCode(),
+      'source' => $this->_token,
+      'capture' => $capture,
+      'description' => sprintf('Payment for order #%s on %s', $payment->getOrder()->getIncrementId(), $payment->getOrder()->getStore()->getFrontendName())
+    );
+    
+    //If a saved card is being used, set the customer token
+    if($this->_useSavedCard) {
+      $customerToken = Mage::helper('stripe')->getCustomer()->getToken();
+      $chargeData['customer'] = Mage::helper('core')->decrypt($customerToken);
+    }
     
     try {
-      $charge = \Stripe\Charge::create(array(
-        'amount' => $amount * 100,
-        'currency' => $payment->getOrder()->getBaseCurrencyCode(),
-        'source' => $this->_token,
-        'capture' => $capture,
-        'description' => sprintf('Payment for order #%s on %s', $payment->getOrder()->getIncrementId(), $payment->getOrder()->getStore()->getFrontendName())
-      ));
+      $charge = \Stripe\Charge::create($chargeData);
     } catch (\Stripe\Error\InvalidRequest $e) {
       Mage::throwException($e);
     } catch (\Stripe\Error\Card $e) {
@@ -262,7 +271,7 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
    */
   protected function _retrieveCharge($transactionId)
   {
-    $this->_setApiKey();
+    Mage::helper('stripe')->setApiKey();
     
     try {
       $charge = \Stripe\Charge::retrieve($transactionId);
@@ -284,7 +293,7 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
    */
   protected function _createRefund($transactionId, $amount)
   {
-    $this->_setApiKey();
+    Mage::helper('stripe')->setApiKey();
     
     try {
       $refund = \Stripe\Refund::create(array(
@@ -298,6 +307,74 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
     }
     
     return $refund;
+  }
+  
+  /**
+   * Save a card
+   *
+   * @param   none
+   * @return  none
+   */
+  protected function _saveCard()
+  {
+    Mage::log('save card');
+    
+    if(!Mage::helper('stripe')->isCustomer()) {
+      //Create the customer in Stripe
+      $customer = $this->_createCustomer();
+    } else {
+      //Get the customer token
+      $customerToken = Mage::helper('stripe')->getCustomer()->getToken();
+      
+      //Get the customer
+      $customer = Mage::helper('stripe')->retrieveCustomer($customerToken);
+      
+      //Save the card
+      try {
+        $customer->sources->create(array(
+          'source' => $this->_token
+        ));
+      } catch (Exception $e) {
+        Mage::throwException('Stripe: Could not save card');
+      }
+      
+    }
+  }
+  
+  /**
+   * Create a customer
+   *
+   * @param   none
+   * @return  none
+   */
+  protected function _createCustomer()
+  {
+    //Set API Key
+    Mage::helper('stripe')->setApiKey();
+    
+    //Create the customer
+    try {
+      
+      //Get customer object
+      $customer = Mage::getSingleton('customer/session')->getCustomer();
+      
+      //Create customer in Stripe
+      $stripeCustomer = \Stripe\Customer::create(array(
+        'source' => $this->_token,
+        'email' => $customer->getEmail()
+      ));
+      
+      //Create stripe customer in magento
+      $stripeCustomerModel = Mage::getModel('stripe/customer');
+      $stripeCustomerModel->setCustomerId($customer->getId());
+      $stripeCustomerModel->setToken(Mage::helper('core')->encrypt($stripeCustomer->id));
+      $stripeCustomerModel->save();
+      
+    } catch (Exception $e) {
+      Mage::throwException('Stripe: Could not create customer');
+    }
+    
+    return $customer;
   }
 
 }
