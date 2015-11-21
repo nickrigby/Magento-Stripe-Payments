@@ -62,6 +62,12 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
       $charge = $this->_createCharge($payment, $amount, true);
     }
     
+    //Save card?
+    if(isset($_POST['stripeSaveCard']))
+    {
+      $this->_saveCard();
+    }
+    
     //Create the payment in Magento
     $this->_createPayment($payment, $charge, $amount, Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE);
     
@@ -140,19 +146,13 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
     $savedCard = trim($_POST['stripeSavedCard']);
     
     //Saved card or new card?
-    if(!empty($savedCard) && $savedCard != '0') { //Saved
+    if(!empty($savedCard) && $savedCard != '0') { //Use a saved card
       $this->_token = $_POST['stripeSavedCard'];
       $this->_useSavedCard = true;
-    } else if(!empty($tokenString)) { //New
+    } else if(!empty($tokenString)) { //Use a new card
       $this->_retrieveToken($tokenString);
     } else {
       Mage::throwException(Mage::helper('payment')->__('Token is empty.'));
-    }
-    
-    //Save card
-    if(isset($_POST['stripeSaveCard']))
-    {
-      $this->_saveCard();
     }
     
     return $this;
