@@ -62,12 +62,6 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
       $charge = $this->_createCharge($payment, $amount, true);
     }
     
-    //Save card?
-    if(isset($_POST['stripeSaveCard']))
-    {
-      $this->_saveCard();
-    }
-    
     //Create the payment in Magento
     $this->_createPayment($payment, $charge, $amount, Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE);
     
@@ -141,18 +135,28 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
     //Call parent validate
     parent::validate();
     
-    //Get the token from the form
-    $tokenString = trim($_POST['stripeToken']);
-    $savedCard = trim($_POST['stripeSavedCard']);
-    
-    //Saved card or new card?
-    if(!empty($savedCard) && $savedCard != '0') { //Use a saved card
+    //New card or saved card being used?
+    if(isset($_POST['stripeToken']) && !empty($_POST['stripeToken'])) { //New card
+
+      //Token was set with stripe.js, so retrieve it
+      $token = $this->_retrieveToken($_POST['stripeToken']);
+
+      //Save the token
+      $this->_token = $token->id;
+
+    } else if(isset($_POST['stripeSavedCard']) && !empty($_POST['stripeSavedCard'])) { //Saved card
+
+      //Token is a card token, which was saved to the customer previously
       $this->_token = $_POST['stripeSavedCard'];
+
+      //Set flag so we can set customer on charge call later
       $this->_useSavedCard = true;
-    } else if(!empty($tokenString)) { //Use a new card
-      $this->_retrieveToken($tokenString);
-    } else {
+
+    } else { //Error
+
+      //Token was not set, throw an error
       Mage::throwException(Mage::helper('payment')->__('Token is empty.'));
+
     }
     
     return $this;
@@ -220,10 +224,12 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
     Mage::helper('stripe')->setApiKey();
     
     try {
-      $this->_token = \Stripe\Token::retrieve($tokenString);
+      $token = \Stripe\Token::retrieve(trim($tokenString));
     } catch (Exception $e) {
       Mage::throwException('Stripe: Invalid token');
     }
+    
+    return $token;
   }
   
   /**
@@ -236,6 +242,11 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
   {
     //Set API key
     Mage::helper('stripe')->setApiKey();
+    
+    //Save card, if checkbox is checked
+    if(isset($_POST['stripeSaveCard'])) {
+      $this->_saveCard();
+    }
     
     //Set data
     $chargeData = array(
@@ -252,8 +263,9 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
       $chargeData['customer'] = Mage::helper('core')->decrypt($customerToken);
     }
     
+    //Create the charge
     try {
-      $charge = \Stripe\Charge::create($chargeData);
+      $charge = \Stripe\Charge::create($chargeData);    
     } catch (\Stripe\Error\InvalidRequest $e) {
       Mage::throwException($e);
     } catch (\Stripe\Error\Card $e) {
@@ -317,13 +329,21 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
    */
   protected function _saveCard()
   {
-    Mage::log('save card');
-    
-    if(!Mage::helper('stripe')->isCustomer()) {
+    //Before we can save card, is this an existing stripe customer?
+    if(!Mage::helper('stripe')->isCustomer()) { //No
+      
       //Create the customer in Stripe
       $customer = $this->_createCustomer();
-    } else {
-      //Get the customer token
+      
+      //Set the flag to use a saved card (since we just saved it)
+      $this->_useSavedCard = true;
+      
+      //Token is set to card token
+      $this->_token = $customer->default_source;
+      
+    } else { //Yes
+      
+      //Get the customer token from magento
       $customerToken = Mage::helper('stripe')->getCustomer()->getToken();
       
       //Get the customer
@@ -335,9 +355,9 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
           'source' => $this->_token
         ));
       } catch (Exception $e) {
-        Mage::throwException('Stripe: Could not save card');
+        //Silently fail, don't stop transaction
+        Mage::log('Stripe: Could not save card');
       }
-      
     }
   }
   
@@ -365,16 +385,17 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
       ));
       
       //Create stripe customer in magento
-      $stripeCustomerModel = Mage::getModel('stripe/customer');
-      $stripeCustomerModel->setCustomerId($customer->getId());
-      $stripeCustomerModel->setToken(Mage::helper('core')->encrypt($stripeCustomer->id));
-      $stripeCustomerModel->save();
+      $model = Mage::getModel('stripe/customer');
+      $model->setCustomerId($customer->getId());
+      $model->setToken(Mage::helper('core')->encrypt($stripeCustomer->id));
+      $model->save();
       
     } catch (Exception $e) {
-      Mage::throwException('Stripe: Could not create customer');
+      //Silently fail, don't stop transaction
+      Mage::log('Stripe: Could not create customer');
     }
     
-    return $customer;
+    return $stripeCustomer;
   }
 
 }

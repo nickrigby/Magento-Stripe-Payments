@@ -72,7 +72,7 @@ district.stripeCc = (function($) {
       address.line1 = $('#billing\\:street1').val();
       address.zip = $('#billing\\:postcode').val();
       address.country = $('#billing\\:country_id').val();
-      addtess.name = $('billing\\:firstname').val() + ' ' + $('billing\\:lastname').val();
+      address.name = $('billing\\:firstname').val() + ' ' + $('billing\\:lastname').val();
     }
     
   };

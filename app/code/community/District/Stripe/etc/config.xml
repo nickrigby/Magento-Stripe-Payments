@@ -42,7 +42,7 @@
       </controller_front_init_before>
     </events>
     <resources>
-      <district_stripe_setup>
+      <stripe_setup>
         <setup>
           <module>District_Stripe</module>
           <class>District_Stripe_Model_Resource_Mysql4_Setup</class>
@@ -50,15 +50,15 @@
         <connection>
           <use>core_setup</use>
         </connection>
-      </district_stripe_setup>
+      </stripe_setup>
       <stripe_write>
         <connection>
-          <use>core_setup</use>
+          <use>core_write</use>
         </connection>
       </stripe_write>
       <stripe_read>
         <connection>
-          <use>core_setup</use>
+          <use>core_read</use>
         </connection>
       </stripe_read>
     </resources>
@@ -86,8 +86,17 @@
         <jquery_enabled>0</jquery_enabled>
       </stripe>
     </payment>
-  </default>
+  </default> 
   <frontend>
+    <routers>
+      <stripe>
+        <use>standard</use>
+        <args>
+          <module>District_Stripe</module>
+          <frontName>stripe</frontName>
+        </args>
+      </stripe>
+    </routers>
     <layout>
       <updates>
         <stripe>
