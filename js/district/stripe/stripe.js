@@ -18,7 +18,7 @@ district.stripeCc = (function($) {
     self.getBillingAddress();
     
     //Shortcut to fields
-    $inputs.cardNumber = $('#stripe-card-number');
+    $inputs.cardNumber = $('#stripe-cc-number');
     $inputs.cardExpiry = $('#stripe-cc-exp');
     $inputs.cardCVC = $('#stripe-cc-cvc');
     $inputs.cardToken = $('#stripe-token');

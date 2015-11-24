@@ -17,20 +17,6 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     }
   }
   
-  public function isCustomer()
-  {
-    //Get logged in customer
-    $customer = Mage::getSingleton('customer/session')->getCustomer();
-    $stripeCustomerModel = Mage::getModel('stripe/customer');
-    $stripeCustomer = $stripeCustomerModel->load($customer->getId(), 'customer_id');
-    
-    if(!$stripeCustomer->getId()) {
-      return false;
-    }
-    
-    return true;
-  }
-  
   /**
    * Retrieve a customer from Stripe
    *
@@ -44,7 +30,8 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     try {
       $customer = \Stripe\Customer::retrieve(Mage::helper('core')->decrypt($token));
     } catch(Exception $e) {
-      Mage::throwException('Stripe: Could not retrieve customer');
+      //Fail silently
+      Mage::log('Stripe: Could not retrieve customer');
     }
     
     return $customer;
@@ -62,6 +49,43 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     $model = Mage::getModel('stripe/customer');
     
     return $model->load($customer->getId(), 'customer_id');
+  }
+  
+  /**
+   * Create a customer
+   *
+   * @param   none
+   * @return  none
+   */
+  public function createCustomer($token)
+  {
+    //Set API Key
+    $this->setApiKey();
+    
+    //Create the customer
+    try {
+      
+      //Get customer object
+      $customer = Mage::getSingleton('customer/session')->getCustomer();
+      
+      //Create customer in Stripe
+      $stripeCustomer = \Stripe\Customer::create(array(
+        'source' => $token,
+        'email' => $customer->getEmail()
+      ));
+      
+      //Create stripe customer in magento
+      $model = Mage::getModel('stripe/customer');
+      $model->setCustomerId($customer->getId());
+      $model->setToken(Mage::helper('core')->encrypt($stripeCustomer->id));
+      $model->save();
+      
+    } catch (Exception $e) {
+      //Silently fail, don't stop transaction
+      Mage::log('Stripe: Could not create customer');
+    }
+    
+    return $stripeCustomer;
   }
   
 }

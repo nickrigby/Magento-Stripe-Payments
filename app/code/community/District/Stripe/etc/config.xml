@@ -17,6 +17,9 @@
           <customer>
             <table>district_stripe_customer</table>
           </customer>
+          <order_failed>
+            <table>district_stripe_order_failed</table>
+          </order_failed>
         </entities>
       </stripe_mysql4>
     </models>

@@ -266,10 +266,10 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
     //Create the charge
     try {
       $charge = \Stripe\Charge::create($chargeData);    
-    } catch (\Stripe\Error\InvalidRequest $e) {
-      Mage::throwException($e);
-    } catch (\Stripe\Error\Card $e) {
-      Mage::throwException($e);
+    } catch (Exception $e) {
+      $message = $e->getMessage();
+      $this->_logFailedOrder($payment, $amount, $message);
+      Mage::throwException($message);
     }
     
     return $charge;
@@ -287,10 +287,9 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
     
     try {
       $charge = \Stripe\Charge::retrieve($transactionId);
-    } catch (\Stripe\Error\InvalidRequest $e) {
-      Mage::throwException($e);
-    } catch (\Stripe\Error\Card $e) {
-      Mage::throwException($e);
+    } catch (Exception $e) {
+      $message = $e->getMessage();
+      Mage::throwException($message);
     }
     
     return $charge;
@@ -330,15 +329,15 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
   protected function _saveCard()
   {
     //Before we can save card, is this an existing stripe customer?
-    if(!Mage::helper('stripe')->isCustomer()) { //No
+    if(!isset($_POST['isStripeCustomer'])) { //No
       
       //Create the customer in Stripe
-      $customer = $this->_createCustomer();
+      $customer = Mage::helper('stripe')->createCustomer($this->_token);
       
       //Set the flag to use a saved card (since we just saved it)
       $this->_useSavedCard = true;
       
-      //Token is set to card token
+      //Set token is set to default card token
       $this->_token = $customer->default_source;
       
     } else { //Yes
@@ -361,41 +360,15 @@ class District_Stripe_Model_Stripe extends Mage_Payment_Model_Method_Abstract {
     }
   }
   
-  /**
-   * Create a customer
-   *
-   * @param   none
-   * @return  none
-   */
-  protected function _createCustomer()
-  {
-    //Set API Key
-    Mage::helper('stripe')->setApiKey();
+  private function _logFailedOrder(Varien_Object $payment, $amount, $message) {
     
-    //Create the customer
-    try {
-      
-      //Get customer object
-      $customer = Mage::getSingleton('customer/session')->getCustomer();
-      
-      //Create customer in Stripe
-      $stripeCustomer = \Stripe\Customer::create(array(
-        'source' => $this->_token,
-        'email' => $customer->getEmail()
-      ));
-      
-      //Create stripe customer in magento
-      $model = Mage::getModel('stripe/customer');
-      $model->setCustomerId($customer->getId());
-      $model->setToken(Mage::helper('core')->encrypt($stripeCustomer->id));
-      $model->save();
-      
-    } catch (Exception $e) {
-      //Silently fail, don't stop transaction
-      Mage::log('Stripe: Could not create customer');
-    }
+    $model = $model = Mage::getModel('stripe/order_failed');
+    $model->setOrderId($payment->getOrder()->getIncrementId());
+    $model->setCcType('');
+    $model->setCcLast4('');
+    $model->setAmount($amount);
+    $model->save();
     
-    return $stripeCustomer;
   }
 
 }

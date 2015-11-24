@@ -9,5 +9,14 @@ $installer->run("
       `token` varchar(255) NOT NULL,
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    
+    CREATE TABLE `{$installer->getTable('stripe/order_failed')}` (
+      `id` int(10) unsigned NOT NULL auto_increment,
+      `order_id` int(10) unsigned NOT NULL,
+      `cc_type` varchar(255),
+      `cc_last4` varchar(10),
+      `amount` decimal(12,4),
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ");
 $installer->endSetup();
