@@ -1,2 +1,6 @@
 var district = district || {};
-district.$ = jQuery.noConflict(true);
+if(!window.jQuery) {
+  district.$ = jQuery.noConflict();
+} else {
+  district.$ = jQuery;
+}
