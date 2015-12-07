@@ -127,7 +127,7 @@ district.stripeCc = (function($) {
       address_country: address.country,
       address_line1: address.line1,
       address_zip: address.zip,
-      name: ''
+      name: address.name
     }, self.stripeResponseHandler);
 
   };
