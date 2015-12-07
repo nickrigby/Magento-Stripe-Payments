@@ -13,7 +13,6 @@ class District_Stripe_Block_Info_Cc extends Mage_Payment_Block_Info_Cc
 {
     protected function _construct()
     {
-      Mage::log('Block2');
         parent::_construct();
         $this->setTemplate('district/stripe/info/cc.phtml');
     }

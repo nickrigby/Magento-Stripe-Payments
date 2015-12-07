@@ -16,6 +16,7 @@ $installer->run("
       `cc_type` varchar(255),
       `cc_last4` varchar(10),
       `amount` decimal(12,4),
+      `reason` text,
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ");

@@ -43,6 +43,15 @@
           </stripe>
         </observers>
       </controller_front_init_before>
+      <sales_model_service_quote_submit_failure>
+        <observers>
+          <stripe>
+            <class>District_Stripe_Model_Observer_Orderfail</class>
+            <type>singleton</type>
+            <method>save</method>
+          </stripe>
+        </observers>
+      </sales_model_service_quote_submit_failure>
     </events>
     <resources>
       <stripe_setup>
@@ -80,7 +89,7 @@
   <default>
     <payment>
       <stripe>
-        <model>stripe/stripe</model>
+        <model>stripe/method_cc</model>
         <title>Stripe</title>
         <api_secret_key backend_model="adminhtml/system_config_backend_encrypted" />
         <api_publishable_key backend_model="adminhtml/system_config_backend_encrypted" />
@@ -108,4 +117,13 @@
       </updates>
     </layout>
   </frontend>
+  <adminhtml>
+    <layout>
+      <updates>
+        <stripe>
+          <file>district/stripe/stripe.xml</file>
+        </stripe>
+      </updates>
+    </layout>
+  </adminhtml>
 </config>

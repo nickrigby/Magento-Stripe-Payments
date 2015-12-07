@@ -1,0 +1,7 @@
+<layout version="0.1.0">
+  <default>
+    <reference name="head">
+      <action method="addCss"><stylesheet>district/stripe/css/styles.css</stylesheet></action>
+    </reference>
+  </default>
+</layout>

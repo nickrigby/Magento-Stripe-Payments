@@ -88,4 +88,19 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     return $stripeCustomer;
   }
   
+  /**
+   * Calculate a fraud score
+   *
+   * @param   none
+   * @return  none
+   */
+  public function getFailedOrdersCount($orderId)
+  {
+    //Count failed orders
+    return Mage::getModel('stripe/order_failed')
+      ->getCollection()
+      ->addFieldToFilter('order_id', array('eq' => $orderId))
+      ->getSize();
+  }
+  
 }
