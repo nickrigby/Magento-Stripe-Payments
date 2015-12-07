@@ -59,7 +59,7 @@ district.stripeCc = (function($) {
     var $billingAddress = $('#billing-address-select');
     
     //If the element exists and the value is not empty
-    if($billingAddress.length && $billingAddress.val != '') {
+    if($billingAddress.length && $billingAddress.val() != '') {
       $.ajax({
         url: billing.addressUrl + $billingAddress.val()
       }).done(function(data) {
