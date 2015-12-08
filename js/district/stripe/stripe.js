@@ -44,8 +44,15 @@ district.stripeCc = (function($) {
       }
     });
     
-    //Wrap magento save method
-    Payment.prototype.save = Payment.prototype.save.wrap(self.validateForm);
+    //Wrap magento save method (frontend)
+    if(typeof Payment !== 'undefined') {
+      Payment.prototype.save = Payment.prototype.save.wrap(self.validateForm);
+    }
+    
+    //Wrap magento place order method (backend)
+    if(typeof AdminOrder !== 'undefined') {
+      AdminOrder.prototype.submit = AdminOrder.prototype.submit.wrap(self.validateForm);
+    }
     
   };
   
@@ -73,7 +80,14 @@ district.stripeCc = (function($) {
       address.zip = $('#billing\\:postcode').val();
       address.country = $('#billing\\:country_id').val();
       address.name = $('billing\\:firstname').val() + ' ' + $('billing\\:lastname').val();
-    }
+    } /*else {
+      address.line1 = $('#order-billing_address_street0').val();
+      address.zip = $('#order-billing_address_postcode').val();
+      address.country = $('#order-billing_address_country_id').val();
+      address.name = $('#order-billing_address_firstname').val() + ' ' + $('#order-billing_address_lastname').val();
+    }*/
+    
+    window.alert('get blling address');
     
   };
     

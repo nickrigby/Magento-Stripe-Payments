@@ -1,7 +1,15 @@
 <layout version="0.1.0">
-  <default>
+  <adminhtml_sales_order_view>
     <reference name="head">
       <action method="addCss"><stylesheet>district/stripe/css/styles.css</stylesheet></action>
     </reference>
-  </default>
+  </adminhtml_sales_order_view>
+  <adminhtml_sales_order_create_index>
+    <reference name="head">
+      <action method="addJs" ifconfig="payment/stripe/jquery_admin_enabled"><script>district/stripe/jquery.min.js</script></action>
+      <action method="addJs"><script>district/stripe/jquery.noconflict.js</script></action>
+      <action method="addJs"><script>district/stripe/jquery.payment.min.js</script></action>
+      <action method="addJs"><script>district/stripe/stripe.js</script></action>
+    </reference>
+  </adminhtml_sales_order_create_index>
 </layout>
