@@ -1,4 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
+<!--
+/**
+ * District Commerce
+ *
+ * @category    District
+ * @package     Stripe
+ * @author      District Commerce <support@districtcommerce.com>
+ * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
+ * 
+ */
+-->
 <config>
   <modules>
     <District_Stripe>
@@ -6,6 +17,7 @@
       <codePool>community</codePool>
       <depends>
         <Mage_Payment />
+        <Mage_Paygate />
       </depends>
     </District_Stripe>
   </modules>
