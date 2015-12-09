@@ -1,3 +1,7 @@
+#payment_form_stripe {
+  padding-left: 0;
+}
+
 #payment_form_stripe .reader-visible {
   position: absolute;
   left: -10000px;
@@ -8,6 +12,7 @@
 }
 
 #payment_form_stripe input[type=tel] {
+  position: relative;
   height: 37px;
   border-radius: 4px;
   padding: 0 6px 2px 6px;
@@ -20,24 +25,29 @@
   background-position: 97% 50%;
 }
 
+#payment_form_stripe ol li {
+  margin: 0;
+}
+
 #payment_form_stripe #stripe-cc-number {
   width: 200px;
-}
-
-#payment_form_stripe #stripe-cc-exp {
-  width: 100px;
-}
-
-#payment_form_stripe #stripe-cc-exp {
-  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+  margin-bottom: -1px;
+}
+
+#payment_form_stripe #stripe-cc-exp {
   width: 100px;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 #payment_form_stripe #stripe-cc-cvc {
+  width: 101px;
+  border-top-right-radius: 0;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-  width: 101px;
   margin-left: -4px;
 }
 
@@ -63,6 +73,7 @@
 
 #payment_form_stripe .has-error input {
   border-color: #f00 !important;
+  z-index: 10;
 }
 
 #payment_form_stripe .float {

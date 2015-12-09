@@ -5,7 +5,7 @@ district.stripeCc = (function($) {
   var self = {},
       $errorMsg = $('#stripe-error-messages'),
       $inputs = {},
-      mageSave,
+      mageValidateParent,
       address = {};
   
   /*
@@ -13,9 +13,6 @@ district.stripeCc = (function($) {
    *
    */
   self.init = function() {
-    
-    //Get billing address
-    self.getBillingAddress();
     
     //Shortcut to fields
     $inputs.cardNumber = $('#stripe-cc-number');
@@ -44,27 +41,48 @@ district.stripeCc = (function($) {
       }
     });
     
-    //Wrap magento save method (frontend)
+    //If frontend payment
     if(typeof Payment !== 'undefined') {
+      
+      //Get billing address
+      self.getBillingAddressFrontend();
+      
+      //Wrap the payment save method
       Payment.prototype.save = Payment.prototype.save.wrap(self.validateForm);
-    }
-    
-    //Wrap magento place order method (backend)
-    if(typeof AdminOrder !== 'undefined') {
+      
+    } else if(typeof AdminOrder !== 'undefined') { //Admin payment
+      
+      //Wrap submit method
       AdminOrder.prototype.submit = AdminOrder.prototype.submit.wrap(self.validateForm);
+      
+      //Wrap get payment data method
+      AdminOrder.prototype.getPaymentData = AdminOrder.prototype.getPaymentData.wrap(self.paymentDataChange);
+      
     }
     
   };
   
   /*
-   * Get billing address
+   * Runs when updating payment form in admin
    *
    */
-  self.getBillingAddress = function() {
+  self.paymentDataChange = function(getPaymentData) {
+    
+    self.getBillingAddressAdmin();
+    
+    getPaymentData();
+    
+  };
+  
+  /*
+   * Get billing address in frontend
+   *
+   */
+  self.getBillingAddressFrontend = function() {
     
     //Get billing address select element
     var $billingAddress = $('#billing-address-select');
-    
+
     //If the element exists and the value is not empty
     if($billingAddress.length && $billingAddress.val() != '') {
       $.ajax({
@@ -80,30 +98,36 @@ district.stripeCc = (function($) {
       address.zip = $('#billing\\:postcode').val();
       address.country = $('#billing\\:country_id').val();
       address.name = $('billing\\:firstname').val() + ' ' + $('billing\\:lastname').val();
-    } /*else {
-      address.line1 = $('#order-billing_address_street0').val();
-      address.zip = $('#order-billing_address_postcode').val();
-      address.country = $('#order-billing_address_country_id').val();
-      address.name = $('#order-billing_address_firstname').val() + ' ' + $('#order-billing_address_lastname').val();
-    }*/
+    }
     
-    window.alert('get blling address');
-    
+  };
+  
+  /*
+   * Get billing address in admin
+   *
+   */
+  self.getBillingAddressAdmin = function() {
+  
+    address.line1 = $('#order-billing_address_street0').val();
+    address.zip = $('#order-billing_address_postcode').val();
+    address.country = $('#order-billing_address_country_id').val();
+    address.name = $('#order-billing_address_firstname').val() + ' ' + $('#order-billing_address_lastname').val();
+  
   };
     
   /*
    * Validate the form
    *
    */
-  self.validateForm = function(save) {
+  self.validateForm = function(validateParent) {
 
-    //Save ref to magento save function (we need it in stripe callback)
-    mageSave = save;
+    //Save ref to magento parent function (we need it in stripe callback)
+    mageValidateParent = validateParent;
     
     if($inputs.savedCard.length && $inputs.savedCard.val() != '0') { //Existing card to be used
 
       $inputs.cardToken.val($inputs.savedCard.val());
-      mageSave();
+      mageValidateParent();
       
     } else { //New card to be used
       
@@ -112,12 +136,12 @@ district.stripeCc = (function($) {
       var validCardExpiry = $.payment.validateCardExpiry($.payment.cardExpiryVal($inputs.cardExpiry.val()));
       var validCardCVC = $.payment.validateCardCVC($inputs.cardCVC.val(), $.payment.cardType($inputs.cardNumber.val()));
 
-      //Toggle error class for invalud fields
+      //Toggle error class for invalid fields
       $inputs.cardNumber.toggleInputError(!validCardNumber);
       $inputs.cardExpiry.toggleInputError(!validCardExpiry);
       $inputs.cardCVC.toggleInputError(!validCardCVC);
 
-      //If valid, call original save method, else return
+      //If valid, create the token, else return
       if(validCardNumber && validCardExpiry && validCardCVC) {
         self.createToken();
       } else {
@@ -156,7 +180,7 @@ district.stripeCc = (function($) {
       $errorMsg.html(response.error.message);
     } else {
       $inputs.cardToken.val(response.id);
-      mageSave();
+      mageValidateParent();
     }
     
   };
