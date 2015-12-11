@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * District Commerce
+ *
+ * @category    District
+ * @package     Stripe
+ * @author      District Commerce <support@districtcommerce.com>
+ * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
+ * 
+ */
+-->
+<config>
+  <menu>
+    <report>
+      <children>
+        <district>
+          <title>District Commerce</title>
+          <sort_order>100</sort_order>
+          <children>
+            <orderfail>
+              <title>Failed Stripe Orders</title>
+              <sort_order>1</sort_order>
+              <action>adminhtml/orderfail/index</action>
+            </orderfail>
+          </children>
+        </district>
+      </children>
+    </report>
+  </menu>
+  <acl>
+    <resources>
+      <admin>
+        <children>
+          <report>
+            <children>
+              <orderfail>
+                <title>District Stripe Failed Orders</title>
+                <sort_order>100</sort_order>
+              </orderfail>
+            </children>
+          </report>
+        </children>
+      </admin>
+    </resources>
+  </acl>
+</config>

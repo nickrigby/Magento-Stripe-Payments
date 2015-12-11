@@ -24,4 +24,9 @@
       <action method="addJs"><script>district/stripe/stripe.api.js</script></action>
     </reference>
   </adminhtml_sales_order_create_index>
+  <adminhtml_orderfail_index>
+    <reference name="content">
+      <block type="stripe/adminhtml_orderfail" name="district_stripe_orderfail" />
+    </reference>
+  </adminhtml_orderfail_index>
 </layout>
