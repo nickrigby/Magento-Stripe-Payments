@@ -34,18 +34,24 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     * @param   string $token
     * @return  Stripe_Customer $customer
     */
-    public function retrieveCustomer($token)
+    public function retrieveCustomer()
     {
         $this->setApiKey();
 
-        try {
-            $customer = \Stripe\Customer::retrieve(Mage::helper('core')->decrypt($token));
-        } catch(Exception $e) {
-            //Fail silently
-            Mage::log($this->__('Could not retrieve customer'));
+        //Get the customer token from magento
+        if($token = Mage::helper('stripe')->getCustomer()->getToken())
+        {
+            try {
+                $customer = \Stripe\Customer::retrieve(Mage::helper('core')->decrypt($token));
+            } catch(Exception $e) {
+                //Fail silently
+                Mage::log($this->__('Could not retrieve customer'));
+            }
+
+            return $customer;
         }
 
-        return $customer;
+        return false;
     }
 
     /**
@@ -123,6 +129,20 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
             ->getCollection()
             ->addFieldToFilter('order_id', array('eq' => $orderId))
             ->getSize();
+    }
+
+    /**
+    * Delete a stored card
+    *
+    * @param   string $cardId
+    * @return  Stripe_Object
+    */
+    public function deleteCard($cardId)
+    {
+        if($customer = $this->retrieveCustomer())
+        {
+            return $customer->sources->retrieve($cardId)->delete();
+        }
     }
 
 }

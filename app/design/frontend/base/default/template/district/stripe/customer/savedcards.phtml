@@ -1,0 +1,27 @@
+<div class="page-title">
+    <h1><?php echo $this->__('Saved Credit Cards') ?></h1>
+</div>
+<?php if($cards = $this->getCards()): ?>
+<table class="data-table" id="district-stripe-savedcards">
+    <thead>
+        <tr class="first last">
+            <th>Type</th>
+            <th>Last 4</th>
+            <th>Expiry</th>
+            <th>&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($cards as $card): ?>
+        <tr class="first odd">
+            <td><img src="<?php echo $this->getSkinUrl('images/district/stripe/'.strtolower($card->brand).'.png'); ?>" alt="<?php echo $card->brand; ?>"></td>
+            <td><?php echo $card->last4; ?></td>
+            <td><?php echo $card->exp_month; ?>/<?php echo $card->exp_year; ?></td>
+            <td><a href="<?php echo $this->getUrl('*/*/delete', array('id' => $card->id)); ?>">Delete</a></td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+<?php else: ?>
+<?php echo $this->__('You have no saved credit cards.'); ?>
+<?php endif; ?>

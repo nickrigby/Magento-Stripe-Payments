@@ -12,14 +12,11 @@
 $isStripeCustomer = false;
 $savedCards = false;
 
-//If customer exists in our Stripe table
-if($token = Mage::helper('stripe')->getCustomer()->getToken()) {
+//If customer exists in Stripe
+if($cust = Mage::helper('stripe')->retrieveCustomer()) {
 
     //Set customer flag
     $isStripeCustomer = true;
-
-    //Get customer from Stripe
-    $cust = Mage::helper('stripe')->retrieveCustomer($token);
 
     //Get stored cards
     $cards = $cust->sources->data;

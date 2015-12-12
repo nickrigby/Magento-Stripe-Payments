@@ -10,6 +10,25 @@
  */
 -->
 <layout version="0.1.0">
+
+    <customer_account>
+        <reference name="customer_account_navigation">
+            <action method="addlink">
+                <name>district_stripe_savedcc</name>
+                <path>stripe/savedcards</path>
+                <label>Saved Credit Cards</label>
+            </action>
+        </reference>
+    </customer_account>
+
+    <stripe_savedcards_index>
+        <update handle="customer_account"/>
+        <reference name="my.account.wrapper">
+            <block type="stripe/customer_savedcards" name="district_stripe_savedcards" template="district/stripe/customer/savedcards.phtml"/>
+            <block type="customer/account_dashboard" name="customer.account.link.back" template="customer/account/link/back.phtml"/>
+        </reference>
+    </stripe_savedcards_index>
+
     <checkout_onepage_index>
         <reference name="head">
             <action method="addCss"><stylesheet>css/district/stripe/styles.css</stylesheet></action>
@@ -28,4 +47,5 @@
     <opc_index_index>
         <reference name="head"></reference>
     </opc_index_index>
+
 </layout>

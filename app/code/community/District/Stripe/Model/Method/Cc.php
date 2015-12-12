@@ -377,11 +377,8 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
 
     } else { //Yes
 
-      //Get the customer token from magento
-      $customerToken = Mage::helper('stripe')->getCustomer()->getToken();
-
       //Get the customer
-      $customer = Mage::helper('stripe')->retrieveCustomer($customerToken);
+      $customer = Mage::helper('stripe')->retrieveCustomer();
 
       //Save the card
       try {
