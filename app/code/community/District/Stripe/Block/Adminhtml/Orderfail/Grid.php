@@ -15,7 +15,7 @@ class District_Stripe_Block_Adminhtml_Orderfail_Grid extends Mage_Adminhtml_Bloc
   {
     parent::__construct();
     
-    $this->setDefaultSort('id');
+    $this->setDefaultSort('date');
     $this->setId('district_stripe_orderfail_grid');
     $this->setDefaultDir('desc');
     $this->setSaveParametersInSession(true);
@@ -36,16 +36,21 @@ class District_Stripe_Block_Adminhtml_Orderfail_Grid extends Mage_Adminhtml_Bloc
   
   protected function _prepareColumns()
   {
-    $this->addColumn('id', array(
-      'header'=> $this->__('ID'),
-      'align' =>'right',
-      'width' => '50px',
-      'index' => 'id',
-    ));
-    
     $this->addColumn('order_id', array(
       'header'=> $this->__('Order ID'),
       'index' => 'order_id',
+      'width' => '150px',
+    ));
+    
+    $this->addColumn('date', array(
+      'header'=> $this->__('Date'),
+      'index' => 'date',
+      'type' => 'datetime',
+    ));
+    
+    $this->addColumn('code', array(
+      'header'=> $this->__('Code'),
+      'index' => 'code',
     ));
     
     $this->addColumn('cc_type', array(
@@ -61,14 +66,16 @@ class District_Stripe_Block_Adminhtml_Orderfail_Grid extends Mage_Adminhtml_Bloc
     $this->addColumn('amount', array(
       'header'=> $this->__('Amount'),
       'index' => 'amount',
-    ));
-    
-    $this->addColumn('reason', array(
-      'header'=> $this->__('Reason'),
-      'index' => 'reason',
+      'type' => 'currency',
+      'currency' => 'base_currency_code',
     ));
     
     return parent::_prepareColumns();
+  }
+  
+  public function getRowUrl($row)
+  {
+    return Mage::helper('stripe')->getPaymentsDashboardUrl() . Mage::helper('core')->decrypt($row->getToken());
   }
   
 }

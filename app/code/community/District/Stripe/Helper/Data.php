@@ -11,6 +11,8 @@
 
 class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
 {
+  const DASHBOARD_PAYMENTS_URL = 'https://dashboard.stripe.com/payments/';
+  
   /**
    * Sets the API key for interfacing with Stripe API
    *
@@ -58,6 +60,11 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     $model = Mage::getModel('stripe/customer');
     
     return $model->load($customer->getId(), 'customer_id');
+  }
+  
+  public function getPaymentsDashboardUrl()
+  {
+    return self::DASHBOARD_PAYMENTS_URL;
   }
   
   /**

@@ -21,11 +21,14 @@ $installer->run("
     
     CREATE TABLE `{$installer->getTable('stripe/order_failed')}` (
       `id` int(10) unsigned NOT NULL auto_increment,
+      `date` datetime NOT NULL default '0000-00-00 00:00:00',
       `order_id` int(10) unsigned NOT NULL,
       `cc_type` varchar(255),
       `cc_last4` varchar(10),
       `amount` decimal(12,4),
-      `reason` text,
+      `type` varchar(255),
+      `code` varchar(255),
+      `token` varchar(255),
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ");

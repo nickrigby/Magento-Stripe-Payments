@@ -283,18 +283,28 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     //Create the charge
     try {
       $charge = \Stripe\Charge::create($chargeData);    
-    } catch (Exception $e) {
+    } catch (\Stripe\Error\Card $e) {
       
-      //Get error message
-      $message = $e->getMessage();
+      //Get messages
+      $jsonBody = $e->getJsonBody();
+      $error = $jsonBody['error'];
       
       //Save error in additional info column
       Mage::getSingleton('checkout/session')->getQuote()->getPayment()->setAdditionalInformation(array(
-        'error' => $message,
+        'error' => $error['message'],
+        'type'  => $error['type'],
+        'code'  => $error['code'],
+        'token' => $error['charge'],
       ));
       
       //Throw the error
-      Mage::throwException($message);
+      Mage::throwException($error['message']);
+      
+    } catch (Exception $e) {
+      
+      //Throw the error
+      Mage::throwException($e->getMessage());
+      
     }
     
     return $charge;

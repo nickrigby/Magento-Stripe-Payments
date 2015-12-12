@@ -74,7 +74,7 @@ $failedOrderCount = Mage::helper('stripe')->getFailedOrdersCount($order->getIncr
     <tr>
       <td class="label">&nbsp;</td>
       <td class="value">
-        <a href="https://dashboard.stripe.com/payments/<?php echo $payment->getLastTransId(); ?>" target="_blank">View transaction in Stripe</a>
+        <a href="<?php echo Mage::helper('stripe')->getPaymentsDashboardUrl() . $payment->getLastTransId(); ?>" target="_blank">View transaction in Stripe</a>
       </td>
     </tr>
   </tbody>
