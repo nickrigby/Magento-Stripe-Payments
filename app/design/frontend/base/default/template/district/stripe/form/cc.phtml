@@ -64,7 +64,7 @@ if($token = Mage::helper('stripe')->getCustomer()->getToken()) {
             <label for="stripe-cc-cvc" class="reader-visible"><?php echo $this->__('CVC'); ?></label>
             <input id="stripe-cc-cvc" type="tel" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('CVC'); ?>" data-stripe="cvc" size="4" maxlength="4">
         </li>
-        <?php if(Mage::getSingleton('customer/session')->isLoggedIn()): ?>
+        <?php if(Mage::getSingleton('customer/session')->isLoggedIn() && Mage::getStoreConfig('payment/stripe/save_cc_enabled')): ?>
         <li class="checkbox">
             <label><input type="checkbox" name="stripeSaveCard" /> <?php echo $this->__('Save card for future purchases'); ?></label>
         </li>
