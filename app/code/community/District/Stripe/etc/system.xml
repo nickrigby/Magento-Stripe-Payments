@@ -7,115 +7,115 @@
  * @package     Stripe
  * @author      District Commerce <support@districtcommerce.com>
  * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
- * 
+ *
  */
 -->
 <config>
-  <sections>
-    <payment>
-      <groups>
-        <stripe translate="label" module="stripe">
-          <label>Stripe Credit Card</label>
-          <sort_order>1000</sort_order>
-          <show_in_default>1</show_in_default>
-          <show_in_website>1</show_in_website>
-          <show_in_store>1</show_in_store>
-          <fields>
-            <active translate="label">
-              <label>Enabled</label>
-              <frontend_type>select</frontend_type>
-              <source_model>adminhtml/system_config_source_yesno</source_model>
-              <sort_order>10</sort_order>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>0</show_in_store>
-            </active>
-            <title translate="label">
-              <label>Title</label>
-              <frontend_type>text</frontend_type>
-              <sort_order>20</sort_order>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>1</show_in_store>
-            </title>
-            <api_secret_key translate="label">
-              <label>API Secret Key</label>
-              <frontend_type>obscure</frontend_type>
-              <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
-              <sort_order>30</sort_order>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>0</show_in_store>
-            </api_secret_key>
-            <api_publishable_key translate="label">
-              <label>API Publishable Key</label>
-              <frontend_type>obscure</frontend_type>
-              <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
-              <sort_order>40</sort_order>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>0</show_in_store>
-            </api_publishable_key>
-            <allowspecific translate="label">
-              <label>Payment from applicable countries</label>
-              <frontend_type>allowspecific</frontend_type>
-              <sort_order>50</sort_order>
-              <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>0</show_in_store>
-            </allowspecific>
-            <specificcountry translate="label">
-              <label>Payment from specific countries</label>
-              <frontend_type>multiselect</frontend_type>
-              <sort_order>60</sort_order>
-              <source_model>adminhtml/system_config_source_country</source_model>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>0</show_in_store>
-              <depends><allowspecific>1</allowspecific></depends>
-            </specificcountry>
-            <payment_action translate="label">
-              <label>Payment Action</label>
-              <frontend_type>select</frontend_type>
-              <source_model>paygate/authorizenet_source_paymentAction</source_model>
-              <sort_order>70</sort_order>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>0</show_in_store>
-            </payment_action>  
-            <cctype translate="label">
-              <label>Allowed Credit Card Types</label>
-              <frontend_type>multiselect</frontend_type>
-              <source_model>stripe/system_config_source_payment_cctype</source_model>
-              <sort_order>80</sort_order>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>0</show_in_store>
-            </cctype>
-            <jquery_enabled translate="label">
-              <label>Enable jQuery in frontend?</label>
-              <frontend_type>select</frontend_type>
-              <sort_order>90</sort_order>
-              <source_model>adminhtml/system_config_source_yesno</source_model>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>0</show_in_store>
-              <comment><![CDATA[If another module/theme is including jQuery, set to no]]></comment>
-            </jquery_enabled>
-            <jquery_admin_enabled translate="label">
-              <label>Enable jQuery in admin?</label>
-              <frontend_type>select</frontend_type>
-              <sort_order>100</sort_order>
-              <source_model>adminhtml/system_config_source_yesno</source_model>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>0</show_in_store>
-              <comment><![CDATA[If another module/theme is including jQuery, set to no]]></comment>
-            </jquery_admin_enabled>
-          </fields>
-        </stripe>
-      </groups>
-    </payment>
-  </sections>
+    <sections>
+        <payment>
+            <groups>
+                <stripe translate="label" module="stripe">
+                    <label>Stripe Credit Card</label>
+                    <sort_order>1000</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </active>
+                        <title translate="label">
+                            <label>Title</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </title>
+                        <api_secret_key translate="label">
+                            <label>API Secret Key</label>
+                            <frontend_type>obscure</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </api_secret_key>
+                        <api_publishable_key translate="label">
+                            <label>API Publishable Key</label>
+                            <frontend_type>obscure</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </api_publishable_key>
+                        <allowspecific translate="label">
+                            <label>Payment from applicable countries</label>
+                            <frontend_type>allowspecific</frontend_type>
+                            <sort_order>50</sort_order>
+                            <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </allowspecific>
+                        <specificcountry translate="label">
+                            <label>Payment from specific countries</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <sort_order>60</sort_order>
+                            <source_model>adminhtml/system_config_source_country</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends><allowspecific>1</allowspecific></depends>
+                        </specificcountry>
+                        <payment_action translate="label">
+                            <label>Payment Action</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>paygate/authorizenet_source_paymentAction</source_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </payment_action>
+                        <cctype translate="label">
+                            <label>Allowed Credit Card Types</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>stripe/system_config_source_payment_cctype</source_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </cctype>
+                        <jquery_enabled translate="label">
+                            <label>Enable jQuery in frontend?</label>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>90</sort_order>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[If another module/theme is including jQuery, set to no]]></comment>
+                        </jquery_enabled>
+                        <jquery_admin_enabled translate="label">
+                            <label>Enable jQuery in admin?</label>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>100</sort_order>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[If another module/theme is including jQuery, set to no]]></comment>
+                        </jquery_admin_enabled>
+                    </fields>
+                </stripe>
+            </groups>
+        </payment>
+    </sections>
 </config>

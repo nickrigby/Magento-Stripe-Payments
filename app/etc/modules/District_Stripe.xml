@@ -7,18 +7,18 @@
  * @package     Stripe
  * @author      District Commerce <support@districtcommerce.com>
  * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
- * 
+ *
  */
 -->
 <config>
-  <modules>
-    <District_Stripe>
-      <active>false</active>
-      <codePool>community</codePool>
-      <depends>
-        <Mage_Payment />
-        <Mage_Paygate />
-      </depends>
-    </District_Stripe>
-  </modules>
+    <modules>
+        <District_Stripe>
+            <active>false</active>
+            <codePool>community</codePool>
+            <depends>
+                <Mage_Payment />
+                <Mage_Paygate />
+            </depends>
+        </District_Stripe>
+    </modules>
 </config>

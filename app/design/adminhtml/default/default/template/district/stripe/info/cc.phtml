@@ -6,7 +6,7 @@
  * @package     Stripe
  * @author      District Commerce <support@districtcommerce.com>
  * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
- * 
+ *
  */
 
 /**
@@ -27,13 +27,13 @@ $avsStatus = explode('/', $payment->getCcAvsStatus());
 
 //Does country match?
 if(isset($payment->getAdditionalInformation()['country'])) {
-  if($payment->getAdditionalInformation()['country'] !== $order->getBillingAddress()->getCountry()) {
-    $countryStatus = 'fail';
-  } else {
-    $countryStatus = 'pass';
-  }
+    if($payment->getAdditionalInformation()['country'] !== $order->getBillingAddress()->getCountry()) {
+        $countryStatus = 'fail';
+    } else {
+        $countryStatus = 'pass';
+    }
 } else {
-  $countryStatus = 'unavailable';
+    $countryStatus = 'unavailable';
 }
 
 //Get failed orders
@@ -44,38 +44,38 @@ $failedOrderCount = Mage::helper('stripe')->getFailedOrdersCount($order->getIncr
 <i class="icon-cc-stripe"></i>
 
 <table cellspacing="0" class="form-list">
-  <tbody>
-    <tr>
-      <td class="label"><label>Type</label></td>
-      <td class="value card-type"><strong><?php echo $payment->getCcType(); ?></strong></td>
-    </tr>
-    <tr>
-      <td class="label"><label>Last 4 digits</label></td>
-      <td class="value"><strong><?php echo $payment->getCcLast4(); ?></strong></td>
-    </tr>
-    <tr>
-      <td class="label"><label>Exp. Date</label></td>
-      <td class="value"><strong><?php echo $payment->getCcExpMonth() . '/' . $payment->getCcExpYear(); ?></strong></td>
-    </tr>
-    <tr>
-      <td class="label">Security Checks</td>
-      <td class="value">
-        <ul class="security-info">
-          <li title="<?php echo $payment->getCcCidStatus(); ?>"><span><i class="icon-<?php echo $payment->getCcCidStatus(); ?>"></i> CVC</span></li>
-          <li title="<?php echo $avsStatus[0]; ?>"><span><i class="icon-<?php echo $avsStatus[0]; ?>"></i> Street</span></li>    
-          <li title="<?php echo $avsStatus[1]; ?>"><span><i class="icon-<?php echo $avsStatus[1]; ?>"></i> Zip</span></li>
-          <li title="<?php echo $countryStatus; ?>"><span><i class="icon-<?php echo $countryStatus; ?>"></i> Country</span></li>
-          <?php if($failedOrderCount > 0) : ?>
-          <li><span><i class="icon-warning" title="<?php echo $countryStatus; ?>"></i> <?php echo $failedOrderCount; ?> failed attempts</span></li>
-          <?php endif; ?>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td class="label">&nbsp;</td>
-      <td class="value">
-        <a href="<?php echo Mage::helper('stripe')->getPaymentsDashboardUrl() . $payment->getLastTransId(); ?>" target="_blank">View transaction in Stripe</a>
-      </td>
-    </tr>
-  </tbody>
+    <tbody>
+        <tr>
+            <td class="label"><label>Type</label></td>
+            <td class="value card-type"><strong><?php echo $payment->getCcType(); ?></strong></td>
+        </tr>
+        <tr>
+            <td class="label"><label>Last 4 digits</label></td>
+            <td class="value"><strong><?php echo $payment->getCcLast4(); ?></strong></td>
+        </tr>
+        <tr>
+            <td class="label"><label>Exp. Date</label></td>
+            <td class="value"><strong><?php echo $payment->getCcExpMonth() . '/' . $payment->getCcExpYear(); ?></strong></td>
+        </tr>
+        <tr>
+            <td class="label">Security Checks</td>
+            <td class="value">
+                <ul class="security-info">
+                    <li title="<?php echo $payment->getCcCidStatus(); ?>"><span><i class="icon-<?php echo $payment->getCcCidStatus(); ?>"></i> CVC</span></li>
+                    <li title="<?php echo $avsStatus[0]; ?>"><span><i class="icon-<?php echo $avsStatus[0]; ?>"></i> Street</span></li>
+                    <li title="<?php echo $avsStatus[1]; ?>"><span><i class="icon-<?php echo $avsStatus[1]; ?>"></i> Zip</span></li>
+                    <li title="<?php echo $countryStatus; ?>"><span><i class="icon-<?php echo $countryStatus; ?>"></i> Country</span></li>
+                    <?php if($failedOrderCount > 0) : ?>
+                    <li><span><i class="icon-warning" title="<?php echo $countryStatus; ?>"></i> <?php echo $failedOrderCount; ?> failed attempts</span></li>
+                    <?php endif; ?>
+                </ul>
+            </td>
+        </tr>
+        <tr>
+            <td class="label">&nbsp;</td>
+            <td class="value">
+                <a href="<?php echo Mage::helper('stripe')->getPaymentsDashboardUrl() . $payment->getLastTransId(); ?>" target="_blank">View transaction in Stripe</a>
+            </td>
+        </tr>
+    </tbody>
 </table>

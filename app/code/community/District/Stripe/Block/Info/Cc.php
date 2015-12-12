@@ -6,7 +6,7 @@
  * @package     Stripe
  * @author      District Commerce <support@districtcommerce.com>
  * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
- * 
+ *
  */
 
 class District_Stripe_Block_Info_Cc extends Mage_Payment_Block_Info_Cc
@@ -16,5 +16,4 @@ class District_Stripe_Block_Info_Cc extends Mage_Payment_Block_Info_Cc
         parent::_construct();
         $this->setTemplate('district/stripe/info/cc.phtml');
     }
-
 }
