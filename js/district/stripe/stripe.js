@@ -46,6 +46,7 @@ district.stripeCc = (function($) {
         $('#stripe-saved-card').change(function() {
             if($(this).val() == '0') {
                 $('#stripe-new-card').show();
+                $inputs.cardNumber.focus();
             } else {
                 $('#stripe-new-card').hide();
             }
