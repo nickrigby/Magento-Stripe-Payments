@@ -20,9 +20,9 @@ class District_Stripe_OrderfailedController extends Mage_Adminhtml_Controller_Ac
     {
         $this->loadLayout()
             ->_setActiveMenu('report/district/orderfailed')
-            ->_title($this->__('District Commerce'))->_title($this->__('Failed orders'))
-            ->_addBreadcrumb($this->__('District'), $this->__('District'))
-            ->_addBreadcrumb($this->__('Failed orders'), $this->__('Failed orders'));
+            ->_title($this->__('District Commerce'))->_title($this->__('Failed Stripe Orders'))
+            ->_addBreadcrumb($this->__('District Commerce'), $this->__('District Commerce'))
+            ->_addBreadcrumb($this->__('Failed Stripe Orders'), $this->__('Failed Stripe Orders'));
         return $this;
     }
 

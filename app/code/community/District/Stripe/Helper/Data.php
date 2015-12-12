@@ -24,7 +24,7 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
         try {
             \Stripe\Stripe::setApiKey(Mage::getStoreConfig('payment/stripe/api_secret_key'));
         } catch (Exception $e) {
-            Mage::throwException('District Stripe: Could not set API key');
+            Mage::throwException($this->__('Cannot set Stripe API key'));
         }
     }
 
@@ -42,14 +42,14 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
             $customer = \Stripe\Customer::retrieve(Mage::helper('core')->decrypt($token));
         } catch(Exception $e) {
             //Fail silently
-            Mage::log('District Stripe: Could not retrieve customer');
+            Mage::log($this->__('Could not retrieve customer'));
         }
 
         return $customer;
     }
 
     /**
-    * Get a customer from Database
+    * Get a customer from District Stripe Database
     *
     * @param   none
     * @return  District_Stripe_Model_Customer
@@ -104,7 +104,7 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
 
         } catch (Exception $e) {
             //Silently fail, don't stop transaction
-            Mage::log('Stripe: Could not create customer');
+            Mage::log($this->__('Could not create customer'));
         }
 
         return $stripeCustomer;

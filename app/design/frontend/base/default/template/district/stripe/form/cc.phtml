@@ -41,32 +41,32 @@ if($token = Mage::helper('stripe')->getCustomer()->getToken()) {
     <?php if($savedCards): ?>
     <ol>
         <li>
-            <label for="stripe-saved-card" class="reader-visible">Choose card</label>
+            <label for="stripe-saved-card" class="reader-visible"><?php echo $this->__('Choose card'); ?></label>
             <select id="stripe-saved-card" name="stripeSavedCard">
                 <?php foreach($cards as $card): ?>
                 <option value="<?php echo $card->id; ?>"><?php echo $card->brand; ?> **** **** **** <?php echo $card->last4; ?></option>
                 <?php endforeach; ?>
-                <option value="0">New card</option>
+                <option value="0"><?php echo $this->__('New card'); ?></option>
             </select>
         </li>
     </ol>
     <?php endif; ?>
     <ol id="stripe-new-card" <?php if($savedCards): ?> style="display:none;"<?php endif; ?>>
         <li>
-            <label for="stripe-cc-number" class="reader-visible">Card Number</label>
-            <input id="stripe-cc-number" type="tel" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="Card number" data-stripe="number" size="20">
+            <label for="stripe-cc-number" class="reader-visible"><?php echo $this->__('Card Number'); ?></label>
+            <input id="stripe-cc-number" type="tel" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('Card Number'); ?>" data-stripe="number" size="20">
         </li>
         <li class="float">
-            <label for="stripe-cc-exp" class="reader-visible">Expiry Date</label>
+            <label for="stripe-cc-exp" class="reader-visible"><?php echo $this->__('Expiry Date'); ?></label>
             <input id="stripe-cc-exp" type="tel" x-autocompletetype="off" autocompletetype="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="MM / YY" size="5" data-stripe="exp">
         </li>
         <li class="float">
-            <label for="stripe-cc-cvc" class="reader-visible">CVC</label>
-            <input id="stripe-cc-cvc" type="tel" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="CVC" data-stripe="cvc" size="4" maxlength="4">
+            <label for="stripe-cc-cvc" class="reader-visible"><?php echo $this->__('CVC'); ?></label>
+            <input id="stripe-cc-cvc" type="tel" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('CVC'); ?>" data-stripe="cvc" size="4" maxlength="4">
         </li>
         <?php if(Mage::getSingleton('customer/session')->isLoggedIn()): ?>
         <li class="checkbox">
-            <label><input type="checkbox" name="stripeSaveCard" /> Save card for future purchases</label>
+            <label><input type="checkbox" name="stripeSaveCard" /> <?php echo $this->__('Save card for future purchases'); ?></label>
         </li>
         <?php endif; ?>
     </ol>

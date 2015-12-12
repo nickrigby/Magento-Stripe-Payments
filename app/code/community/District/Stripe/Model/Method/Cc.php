@@ -6,15 +6,15 @@
  * @package     Stripe
  * @author      District Commerce <support@districtcommerce.com>
  * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
- * 
+ *
  */
 
 class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract {
-  
+
   protected $_code = 'stripe';
   protected $_formBlockType = 'stripe/form_cc';
   protected $_infoBlockType = 'stripe/info_cc';
-  
+
   /**
    * Payment Method features
    * @var bool
@@ -36,16 +36,16 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
   protected $_canManageRecurringProfiles  = true;
   protected $_canSaveCc                   = false;
   protected $_isAvailable                 = true;
-  
+
   //Stripe specific
   private $_token;
   private $_useSavedCard = false;
-  
+
   public function __construct()
   {
     parent::__construct();
   }
-  
+
   /**
    * Capture the payment
    *
@@ -55,10 +55,10 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
    * @return Mage_Payment_Model_Abstract
    */
   public function capture(Varien_Object $payment, $amount)
-  { 
+  {
     //Call parent capture function
     parent::capture($payment, $amount);
-    
+
     //Check amount is okay
     if ($amount <= 0) {
       Mage::throwException(Mage::helper('payment')->__('Invalid amount for authorization.'));
@@ -70,16 +70,16 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     } else { //Auth and capture
       $charge = $this->_createCharge($payment, $amount, true);
     }
-    
+
     //Create the payment in Magento
     $this->_createPayment($payment, $charge, $amount, Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE);
-    
+
     //Skip transaction creation
     $payment->setSkipTransactionCreation(true);
 
     return $this;
   }
-  
+
   /**
    * Authorize payment abstract method
    *
@@ -92,24 +92,24 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
   {
     //Call parent authorize function
     parent::authorize($payment, $amount);
-    
+
     //Check amount is okay
     if ($amount <= 0) {
       Mage::throwException(Mage::helper('payment')->__('Invalid amount for authorization.'));
     }
-    
+
     //Create the charge (authorization only)
     $charge = $this->_createCharge($payment, $amount, false);
-    
+
     //Create the payment in Magento
     $this->_createPayment($payment, $charge, $amount, Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH);
-    
+
     //Skip transaction creation
     $payment->setSkipTransactionCreation(true);
-    
+
     return $this;
   }
-  
+
   /**
    * Refund
    *
@@ -120,19 +120,19 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
   {
     //Get transaction id
     $transactionId = $payment->getLastTransId();
-    
+
     //Create the refund
     $refund = $this->_createRefund($transactionId, $amount);
-    
+
     //Close payment
     $this->_closePayment($payment, $refund, Mage_Sales_Model_Order_Payment_Transaction::TYPE_REFUND);
-    
+
     //Skip transaction creation
     $payment->setSkipTransactionCreation(true);
-    
+
     return $this;
   }
-  
+
   /**
    * Validate payment method
    *
@@ -143,7 +143,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
   {
     //Call parent validate
     parent::validate();
-    
+
     //New card or saved card being used?
     if(isset($_POST['stripeToken']) && !empty($_POST['stripeToken'])) { //New card
 
@@ -164,10 +164,10 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     } else { //Error
 
       //Token was not set, throw an error
-      Mage::throwException(Mage::helper('payment')->__('Token is empty.'));
+      Mage::throwException(Mage::helper('stripe')->__('There was an error validating your card. Please try again.'));
 
     }
-    
+
     //Add card details to quote
     Mage::getSingleton('checkout/session')->getQuote()->getPayment()->addData(array(
       'cc_exp_year' => $token->card->exp_year,
@@ -175,10 +175,10 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
       'cc_last4' => $token->card->last4,
       'cc_type' => $token->card->brand,
     ));
-    
+
     return $this;
   }
-  
+
   /**
    * Sets the payment information
    *
@@ -191,7 +191,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     $payment->setTransactionId($charge->id);
     $payment->setIsTransactionClosed(0);
     $payment->setAmount($amount);
-    
+
     //Add payment cc information
     $payment->setcc_exp_month($charge->source->exp_month);
     $payment->setcc_exp_year($charge->source->exp_year);
@@ -209,11 +209,11 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
       'funding' => $charge->source->funding,
       'country' => $charge->source->country
     ));
-    
+
     //Add the transaction
     $payment->addTransaction($requestType, null, true);
   }
-  
+
   /**
    * Closes a payment
    *
@@ -225,11 +225,11 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     $payment->setTransactionId($refund->id);
     $payment->setIsTransactionClosed(true);
     $payment->setShouldCloseParentTransaction(true);
-    
+
     //Add the transaction
     $payment->addTransaction($requestType, null, true);
   }
-  
+
   /**
    * Get the token from Stripe based on passed in tokenString
    *
@@ -239,16 +239,16 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
   protected function _retrieveToken($tokenString)
   {
     Mage::helper('stripe')->setApiKey();
-    
+
     try {
       $token = \Stripe\Token::retrieve(trim($tokenString));
     } catch (Exception $e) {
-      Mage::throwException('Stripe: Invalid token');
+      Mage::throwException(Mage::helper('stripe')->__('Invalid token. Please try again.'));
     }
-    
+
     return $token;
   }
-  
+
   /**
    * Create a charge
    *
@@ -259,12 +259,12 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
   {
     //Set API key
     Mage::helper('stripe')->setApiKey();
-    
+
     //Save card, if checkbox is checked
     if(isset($_POST['stripeSaveCard'])) {
       $this->_saveCard();
     }
-    
+
     //Set data
     $chargeData = array(
       'amount' => $amount * 100,
@@ -273,22 +273,22 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
       'capture' => $capture,
       'description' => sprintf('Payment for order #%s on %s', $payment->getOrder()->getIncrementId(), $payment->getOrder()->getStore()->getFrontendName())
     );
-    
+
     //If a saved card is being used, set the customer token
     if($this->_useSavedCard) {
       $customerToken = Mage::helper('stripe')->getCustomer()->getToken();
       $chargeData['customer'] = Mage::helper('core')->decrypt($customerToken);
     }
-    
+
     //Create the charge
     try {
-      $charge = \Stripe\Charge::create($chargeData);    
+      $charge = \Stripe\Charge::create($chargeData);
     } catch (\Stripe\Error\Card $e) {
-      
+
       //Get messages
       $jsonBody = $e->getJsonBody();
       $error = $jsonBody['error'];
-      
+
       //Save error in additional info column
       Mage::getSingleton('checkout/session')->getQuote()->getPayment()->setAdditionalInformation(array(
         'error' => $error['message'],
@@ -296,20 +296,20 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         'code'  => $error['code'],
         'token' => $error['charge'],
       ));
-      
+
       //Throw the error
-      Mage::throwException($error['message']);
-      
+      Mage::throwException(Mage::helper('stripe')->__($error['message']));
+
     } catch (Exception $e) {
-      
+
       //Throw the error
-      Mage::throwException($e->getMessage());
-      
+      Mage::throwException(Mage::helper('stripe')->__($e->getMessage()));
+
     }
-    
+
     return $charge;
   }
-  
+
   /**
    * Retrieve a charge
    *
@@ -319,17 +319,17 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
   protected function _retrieveCharge($transactionId)
   {
     Mage::helper('stripe')->setApiKey();
-    
+
     try {
       $charge = \Stripe\Charge::retrieve($transactionId);
     } catch (Exception $e) {
       $message = $e->getMessage();
       Mage::throwException($message);
     }
-    
+
     return $charge;
   }
-  
+
   /**
    * Create a refund
    *
@@ -340,7 +340,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
   protected function _createRefund($transactionId, $amount)
   {
     Mage::helper('stripe')->setApiKey();
-    
+
     try {
       $refund = \Stripe\Refund::create(array(
         'charge' => $transactionId,
@@ -351,10 +351,10 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     } catch (\Stripe\Error\Card $e) {
       Mage::throwException($e);
     }
-    
+
     return $refund;
   }
-  
+
   /**
    * Save a card
    *
@@ -365,24 +365,24 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
   {
     //Before we can save card, is this an existing stripe customer?
     if(!isset($_POST['isStripeCustomer'])) { //No
-      
+
       //Create the customer in Stripe
       $customer = Mage::helper('stripe')->createCustomer($this->_token);
-      
+
       //Set the flag to use a saved card (since we just saved it)
       $this->_useSavedCard = true;
-      
+
       //Set token to default card token
       $this->_token = $customer->default_source;
-      
+
     } else { //Yes
-      
+
       //Get the customer token from magento
       $customerToken = Mage::helper('stripe')->getCustomer()->getToken();
-      
+
       //Get the customer
       $customer = Mage::helper('stripe')->retrieveCustomer($customerToken);
-      
+
       //Save the card
       try {
         $customer->sources->create(array(
@@ -390,9 +390,8 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         ));
       } catch (Exception $e) {
         //Silently fail, don't stop transaction
-        Mage::log('Stripe: Could not save card');
+        Mage::log(Mage::helper('stripe')->__('Could not save card'));
       }
     }
   }
-
 }

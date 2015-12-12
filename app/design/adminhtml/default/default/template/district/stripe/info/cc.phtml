@@ -46,27 +46,27 @@ $failedOrderCount = Mage::helper('stripe')->getFailedOrdersCount($order->getIncr
 <table cellspacing="0" class="form-list">
     <tbody>
         <tr>
-            <td class="label"><label>Type</label></td>
+            <td class="label"><label><?php echo $this->__('Card Type'); ?></label></td>
             <td class="value card-type"><strong><?php echo $payment->getCcType(); ?></strong></td>
         </tr>
         <tr>
-            <td class="label"><label>Last 4 digits</label></td>
+            <td class="label"><label><?php echo $this->__('Last 4 Digits'); ?></label></td>
             <td class="value"><strong><?php echo $payment->getCcLast4(); ?></strong></td>
         </tr>
         <tr>
-            <td class="label"><label>Exp. Date</label></td>
+            <td class="label"><label><?php echo $this->__('Expiry Date'); ?></label></td>
             <td class="value"><strong><?php echo $payment->getCcExpMonth() . '/' . $payment->getCcExpYear(); ?></strong></td>
         </tr>
         <tr>
-            <td class="label">Security Checks</td>
+            <td class="label"><?php echo $this->__('Security Checks'); ?></td>
             <td class="value">
                 <ul class="security-info">
-                    <li title="<?php echo $payment->getCcCidStatus(); ?>"><span><i class="icon-<?php echo $payment->getCcCidStatus(); ?>"></i> CVC</span></li>
-                    <li title="<?php echo $avsStatus[0]; ?>"><span><i class="icon-<?php echo $avsStatus[0]; ?>"></i> Street</span></li>
-                    <li title="<?php echo $avsStatus[1]; ?>"><span><i class="icon-<?php echo $avsStatus[1]; ?>"></i> Zip</span></li>
-                    <li title="<?php echo $countryStatus; ?>"><span><i class="icon-<?php echo $countryStatus; ?>"></i> Country</span></li>
+                    <li title="<?php echo $payment->getCcCidStatus(); ?>"><span><i class="icon-<?php echo $payment->getCcCidStatus(); ?>"></i> <?php echo $this->__('CVC'); ?></span></li>
+                    <li title="<?php echo $avsStatus[0]; ?>"><span><i class="icon-<?php echo $avsStatus[0]; ?>"></i> <?php echo $this->__('Street'); ?></span></li>
+                    <li title="<?php echo $avsStatus[1]; ?>"><span><i class="icon-<?php echo $avsStatus[1]; ?>"></i> <?php echo $this->__('Zip'); ?></span></li>
+                    <li title="<?php echo $countryStatus; ?>"><span><i class="icon-<?php echo $countryStatus; ?>"></i> <?php echo $this->__('Country'); ?></span></li>
                     <?php if($failedOrderCount > 0) : ?>
-                    <li><span><i class="icon-warning" title="<?php echo $countryStatus; ?>"></i> <?php echo $failedOrderCount; ?> failed attempts</span></li>
+                    <li><span><i class="icon-warning" title="<?php echo $countryStatus; ?>"></i> <?php echo $failedOrderCount; ?> <?php echo $this->__('Failed attempts'); ?></span></li>
                     <?php endif; ?>
                 </ul>
             </td>
@@ -74,7 +74,7 @@ $failedOrderCount = Mage::helper('stripe')->getFailedOrdersCount($order->getIncr
         <tr>
             <td class="label">&nbsp;</td>
             <td class="value">
-                <a href="<?php echo Mage::helper('stripe')->getPaymentsDashboardUrl() . $payment->getLastTransId(); ?>" target="_blank">View transaction in Stripe</a>
+                <a href="<?php echo Mage::helper('stripe')->getPaymentsDashboardUrl() . $payment->getLastTransId(); ?>" target="_blank"><?php echo $this->__('View payment in Stripe'); ?></a>
             </td>
         </tr>
     </tbody>

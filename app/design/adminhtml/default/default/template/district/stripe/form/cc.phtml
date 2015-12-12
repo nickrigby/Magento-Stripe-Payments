@@ -16,16 +16,16 @@
     <div id="stripe-error-messages"></div>
     <ol id="stripe-new-card">
         <li>
-            <label for="stripe-cc-number" class="reader-visible">Card Number</label>
-            <input id="stripe-cc-number" type="tel" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="Card number" data-stripe="number" size="20">
+            <label for="stripe-cc-number" class="reader-visible"><?php echo $this->__('Card Number'); ?></label>
+            <input id="stripe-cc-number" type="tel" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('Card Number'); ?>" data-stripe="number" size="20">
         </li>
         <li class="float">
-            <label for="stripe-cc-exp" class="reader-visible">Expiry Date</label>
+            <label for="stripe-cc-exp" class="reader-visible"><?php echo $this->__('Expiry Date'); ?></label>
             <input id="stripe-cc-exp" type="tel" x-autocompletetype="off" autocompletetype="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="MM / YY" size="5" data-stripe="exp">
         </li>
         <li class="float">
-            <label for="stripe-cc-cvc" class="reader-visible">CVC</label>
-            <input id="stripe-cc-cvc" type="tel" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="CVC" data-stripe="cvc" size="4" maxlength="4">
+            <label for="stripe-cc-cvc" class="reader-visible"><?php echo $this->__('CVC'); ?></label>
+            <input id="stripe-cc-cvc" type="tel" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('CVC'); ?>" data-stripe="cvc" size="4" maxlength="4">
         </li>
     </ol>
 </div>
