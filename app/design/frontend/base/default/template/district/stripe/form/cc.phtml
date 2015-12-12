@@ -36,12 +36,14 @@ if($cust = Mage::helper('stripe')->retrieveCustomer()) {
     <?php endif; ?>
     <div id="stripe-error-messages"></div>
     <?php if($savedCards): ?>
-    <ol>
+    <ol id="stripe-saved-card-select">
         <li>
             <label for="stripe-saved-card" class="reader-visible"><?php echo $this->__('Choose card'); ?></label>
             <select id="stripe-saved-card" name="stripeSavedCard">
                 <?php foreach($cards as $card): ?>
-                <option value="<?php echo $card->id; ?>"><?php echo $card->brand; ?> **** **** **** <?php echo $card->last4; ?></option>
+                <option value="<?php echo $card->id; ?>">
+                    <?php echo $card->brand; ?> **** **** **** <?php echo $card->last4; ?> (<?php echo $card->exp_month . '/' . $card->exp_year; ?>)
+                </option>
                 <?php endforeach; ?>
                 <option value="0"><?php echo $this->__('New card'); ?></option>
             </select>
