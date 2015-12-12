@@ -42,10 +42,10 @@ if($cust = Mage::helper('stripe')->retrieveCustomer()) {
             <select id="stripe-saved-card" name="stripeSavedCard">
                 <?php foreach($cards as $card): ?>
                 <option value="<?php echo $card->id; ?>">
-                    <?php echo $card->brand; ?> **** **** **** <?php echo $card->last4; ?> (<?php echo $card->exp_month . '/' . $card->exp_year; ?>)
+                    <?php echo $card->brand; ?> **** <?php echo $card->last4; ?> (<?php echo $card->exp_month . '/' . $card->exp_year; ?>)
                 </option>
                 <?php endforeach; ?>
-                <option value="0"><?php echo $this->__('New card'); ?></option>
+                <option value=""><?php echo $this->__('New card'); ?></option>
             </select>
         </li>
     </ol>

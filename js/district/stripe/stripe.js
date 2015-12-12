@@ -44,7 +44,7 @@ district.stripeCc = (function($) {
 
         //Toggle new card form
         $('#stripe-saved-card').change(function() {
-            if($(this).val() == '0') {
+            if($(this).val() === '') {
                 $('#stripe-new-card').show();
                 $inputs.cardNumber.focus();
             } else {
@@ -135,9 +135,8 @@ district.stripeCc = (function($) {
         //Save ref to magento parent function (we need it in stripe callback)
         mageValidateParent = validateParent;
 
-        if($inputs.savedCard.length && $inputs.savedCard.val() != '0') { //Existing card to be used
+        if($inputs.savedCard.length && $inputs.savedCard.val() !== '') { //Existing card to be used
 
-            $inputs.cardToken.val($inputs.savedCard.val());
             mageValidateParent();
 
         } else { //New card to be used
