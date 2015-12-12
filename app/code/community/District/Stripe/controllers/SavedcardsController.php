@@ -19,12 +19,12 @@ class District_Stripe_SavedcardsController extends Mage_Core_Controller_Front_Ac
 
         if($id) {
             if(Mage::helper('stripe')->deleteCard($id)) {
-                Mage::getSingleton('adminhtml/session')->addSuccess($this->__('Card was sucessfully deleted.'));
+                Mage::getSingleton('core/session')->addSuccess($this->__('Card was sucessfully deleted.'));
             } else {
-                Mage::getSingleton('adminhtml/session')->addError($this->__('Card could not be deleted.'));
+                Mage::getSingleton('core/session')->addError($this->__('Card could not be deleted.'));
             }
         } else {
-            Mage::getSingleton('adminhtml/session')->addError($this->__('Card could not be deleted.'));
+            Mage::getSingleton('core/session')->addError($this->__('Card could not be deleted.'));
         }
 
         $this->_redirect('*/*/');
