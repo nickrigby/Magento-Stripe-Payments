@@ -1,104 +1,108 @@
 /**
- * District Commerce
- *
- * @category    District
- * @package     Stripe
- * @author      District Commerce <support@districtcommerce.com>
- * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
- * 
- */
+* District Commerce
+*
+* @category    District
+* @package     Stripe
+* @author      District Commerce <support@districtcommerce.com>
+* @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
+*
+*/
 
 #payment_form_stripe {
-  padding-left: 0;
+    padding-left: 0;
+}
+
+#payment_form_stripe #stripe-saved-card-select {
+    margin-bottom: .5em;
 }
 
 #payment_form_stripe .reader-visible {
-  position: absolute;
-  left: -10000px;
-  top: auto;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
 }
 
 #payment_form_stripe input[type=tel] {
-  position: relative;
-  height: 37px;
-  border-radius: 4px;
-  padding: 0 6px 2px 6px;
-  font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
-  font-size: 15px;
-  box-sizing: border-box;
-  background: #fff;
-  border: 1px solid #ccc;
-  background-repeat: no-repeat;
-  background-position: 97% 50%;
+    position: relative;
+    height: 37px;
+    border-radius: 4px;
+    padding: 0 6px 2px 6px;
+    font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
+    font-size: 15px;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid #ccc;
+    background-repeat: no-repeat;
+    background-position: 97% 50%;
 }
 
 #payment_form_stripe ol li {
-  margin: 0;
+    margin: 0;
 }
 
 #payment_form_stripe #stripe-cc-number {
-  width: 200px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  margin-bottom: -1px;
+    width: 200px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-bottom: -1px;
 }
 
 #payment_form_stripe #stripe-cc-exp {
-  width: 100px;
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
-  border-bottom-right-radius: 0;
+    width: 100px;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 #payment_form_stripe #stripe-cc-cvc {
-  width: 101px;
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  margin-left: -4px;
+    width: 101px;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: -4px;
 }
 
 #payment_form_stripe input.visa {
-  background-image: url(../../../images/district/stripe/visa.png);
+    background-image: url(../../../images/district/stripe/visa.png);
 }
 
 #payment_form_stripe input.mastercard {
-  background-image: url(../../../images/district/stripe/mastercard.png);
+    background-image: url(../../../images/district/stripe/mastercard.png);
 }
 
 #payment_form_stripe input.amex {
-  background-image: url(../../../images/district/stripe/amex.png);
+    background-image: url(../../../images/district/stripe/amex.png);
 }
 
 #payment_form_stripe input.discover {
-  background-image: url(../../../images/district/stripe/discover.png);
+    background-image: url(../../../images/district/stripe/discover.png);
 }
 
 #payment_form_stripe input.jcb {
-  background-image: url(../../../images/district/stripe/jcb.png);
+    background-image: url(../../../images/district/stripe/jcb.png);
 }
 
 #payment_form_stripe .has-error input {
-  border-color: #f00 !important;
-  z-index: 10;
+    border-color: #f00 !important;
+    z-index: 10;
 }
 
 #payment_form_stripe .float {
-  display: inline-block;
+    display: inline-block;
 }
 
 #payment_form_stripe .checkbox {
-  width: 200px;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-  padding: 6px;
-  background: #f5f5f5;
-  border-radius: 4px;
+    width: 200px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    padding: 6px;
+    background: #f5f5f5;
+    border-radius: 4px;
 }
 
 #payment_form_stripe .checkbox label {
-  font-weight: 400;
+    font-weight: 400;
 }
