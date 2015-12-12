@@ -9,7 +9,7 @@
  *
  */
 
-class District_Stripe_Model_Observer_Orderfail extends Varien_Event_Observer
+class District_Stripe_Model_Observer_Orderfailed extends Varien_Event_Observer
 {
     /**
      * This an observer function for the event 'controller_front_init_before'.

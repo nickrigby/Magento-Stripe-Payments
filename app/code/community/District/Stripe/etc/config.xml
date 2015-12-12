@@ -57,7 +57,7 @@
             <sales_model_service_quote_submit_failure>
                 <observers>
                     <stripe>
-                        <class>District_Stripe_Model_Observer_Orderfail</class>
+                        <class>District_Stripe_Model_Observer_Orderfailed</class>
                         <type>singleton</type>
                         <method>save</method>
                     </stripe>

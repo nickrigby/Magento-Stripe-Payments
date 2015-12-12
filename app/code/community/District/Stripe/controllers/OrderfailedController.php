@@ -9,17 +9,18 @@
  *
  */
 
-class District_Stripe_OrderfailController extends Mage_Adminhtml_Controller_Action
+class District_Stripe_OrderfailedController extends Mage_Adminhtml_Controller_Action
 {
     public function indexAction()
     {
+        Mage::log('index');
         $this->_initAction()->renderLayout();
     }
 
     protected function _initAction()
     {
         $this->loadLayout()
-            ->_setActiveMenu('report/district/orderfail')
+            ->_setActiveMenu('report/district/orderfailed')
             ->_title($this->__('District Commerce'))->_title($this->__('Failed orders'))
             ->_addBreadcrumb($this->__('District'), $this->__('District'))
             ->_addBreadcrumb($this->__('Failed orders'), $this->__('Failed orders'));
@@ -28,6 +29,6 @@ class District_Stripe_OrderfailController extends Mage_Adminhtml_Controller_Acti
 
     protected function _isAllowed()
     {
-        return Mage::getSingleton('admin/session')->isAllowed('district/orderfail');
+        return Mage::getSingleton('admin/session')->isAllowed('district/orderfailed');
     }
 }

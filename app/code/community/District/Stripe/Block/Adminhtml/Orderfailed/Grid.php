@@ -9,14 +9,14 @@
  *
  */
 
-class District_Stripe_Block_Adminhtml_Orderfail_Grid extends Mage_Adminhtml_Block_Widget_Grid
+class District_Stripe_Block_Adminhtml_Orderfailed_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
     public function __construct()
     {
         parent::__construct();
 
         $this->setDefaultSort('date');
-        $this->setId('district_stripe_orderfail_grid');
+        $this->setId('district_stripe_orderfailed_grid');
         $this->setDefaultDir('desc');
         $this->setSaveParametersInSession(true);
     }

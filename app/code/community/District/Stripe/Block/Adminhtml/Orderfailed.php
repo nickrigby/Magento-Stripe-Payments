@@ -9,12 +9,12 @@
  *
  */
 
-class District_Stripe_Block_Adminhtml_Orderfail extends Mage_Adminhtml_Block_Widget_Grid_Container
+class District_Stripe_Block_Adminhtml_Orderfailed extends Mage_Adminhtml_Block_Widget_Grid_Container
 {
     public function __construct()
     {
         $this->_blockGroup = 'stripe';
-        $this->_controller = 'adminhtml_orderfail';
+        $this->_controller = 'adminhtml_orderfailed';
         $this->_headerText = $this->__('Failed Stripe Orders');
         parent::__construct();
         $this->_removeButton('add');
