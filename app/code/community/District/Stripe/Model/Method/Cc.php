@@ -363,14 +363,14 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
    */
   protected function _saveCard()
   {
+    //Set the flag to use a saved card
+    $this->_useSavedCard = true;
+
     //Before we can save card, is this an existing stripe customer?
     if(!isset($_POST['isStripeCustomer'])) { //No
 
       //Create the customer in Stripe
       $customer = Mage::helper('stripe')->createCustomer($this->_token);
-
-      //Set the flag to use a saved card (since we just saved it)
-      $this->_useSavedCard = true;
 
       //Set token to default card token
       $this->_token = $customer->default_source;
@@ -380,11 +380,16 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
       //Get the customer
       $customer = Mage::helper('stripe')->retrieveCustomer();
 
-      //Save the card
       try {
-        $customer->sources->create(array(
+
+        //Save the card
+        $card = $customer->sources->create(array(
           'source' => $this->_token
         ));
+
+        //Set token to saved card id
+        $this->_token = $card->id;
+
       } catch (Exception $e) {
         //Silently fail, don't stop transaction
         Mage::log(Mage::helper('stripe')->__('Could not save card'));
