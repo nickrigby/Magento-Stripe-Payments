@@ -13,7 +13,6 @@ class District_Stripe_OrderfailedController extends Mage_Adminhtml_Controller_Ac
 {
     public function indexAction()
     {
-        Mage::log('index');
         $this->_initAction()->renderLayout();
     }
 
