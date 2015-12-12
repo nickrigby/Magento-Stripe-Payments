@@ -372,7 +372,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
       //Set the flag to use a saved card (since we just saved it)
       $this->_useSavedCard = true;
       
-      //Set token is set to default card token
+      //Set token to default card token
       $this->_token = $customer->default_source;
       
     } else { //Yes

@@ -17,11 +17,11 @@
   </adminhtml_sales_order_view>
   <adminhtml_sales_order_create_index>
     <reference name="head">
+      <action method="addJs"><script>district/stripe/stripe.api.js</script></action>
       <action method="addJs" ifconfig="payment/stripe/jquery_admin_enabled"><script>district/stripe/jquery.min.js</script></action>
       <action method="addJs"><script>district/stripe/jquery.noconflict.js</script></action>
       <action method="addJs"><script>district/stripe/jquery.payment.min.js</script></action>
-      <action method="addJs"><script>district/stripe/stripe.js</script></action>
-      <action method="addJs"><script>district/stripe/stripe.api.js</script></action>
+      <action method="addJs"><script>district/stripe/build/stripe.js</script></action>
     </reference>
   </adminhtml_sales_order_create_index>
   <adminhtml_orderfail_index>
