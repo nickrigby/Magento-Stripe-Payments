@@ -13,10 +13,10 @@
 
     <customer_account>
         <reference name="customer_account_navigation">
-            <action method="addlink">
+            <action method="addlink" translate="label">
                 <name>district_stripe_savedcc</name>
                 <path>stripe/savedcards</path>
-                <label>Saved Credit Cards</label>
+                <label>My Credit Cards</label>
             </action>
         </reference>
     </customer_account>
