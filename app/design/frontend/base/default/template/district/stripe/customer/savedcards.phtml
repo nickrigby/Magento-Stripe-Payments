@@ -26,7 +26,7 @@
         ?>
         <tr>
             <td><img src="<?php echo $this->getSkinUrl('images/district/stripe/'.$cardImg); ?>" alt="<?php echo $card->brand; ?>"></td>
-            <td>**** **** **** <?php echo $card->last4; ?></td>
+            <td>****<?php echo $card->last4; ?></td>
             <td><?php echo $card->exp_month; ?>/<?php echo $card->exp_year; ?></td>
             <td><a href="<?php echo $this->getUrl('*/*/delete', array('id' => $card->id)); ?>">Delete</a></td>
         </tr>
