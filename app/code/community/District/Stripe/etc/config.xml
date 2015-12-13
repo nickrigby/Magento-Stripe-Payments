@@ -158,5 +158,14 @@
                 </stripe>
             </updates>
         </layout>
+        <translate>
+            <modules>
+                <stripe>
+                    <files>
+                        <default>District_Stripe.csv</default>
+                    </files>
+                </stripe>
+            </modules>
+        </translate>
     </adminhtml>
 </config>

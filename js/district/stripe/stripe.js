@@ -16,13 +16,25 @@ district.stripeCc = (function($) {
         $errorMsg = $('#stripe-error-messages'),
         $inputs = {},
         mageValidateParent,
-        address = {};
+        address = {},
+        cardsMap = {
+            AE: 'amex',
+            DI: 'discover',
+            DC: 'dinersclub',
+            JCB: 'jcb',
+            MC: 'mastercard',
+            VI: 'visa'
+        },
+        allowedCards = [];
 
     /*
    * Initialize the form
    *
    */
-    self.init = function() {
+    self.init = function(enabledCards) {
+
+        //Setup enabled cards (specified in Magento Stripe config)
+        self.setupEnabledCards(enabledCards);
 
         //Shortcut to fields
         $inputs.cardNumber = $('#stripe-cc-number');
@@ -70,6 +82,20 @@ district.stripeCc = (function($) {
             AdminOrder.prototype.getPaymentData = AdminOrder.prototype.getPaymentData.wrap(self.paymentDataChange);
 
         }
+
+    };
+
+    self.setupEnabledCards = function(enabledCards) {
+
+        //Split string of cards into array
+        var enabledCardsArr = enabledCards.split(',');
+
+        //Loop through each
+        $.each(cardsMap, function(mageKey, stripeKey) {
+            if($.inArray(mageKey, enabledCardsArr) > -1) {
+                allowedCards.push(stripeKey);
+            }
+        });
 
     };
 
@@ -134,6 +160,13 @@ district.stripeCc = (function($) {
 
         //Save ref to magento parent function (we need it in stripe callback)
         mageValidateParent = validateParent;
+
+        //Check card type is allowed
+        var cardType = $.payment.cardType($inputs.cardNumber.val());
+        if($.inArray(cardType, allowedCards) < 0) {
+            window.alert(Translator.translate('Sorry, ' + cardType + ' is not currently accepted. Please use a different card.').stripTags());
+            return false;
+        }
 
         if($inputs.savedCard.length && $inputs.savedCard.val() !== '') { //Existing card to be used
 
