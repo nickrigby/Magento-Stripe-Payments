@@ -9,10 +9,17 @@
 */
 
 #payment_form_stripe {
+    position: relative;
     padding-left: 0;
 }
 
-#payment_form_stripe #stripe-saved-card-select {
+#payment_form_stripe #stripe-cards-info {
+    position: absolute;
+    right: 0;
+    top: -20px;
+}
+
+#payment_form_stripe #stripe-cards-select-saved {
     margin-bottom: .5em;
 }
 

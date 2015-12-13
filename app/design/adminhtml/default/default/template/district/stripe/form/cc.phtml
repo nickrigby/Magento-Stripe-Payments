@@ -14,7 +14,7 @@
 <div class="form-list" id="payment_form_<?php echo $this->getMethodCode() ?>" style="display:none;">
     <input type="hidden" name="stripeToken" id="stripe-token">
     <div id="stripe-error-messages"></div>
-    <ol id="stripe-new-card">
+    <ol id="stripe-cards-select-new">
         <li>
             <label for="stripe-cc-number" class="reader-visible"><?php echo $this->__('Card Number'); ?></label>
             <input id="stripe-cc-number" type="tel" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('Card Number'); ?>" data-stripe="number" size="20">

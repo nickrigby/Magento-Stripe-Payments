@@ -57,10 +57,10 @@ district.stripeCc = (function($) {
         //Toggle new card form
         $('#stripe-saved-card').change(function() {
             if($(this).val() === '') {
-                $('#stripe-new-card').show();
+                $('#stripe-cards-select-new').show();
                 $inputs.cardNumber.focus();
             } else {
-                $('#stripe-new-card').hide();
+                $('#stripe-cards-select-new').hide();
             }
         });
 
