@@ -44,7 +44,7 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
             try {
                 $customer = \Stripe\Customer::retrieve(Mage::helper('core')->decrypt($token));
             } catch(Exception $e) {
-                //Fail silently
+                //Fail gracefully
                 Mage::log($this->__('Could not retrieve customer'));
             }
 
@@ -109,7 +109,7 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
             $model->save();
 
         } catch (Exception $e) {
-            //Silently fail, don't stop transaction
+            //Fail gracefully
             Mage::log($this->__('Could not create customer'));
         }
 

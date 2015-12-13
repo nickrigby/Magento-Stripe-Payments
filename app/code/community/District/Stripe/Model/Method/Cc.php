@@ -135,7 +135,8 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     /**
     * Validate payment method
     *
-    * @param   Mage_Payment_Model_Info $info
+    * @param   none
+    *
     * @return  Mage_Payment_Model_Abstract
     */
     public function validate()
@@ -145,8 +146,6 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
 
         //Are we validating a new card or saved card?
         if(isset($_POST['stripeSavedCard']) && !empty($_POST['stripeSavedCard'])) { //Saved card
-
-            Mage::log('Saved card');
 
             //Get customer
             $customer = Mage::helper('stripe')->retrieveCustomer();
@@ -162,8 +161,6 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
             $this->_addCardToQuote($card);
 
         } else if(isset($_POST['stripeToken']) && !empty($_POST['stripeToken'])) { //New card
-
-            Mage::log('New card');
 
             //Token was set with stripe.js, so retrieve it
             $token = $this->_retrieveToken($_POST['stripeToken']);
@@ -187,7 +184,11 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     /**
     * Sets the payment information
     *
-    * @param   none
+    * @param   Varien_Object $payment
+    * @param   Stripe_Charge $charge
+    * @param   float $amount
+    * @param   Mage_Sales_Model_Order_Payment_Transaction $requestType
+    *
     * @return  none
     */
     protected function _createPayment(Varien_Object $payment, $charge, $amount, $requestType)
@@ -223,6 +224,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     * Add card details to quote
     *
     * @param   Stripe_Object $card
+    *
     * @return  none
     */
     protected function _addCardToQuote($card)
@@ -238,7 +240,10 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     /**
     * Closes a payment
     *
-    * @param   none
+    * @param   Varien_Object $payment
+    * @param   Stripe_Refund $refund
+    * @param   Mage_Sales_Model_Order_Payment_Transaction $requestType
+    *
     * @return  none
     */
     protected function _closePayment(Varien_Object $payment, $refund, $requestType)
@@ -254,8 +259,9 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     /**
     * Get the token from Stripe based on passed in tokenString
     *
-    * @param   stripe token string
-    * @return  none
+    * @param   string $tokenString
+    *
+    * @return  Stripe_Token $token
     */
     protected function _retrieveToken($tokenString)
     {
@@ -273,8 +279,11 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     /**
     * Create a charge
     *
-    * @param   stripe token string
-    * @return  none
+    * @param   Varien_Object $payment
+    * @param   float $amount
+    * @param   boolean $capture
+    *
+    * @return  Stripe_Charge $charge
     */
     protected function _createCharge(Varien_Object $payment, $amount, $capture = true)
     {
@@ -349,8 +358,9 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     /**
     * Retrieve a charge
     *
-    * @param   transaction id
-    * @return  none
+    * @param   string $transactionId
+    *
+    * @return  Stripe_Charge $charge
     */
     protected function _retrieveCharge($transactionId)
     {
@@ -369,9 +379,10 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     /**
     * Create a refund
     *
-    * @param   transaction id
-    * @param   amount
-    * @return  none
+    * @param   string $transactionId
+    * @param   float amount
+    *
+    * @return  Stripe_Refund $refund
     */
     protected function _createRefund($transactionId, $amount)
     {
@@ -395,7 +406,8 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     * Save a card
     *
     * @param   Stripe_Customer $customer
-    * @return  none
+    *
+    * @return  Stripe_Card $card
     */
     protected function _saveCard($customer)
     {
@@ -407,8 +419,10 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
             ));
 
         } catch (Exception $e) {
-            //Silently fail, don't stop transaction
+
+            //Fail gracefully, don't stop transaction
             Mage::log(Mage::helper('stripe')->__('Could not save card'));
+
         }
 
         return $card;
@@ -418,8 +432,9 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     * Retrieve a card
     *
     * @param   Stripe_Customer $customer
-    * @param   Stripe_Card $card
-    * @return  none
+    * @param   string $card
+    *
+    * @return  Stripe_Card $card
     */
     protected function _retrieveCard($customer, $card)
     {
