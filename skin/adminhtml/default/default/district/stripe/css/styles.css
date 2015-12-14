@@ -5,7 +5,7 @@
  * @package     Stripe
  * @author      District Commerce <support@districtcommerce.com>
  * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
- * 
+ *
  */
 
 @font-face {
@@ -18,7 +18,7 @@
   font-weight: normal;
   font-style: normal;
 }
- 
+
 [class^="icon-"]:before,
 [class*=" icon-"]:before {
   font-family: "fontello";
@@ -37,10 +37,10 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
- 
+
 .icon-pass:before { content: '\e800'; }
 .icon-fail:before { content: '\e801'; }
-.icon-unavailable:before { content: '\e802'; }
+.icon-unavailable:before, .icon-:before { content: '\e802'; }
 .icon-cc-stripe:before { content: '\e805'; }
 .icon-warning:before { content: '\e809'; }
 
@@ -52,6 +52,7 @@
   color: #c00;
 }
 
+.icon-,
 .icon-unavailable,
 .icon-warning {
   color: #c90;
