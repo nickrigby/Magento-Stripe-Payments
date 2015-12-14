@@ -19,7 +19,7 @@
 "Street","Street"
 "Zip","Zip"
 "Country","Country"
-"Failed attempts","Failed attempts"
+"previous attempts were declined","previous attempts were declined"
 "View payment in Stripe","View payment in Stripe"
 "Card Number","Card Number"
 "Choose card","Choose card"
@@ -34,3 +34,4 @@
 "Sorry, jcb is not currently accepted. Please use a different card.","Sorry, JCB is not currently accepted. Please use a different card."
 "Sorry, dinersclub is not currently accepted. Please use a different card.","Sorry, Diners Club is not currently accepted. Please use a different card."
 "Sorry, mastercard is not currently accepted. Please use a different card.","Sorry, MasterCard is not currently accepted. Please use a different card."
+"Could not capture payment","Could not capture payment"
