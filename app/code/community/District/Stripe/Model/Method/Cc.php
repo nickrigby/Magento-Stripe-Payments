@@ -66,6 +66,13 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         //Create the charge
         if($payment->getLastTransId()) { //If previously authorized
             $charge = $this->_retrieveCharge($payment->getLastTransId());
+
+            try {
+                $charge->capture();
+            } catch (Exception $e) {
+                Mage::throwException(Mage::helper('stripe')->__('Could not capture payment.'));
+            }
+
         } else { //Auth and capture
             $charge = $this->_createCharge($payment, $amount, true);
         }
