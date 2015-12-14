@@ -105,7 +105,7 @@
                 <api_secret_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <api_publishable_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <payment_action>authorize_capture</payment_action>
-                <cctype>AE,DI,DC,JCB,MC,VI</cctype>
+                <cctype>AE,MC,VI</cctype>
                 <save_cc_enabled>1</save_cc_enabled>
                 <jquery_enabled>1</jquery_enabled>
                 <jquery_admin_enabled>1</jquery_admin_enabled>
