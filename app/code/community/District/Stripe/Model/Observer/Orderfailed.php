@@ -38,13 +38,23 @@ class District_Stripe_Model_Observer_Orderfailed extends Varien_Event_Observer
             $model->setCcType($payment->getCcType());
             $model->setCcLast4($payment->getCcLast4());
             $model->setAmount($quote->getBaseGrandTotal());
-            $model->setType($info['type']);
-            $model->setCode($info['code']);
-            $model->setToken(Mage::helper('core')->encrypt($info['token']));
+
+            if(isset($info['type'])) {
+                $model->setType($info['type']);
+            }
+
+            if(isset($info['code'])) {
+                $model->setCode($info['code']);
+            }
+
+            if(isset($info['token'])) {
+                $model->setToken(Mage::helper('core')->encrypt($info['token']));
+            }
+
             $model->save();
 
         } catch(Exception $e) {
-            //Silent fail
+            //Graceful fail
         }
     }
 }

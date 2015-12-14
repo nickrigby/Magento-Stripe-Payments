@@ -334,13 +334,33 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
             $jsonBody = $e->getJsonBody();
             $error = $jsonBody['error'];
 
+            //Additional info
+            $additionalInfo = array();
+
+            //Set error type
+            if(isset($error['type'])) {
+                $additionalInfo['type'] = $error['type'];
+            }
+
+            //Set error code
+            if(isset($error['code'])) {
+                $additionalInfo['code'] = $error['code'];
+
+                //Append _fraudulent to code if decline code is set
+                if(isset($error['decline_code']) && $error['decline_code'] === 'fraudulent') {
+                    $additionalInfo['code'] .= '_fraudulent';
+                }
+            }
+
+            //Set charge token
+            if(isset($error['charge'])) {
+                $additionalInfo['token'] = $error['charge'];
+            }
+
             //Save error in additional info column
-            Mage::getSingleton('checkout/session')->getQuote()->getPayment()->setAdditionalInformation(array(
-                'error' => $error['message'],
-                'type'  => $error['type'],
-                'code'  => $error['code'],
-                'token' => $error['charge'],
-            ));
+            if(!empty($additionalInfo)) {
+                Mage::getSingleton('checkout/session')->getQuote()->getPayment()->setAdditionalInformation($additionalInfo);
+            }
 
             //Throw the error
             Mage::throwException(Mage::helper('stripe')->__($error['message']));
