@@ -36,8 +36,8 @@ if(isset($payment->getAdditionalInformation()['country'])) {
     $countryStatus = 'unavailable';
 }
 
-//Get failed orders
-$failedOrderCount = Mage::helper('stripe')->getFailedOrdersCount($order->getIncrementId());
+//Get declined orders
+$delinedOrderCount = Mage::helper('stripe')->getDeclinedOrdersCount($order->getIncrementId());
 
 ?>
 
@@ -65,8 +65,8 @@ $failedOrderCount = Mage::helper('stripe')->getFailedOrdersCount($order->getIncr
                     <li title="<?php echo $avsStatus[0]; ?>"><span><i class="icon-<?php echo $avsStatus[0]; ?>"></i> <?php echo $this->__('Street'); ?></span></li>
                     <li title="<?php echo $avsStatus[1]; ?>"><span><i class="icon-<?php echo $avsStatus[1]; ?>"></i> <?php echo $this->__('Zip'); ?></span></li>
                     <li title="<?php echo $countryStatus; ?>"><span><i class="icon-<?php echo $countryStatus; ?>"></i> <?php echo $this->__('Country'); ?></span></li>
-                    <?php if($failedOrderCount > 0) : ?>
-                    <li><span><i class="icon-warning"></i> <?php echo $failedOrderCount; ?> <?php echo $this->__('Failed attempts'); ?></span></li>
+                    <?php if($delinedOrderCount > 0) : ?>
+                    <li><span><i class="icon-warning"></i> <?php echo $delinedOrderCount; ?> <?php echo $this->__('previous attempts were declined'); ?></span></li>
                     <?php endif; ?>
                 </ul>
             </td>
