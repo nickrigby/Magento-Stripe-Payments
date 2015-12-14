@@ -161,18 +161,18 @@ district.stripeCc = (function($) {
         //Save ref to magento parent function (we need it in stripe callback)
         mageValidateParent = validateParent;
 
-        //Check card type is allowed
-        var cardType = $.payment.cardType($inputs.cardNumber.val());
-        if($.inArray(cardType, allowedCards) < 0) {
-            window.alert(Translator.translate('Sorry, ' + cardType + ' is not currently accepted. Please use a different card.').stripTags());
-            return false;
-        }
-
         if($inputs.savedCard.length && $inputs.savedCard.val() !== '') { //Existing card to be used
 
             mageValidateParent();
 
         } else { //New card to be used
+
+            //Check card type is allowed
+            var cardType = $.payment.cardType($inputs.cardNumber.val());
+            if($.inArray(cardType, allowedCards) < 0) {
+                window.alert(Translator.translate('Sorry, ' + cardType + ' is not currently accepted. Please use a different card.').stripTags());
+                return false;
+            }
 
             //Check that credit card details are valid
             var validCardNumber = $.payment.validateCardNumber($inputs.cardNumber.val());
