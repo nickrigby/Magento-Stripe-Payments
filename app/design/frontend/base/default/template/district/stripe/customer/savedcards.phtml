@@ -17,15 +17,18 @@
 
         switch(strtolower($card->brand)) {
             case 'american express':
-                $cardImg = 'amex.png';
+                $cardbrand = 'amex';
+                break;
+             case 'diners club':
+                $cardbrand = 'dinersclub';
                 break;
             default:
-                $cardImg = $card->brand . '.png';
+                $cardbrand = $card->brand;
         }
 
         ?>
         <tr>
-            <td><img src="<?php echo $this->getSkinUrl('images/district/stripe/'.$cardImg); ?>" alt="<?php echo $card->brand; ?>"></td>
+            <td><span class="district-cc district-cc-<?php echo strtolower($cardbrand); ?>" title="<?php echo $card->brand; ?>"><?php echo $card->brand; ?></span></td>
             <td>****<?php echo $card->last4; ?></td>
             <td><?php echo $card->exp_month; ?>/<?php echo $card->exp_year; ?></td>
             <td><a href="<?php echo $this->getUrl('*/*/delete', array('id' => $card->id)); ?>">Delete</a></td>

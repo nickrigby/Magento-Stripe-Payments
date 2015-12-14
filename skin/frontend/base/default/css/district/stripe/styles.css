@@ -55,6 +55,7 @@
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     margin-bottom: -1px;
+    background-size: 32px 20px;
 }
 
 #payment_form_stripe #stripe-cc-exp {
@@ -81,6 +82,7 @@
 }
 
 #payment_form_stripe input.amex {
+    background-color: #369;
     background-image: url(../../../images/district/stripe/amex.png);
 }
 
@@ -90,6 +92,10 @@
 
 #payment_form_stripe input.jcb {
     background-image: url(../../../images/district/stripe/jcb.png);
+}
+
+#payment_form_stripe input.dinersclub {
+    background-image: url(../../../images/district/stripe/dinersclub.png);
 }
 
 #payment_form_stripe .has-error input {
@@ -112,4 +118,41 @@
 
 #payment_form_stripe .checkbox label {
     font-weight: 400;
+}
+
+.district-cc {
+    display: inline-block;
+    width: 32px;
+    height: 20px;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+    background-size: 32px 20px;
+    background-repeat: no-repeat;
+    background-color: #fff;
+    text-indent: -999em;
+}
+
+.district-cc-amex {
+    background-color: #369;
+    background-image: url(../../../images/district/stripe/amex.png);
+}
+
+.district-cc-visa {
+    background-image: url(../../../images/district/stripe/visa.png);
+}
+
+.district-cc-mastercard {
+    background-image: url(../../../images/district/stripe/mastercard.png);
+}
+
+.district-cc-discover {
+    background-image: url(../../../images/district/stripe/discover.png);
+}
+
+.district-cc-dinersclub {
+    background-image: url(../../../images/district/stripe/dinersclub.png);
+}
+
+.district-cc-jcb {
+    background-image: url(../../../images/district/stripe/jcb.png);
 }

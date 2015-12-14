@@ -14,30 +14,31 @@ $savedCards = false;
 $acceptedCards = Mage::getStoreConfig('payment/stripe/cctype');
 $acceptedCardsArr = explode(',', $acceptedCards);
 $cardsMap = array(
-    'AE' => array(
-        'label' => 'American Express',
-        'img' => 'amex.png',
-    ),
-    'DI' => array(
-        'label' => 'Discover',
-        'img' => 'discover.png',
-    ),
-    'DC' => array(
-        'label' => 'Diners Club',
-        'img' => '',
-    ),
-    'JCB' => array(
-        'label' => 'JCB',
-        'img' => 'jcb.png',
+    'VI' => array(
+        'label' => 'Visa',
+        'class' => 'visa',
     ),
     'MC' => array(
         'label' => 'Mastercard',
-        'img' => 'mastercard.png',
+        'class' => 'mastercard',
     ),
-    'VI' => array(
-        'label' => 'Visa',
-        'img' => 'visa.png',
+    'AE' => array(
+        'label' => 'American Express',
+        'class' => 'amex',
     ),
+    'DI' => array(
+        'label' => 'Discover',
+        'class' => 'discover',
+    ),
+    'DC' => array(
+        'label' => 'Diners Club',
+        'class' => 'dinersclub',
+    ),
+    'JCB' => array(
+        'label' => 'JCB',
+        'class' => 'jcb',
+    ),
+
 );
 
 //If customer exists in Stripe
@@ -104,7 +105,7 @@ if($cust = Mage::helper('stripe')->retrieveCustomer()) {
     <div id="stripe-cards-info">
     <?php foreach($cardsMap as $cardKey => $cardInfo): ?>
     <?php if(in_array($cardKey, $acceptedCardsArr)): ?>
-    <img src="<?php echo $this->getSkinUrl('images/district/stripe/'.$cardInfo['img'], array('_secure'=>true)); ?>" alt="<?php echo $cardInfo['img']; ?>">
+        <span class="district-cc district-cc-<?php echo $cardInfo['class']; ?>" title="<?php echo $cardInfo['label']; ?>"><?php echo $cardInfo['label']; ?></span>
     <?php endif ;?>
     <?php endforeach; ?>
     </div>
