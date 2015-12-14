@@ -10,11 +10,11 @@
  */
 -->
 <layout version="0.1.0">
-    <adminhtml_sales_order_view>
+    <default>
         <reference name="head">
             <action method="addCss"><stylesheet>district/stripe/css/styles.css</stylesheet></action>
         </reference>
-    </adminhtml_sales_order_view>
+    </default>
     <adminhtml_sales_order_create_index>
         <reference name="head">
             <action method="addJs"><script>district/stripe/stripe.api.js</script></action>
