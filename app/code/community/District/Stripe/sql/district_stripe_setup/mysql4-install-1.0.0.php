@@ -26,6 +26,7 @@ $installer->run("
         `cc_type` varchar(255),
         `cc_last4` varchar(10),
         `amount` decimal(12,4),
+        `message` text,
         `type` varchar(255),
         `code` varchar(255),
         `token` varchar(255),

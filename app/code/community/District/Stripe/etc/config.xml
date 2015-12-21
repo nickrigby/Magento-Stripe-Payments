@@ -65,7 +65,7 @@
             </sales_model_service_quote_submit_failure>
         </events>
         <resources>
-            <stripe_setup>
+            <district_stripe_setup>
                 <setup>
                     <module>District_Stripe</module>
                     <class>District_Stripe_Model_Resource_Mysql4_Setup</class>
@@ -73,8 +73,8 @@
                 <connection>
                     <use>core_setup</use>
                 </connection>
-            </stripe_setup>
-            <stripe_write>
+            </district_stripe_setup>
+            <!--<stripe_write>
                 <connection>
                     <use>core_write</use>
                 </connection>
@@ -83,7 +83,7 @@
                 <connection>
                     <use>core_read</use>
                 </connection>
-            </stripe_read>
+            </stripe_read>-->
         </resources>
         <payment>
             <cc>
