@@ -130,9 +130,9 @@
     width: 32px;
     height: 20px;
     border-radius: 2px;
-    border: 1px solid #ddd;
     background-size: 32px 20px;
     background-repeat: no-repeat;
-    background-color: #fff;
+    background-color: #eee;
+    box-shadow: 0 1px 1px #ccc;
     text-indent: -999em;
 }
