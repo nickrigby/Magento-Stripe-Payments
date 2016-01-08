@@ -1,13 +1,16 @@
 <?php
 class District_Stripe_SavedcardsController extends Mage_Core_Controller_Front_Action
 {
+    public function preDispatch()
+    {
+        parent::preDispatch();
+        if (!Mage::getSingleton('customer/session')->authenticate($this)) {
+            $this->setFlag('', self::FLAG_NO_DISPATCH, true);
+        }
+    }
+
     public function indexAction()
     {
-        if (!Mage::getSingleton('customer/session')->isLoggedIn()) {
-            $this->_redirect('customer/account/login');
-            return;
-        }
-
         $this->loadLayout();
         $this->renderLayout();
     }
@@ -28,15 +31,13 @@ class District_Stripe_SavedcardsController extends Mage_Core_Controller_Front_Ac
 
     public function editAction()
     {
-        if (!Mage::getSingleton('customer/session')->isLoggedIn()) {
-            $this->_redirect('customer/account/login');
-            return;
-        }
-
         //Get id of card
         if($id = $this->getRequest()->getParam('id')) {
+
+            //Retrieve the card from Stripe
             if($card = Mage::helper('stripe')->retrieveCard($id)) {
 
+                //Load the layout
                 $this->loadLayout();
                 $this->getlayout()->getBlock('district_stripe_savedcards_edit')->assign('card', $card);
                 $this->renderLayout();
@@ -44,6 +45,7 @@ class District_Stripe_SavedcardsController extends Mage_Core_Controller_Front_Ac
             } else {
                 Mage::getSingleton('core/session')->addError($this->__('Could not retrieve card from Stripe.'));
             }
+
         } else {
             Mage::getSingleton('core/session')->addError($this->__('Card does not exist.'));
         }
@@ -51,13 +53,10 @@ class District_Stripe_SavedcardsController extends Mage_Core_Controller_Front_Ac
 
     public function saveAction()
     {
-        if (!Mage::getSingleton('customer/session')->isLoggedIn()) {
-            $this->_redirect('customer/account/login');
-            return;
-        }
-
         //Get id of card
         if($id = $this->getRequest()->getParam('id')) {
+
+            //Retrieve the card from Stripe
             if($card = Mage::helper('stripe')->retrieveCard($id)) {
 
                 $card->address_line1 = $this->getRequest()->getPost('address_line1');
