@@ -16,7 +16,7 @@
                 <div class="field">
                     <label for="address_zip" class="required"><em>*</em><?php echo $this->__('Zip') ?></label>
                     <div class="input-box">
-                        <input type="text" name="address_zip" value="<?php echo $card->address_zip; ?>" class="input-text required-entry" id="address_zip" />
+                        <input type="text" name="address_zip" value="<?php echo $card->address_zip; ?>" class="input-text validate-zip-international required-entry" id="address_zip" />
                     </div>
                 </div>
             </li>
@@ -30,6 +30,6 @@
 </form>
 <script type="text/javascript">
 //<![CDATA[
-    var dataForm = new VarienForm('form-validate', true);
+    var dataForm = new VarienForm('form-validate');
 //]]>
 </script>
