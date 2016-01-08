@@ -146,4 +146,12 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
 
+    public function retrieveCard($cardId)
+    {
+        if($customer = $this->retrieveCustomer())
+        {
+            return $customer->sources->retrieve($cardId);
+        }
+    }
+
 }

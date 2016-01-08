@@ -32,6 +32,16 @@
         </reference>
     </stripe_savedcards_index>
 
+    <stripe_savedcards_edit>
+        <update handle="customer_account"/>
+        <reference name="head">
+            <action method="addCss"><stylesheet>css/district/stripe/styles.css</stylesheet></action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="stripe/customer_savedcards" name="district_stripe_savedcards_edit" template="district/stripe/customer/savedcards/edit.phtml"/>
+        </reference>
+    </stripe_savedcards_edit>
+
     <checkout_onepage_index>
         <reference name="head">
             <action method="addCss"><stylesheet>css/district/stripe/styles.css</stylesheet></action>

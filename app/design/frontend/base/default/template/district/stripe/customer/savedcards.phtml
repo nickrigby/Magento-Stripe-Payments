@@ -31,7 +31,10 @@
             <td><span class="district-cc district-cc-<?php echo strtolower($cardbrand); ?>" title="<?php echo $card->brand; ?>"><?php echo $card->brand; ?></span></td>
             <td>****<?php echo $card->last4; ?></td>
             <td><?php echo $card->exp_month; ?>/<?php echo $card->exp_year; ?></td>
-            <td><a href="<?php echo $this->getUrl('*/*/delete', array('id' => $card->id)); ?>">Delete</a></td>
+            <td>
+                <a href="<?php echo $this->getUrl('*/*/delete', array('id' => $card->id)); ?>">Delete</a> |
+                <a href="<?php echo $this->getUrl('*/*/edit', array('id' => $card->id)); ?>">Edit address</a>
+            </td>
         </tr>
         <?php endforeach; ?>
     </tbody>
