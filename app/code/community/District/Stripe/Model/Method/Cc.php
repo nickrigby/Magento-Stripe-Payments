@@ -364,6 +364,11 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
                 $additionalInfo['token'] = $error['charge'];
             }
 
+            //Set message
+            if(isset($error['message'])) {
+                $additionalInfo['message'] = $error['message'];
+            }
+
             //Save error in additional info column
             if(!empty($additionalInfo)) {
                 Mage::getSingleton('checkout/session')->getQuote()->getPayment()->setAdditionalInformation($additionalInfo);

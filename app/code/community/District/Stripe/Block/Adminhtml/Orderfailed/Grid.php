@@ -58,6 +58,11 @@ class District_Stripe_Block_Adminhtml_Orderfailed_Grid extends Mage_Adminhtml_Bl
             'index' => 'code',
         ));
 
+        $this->addColumn('message', array(
+            'header'=> $this->__('Message'),
+            'index' => 'message',
+        ));
+
         $this->addColumn('cc_type', array(
             'header'=> $this->__('Card Type'),
             'index' => 'cc_type',

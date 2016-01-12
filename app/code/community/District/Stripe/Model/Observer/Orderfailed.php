@@ -51,6 +51,10 @@ class District_Stripe_Model_Observer_Orderfailed extends Varien_Event_Observer
                 $model->setToken(Mage::helper('core')->encrypt($info['token']));
             }
 
+            if(isset($info['message'])) {
+                $model->setMessage($info['message']);
+            }
+
             $model->save();
 
         } catch(Exception $e) {
