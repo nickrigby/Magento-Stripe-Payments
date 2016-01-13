@@ -128,7 +128,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         $transactionId = $payment->getLastTransId();
 
         //Create the refund
-        $refund = $this->_createRefund($transactionId, $amount);
+        $refund = $this->_createRefund($transactionId, $amount, $payment);
 
         //Close payment
         $this->_closePayment($payment, $refund, Mage_Sales_Model_Order_Payment_Transaction::TYPE_REFUND);
@@ -325,7 +325,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         }
 
         //Set charge data
-        $this->_chargeData['amount'] = $amount * 100;
+        $this->_chargeData['amount'] = Mage::helper('stripe')->calculateCurrencyAmount($amount, $payment->getOrder()->getBaseCurrencyCode());
         $this->_chargeData['currency'] = $payment->getOrder()->getBaseCurrencyCode();
         $this->_chargeData['capture'] = $capture;
         $this->_chargeData['description'] = sprintf('Payment for order #%s on %s', $payment->getOrder()->getIncrementId(), $payment->getOrder()->getStore()->getFrontendName());
@@ -412,18 +412,19 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     * Create a refund
     *
     * @param   string $transactionId
-    * @param   float amount
+    * @param   float $amount
+    * @param   Varien_Object $payment
     *
     * @return  Stripe_Refund $refund
     */
-    protected function _createRefund($transactionId, $amount)
+    protected function _createRefund($transactionId, $amount, $payment)
     {
         Mage::helper('stripe')->setApiKey();
 
         try {
             $refund = \Stripe\Refund::create(array(
                 'charge' => $transactionId,
-                'amount' => $amount * 100
+                'amount' => Mage::helper('stripe')->calculateCurrencyAmount($amount, $payment->getOrder()->getBaseCurrencyCode()),
             ));
         } catch (\Stripe\Error\InvalidRequest $e) {
             Mage::throwException($e);

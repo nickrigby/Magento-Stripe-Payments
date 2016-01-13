@@ -80,6 +80,43 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
+    * Calculates amount based on currency
+    * https://support.stripe.com/questions/which-zero-decimal-currencies-does-stripe-support
+    *
+    * @param float $amount
+    * @param string $currencyCode
+    * @return float $amount
+    */
+    public function calculateCurrencyAmount($amount, $currencyCode)
+    {
+        $zeroDecimalCurrencies = array(
+            'BIF', //Burundian Franc
+            'CLP', //Chilean Peso
+            'DJF', //Djiboutian Franc
+            'GNF', //Guinean Franc
+            'JPY', //Japanese Yen
+            'KMF', //Comorian Franc
+            'KRW', //South Korean Won
+            'MGA', //Malagasy Ariary
+            'PYG', //Paraguayan Guaraní
+            'RWF', //Rwandan Franc
+            'VND', //Vietnamese Đồng
+            'VUV', //Vanuatu Vatu
+            'XAF', //Central African Cfa Franc
+            'XOF', //West African Cfa Franc
+            'XPF', //Cfp Franc
+        );
+
+        if(in_array($currencyCode, $zeroDecimalCurrencies)) {
+            $amount = round($amount, 0);
+        } else {
+            $amount = $amount * 100;
+        }
+
+        return $amount;
+    }
+
+    /**
     * Create a customer
     *
     * @param   string $token
