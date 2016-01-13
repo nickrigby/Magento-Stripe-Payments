@@ -63,9 +63,12 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
             Mage::throwException(Mage::helper('payment')->__('Invalid amount for authorization.'));
         }
 
+        //Get last transaction for this payment
+        $lastTransaction = $payment->getTransaction($payment->getLastTransId());
+
         //Create the charge
-        if($payment->getLastTransId()) { //If previously authorized
-            $charge = $this->_retrieveCharge($payment->getLastTransId());
+        if($lastTransaction && $lastTransaction->getTxnType() == Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH) { //If previously authorized
+            $charge = $this->_retrieveCharge($payment->getCcTransId());
 
             try {
                 $charge->capture();
@@ -75,10 +78,13 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
 
         } else { //Auth and capture
             $charge = $this->_createCharge($payment, $amount, true);
+
+            //Create the payment in Magento
+            $this->_createOrderPayment($payment, $charge, $amount);
         }
 
-        //Create the payment in Magento
-        $this->_createPayment($payment, $charge, $amount, Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE);
+        //Create the transaction
+        $this->_createTransaction($payment, Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE, $charge->id);
 
         //Skip transaction creation
         $payment->setSkipTransactionCreation(true);
@@ -108,7 +114,11 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         $charge = $this->_createCharge($payment, $amount, false);
 
         //Create the payment in Magento
-        $this->_createPayment($payment, $charge, $amount, Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH);
+        $this->_createOrderPayment($payment, $charge, $amount);
+
+        //Create the transaction
+        //Append -auth to txn id, since transaction table needs unique txn id, and capture id is the same
+        $this->_createTransaction($payment, Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH, $charge->id . '-auth');
 
         //Skip transaction creation
         $payment->setSkipTransactionCreation(true);
@@ -189,20 +199,17 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Sets the payment information
+    * Sets the order payment information
     *
     * @param   Varien_Object $payment
     * @param   Stripe_Charge $charge
     * @param   float $amount
-    * @param   Mage_Sales_Model_Order_Payment_Transaction $requestType
     *
     * @return  none
     */
-    protected function _createPayment(Varien_Object $payment, $charge, $amount, $requestType)
+    protected function _createOrderPayment(Varien_Object $payment, $charge, $amount)
     {
-        //Transaction id
-        $payment->setTransactionId($charge->id);
-        $payment->setIsTransactionClosed(0);
+        //Set amount
         $payment->setAmount($amount);
 
         //Add payment cc information
@@ -211,7 +218,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         $payment->setcc_last4($charge->source->last4);
         $payment->setcc_owner($charge->source->name);
         $payment->setcc_type($charge->source->brand);
-        $payment->setcc_trans_id($charge->source->id);
+        $payment->setcc_trans_id($charge->id);
 
         //Add payment fraud information
         $payment->setcc_avs_status($charge->source->address_line1_check . '/' . $charge->source->address_zip_check);
@@ -222,8 +229,21 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
             'funding' => $charge->source->funding,
             'country' => $charge->source->country
         ));
+    }
 
-        //Add the transaction
+    /**
+    * Creates payment transaction
+    *
+    * @param   Varien_Object $payment
+    * @param   Mage_Sales_Model_Order_Payment_Transaction $requestType
+    * @param   string $transactionId
+    *
+    * @return  none
+    */
+    protected function _createTransaction(Varien_Object $payment, $requestType, $transactionId)
+    {
+        $payment->setTransactionId($transactionId);
+        $payment->setIsTransactionClosed(false);
         $payment->addTransaction($requestType, null, true);
     }
 
