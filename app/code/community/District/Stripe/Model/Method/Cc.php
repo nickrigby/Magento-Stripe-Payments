@@ -84,10 +84,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         }
 
         //Create the transaction
-        $this->_createTransaction($payment, Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE, $charge->id);
-
-        //Skip transaction creation
-        $payment->setSkipTransactionCreation(true);
+        $this->_createTransaction($payment, Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE, $charge->id, false, true);
 
         return $this;
     }
@@ -120,9 +117,6 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         //Append -auth to txn id, since transaction table needs unique txn id, and capture id is the same
         $this->_createTransaction($payment, Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH, $charge->id . '-auth');
 
-        //Skip transaction creation
-        $payment->setSkipTransactionCreation(true);
-
         return $this;
     }
 
@@ -142,11 +136,8 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         //Create the refund
         $refund = $this->_createRefund($transactionId, $amount, $payment);
 
-        //Close payment
-        $this->_closePayment($payment, $refund, Mage_Sales_Model_Order_Payment_Transaction::TYPE_REFUND);
-
-        //Skip transaction creation
-        $payment->setSkipTransactionCreation(true);
+        //Create transaction
+        $this->_createTransaction($payment, Mage_Sales_Model_Order_Payment_Transaction::TYPE_REFUND, $refund->id, true, true);
 
         return $this;
     }
@@ -239,14 +230,23 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     * @param   Varien_Object $payment
     * @param   Mage_Sales_Model_Order_Payment_Transaction $requestType
     * @param   string $transactionId
+    * @param   boolean $close
+    * @param   boolean $closeParent
     *
     * @return  none
     */
-    protected function _createTransaction(Varien_Object $payment, $requestType, $transactionId)
+    protected function _createTransaction(Varien_Object $payment, $requestType, $transactionId, $close = false, $closeParent = false)
     {
+        //Set attributes
         $payment->setTransactionId($transactionId);
-        $payment->setIsTransactionClosed(false);
+        $payment->setIsTransactionClosed($close);
+        $payment->setShouldCloseParentTransaction($closeParent);
+
+        //Add the transaction
         $payment->addTransaction($requestType, null, true);
+
+        //Skip transaction creation
+        $payment->setSkipTransactionCreation(true);
     }
 
     /**
@@ -264,25 +264,6 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
             'cc_last4' => $card->last4,
             'cc_type' => $card->brand,
         ));
-    }
-
-    /**
-    * Closes a payment
-    *
-    * @param   Varien_Object $payment
-    * @param   Stripe_Refund $refund
-    * @param   Mage_Sales_Model_Order_Payment_Transaction $requestType
-    *
-    * @return  none
-    */
-    protected function _closePayment(Varien_Object $payment, $refund, $requestType)
-    {
-        $payment->setTransactionId($refund->id);
-        $payment->setIsTransactionClosed(true);
-        $payment->setShouldCloseParentTransaction(true);
-
-        //Add the transaction
-        $payment->addTransaction($requestType, null, true);
     }
 
     /**
