@@ -93,7 +93,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Authorize payment abstract method
+    * Authorize payment method
     *
     * @param Varien_Object $payment
     * @param float $amount
@@ -131,6 +131,8 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     *
     * @param Varien_Object $payment
     * @param float $amount
+    *
+    * @return  Mage_Payment_Model_Abstract
     */
     public function refund(Varien_Object $payment, $amount)
     {
