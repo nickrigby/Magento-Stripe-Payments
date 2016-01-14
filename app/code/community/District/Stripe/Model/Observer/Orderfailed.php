@@ -34,7 +34,7 @@ class District_Stripe_Model_Observer_Orderfailed extends Varien_Event_Observer
 
             //Save failed order
             $model->setOrderId($quote->getReservedOrderId());
-            $model->setDate(Varien_Date::now());
+            $model->setDate(now());
             $model->setCcType($payment->getCcType());
             $model->setCcLast4($payment->getCcLast4());
             $model->setAmount($quote->getBaseGrandTotal());
