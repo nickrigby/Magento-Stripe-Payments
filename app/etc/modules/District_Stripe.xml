@@ -13,7 +13,7 @@
 <config>
     <modules>
         <District_Stripe>
-            <active>false</active>
+            <active>true</active>
             <codePool>community</codePool>
             <depends>
                 <Mage_Payment />
