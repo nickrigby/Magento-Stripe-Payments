@@ -37,10 +37,10 @@ district.stripeCc = (function($) {
         self.setupEnabledCards(enabledCards);
 
         //Shortcut to fields
-        $inputs.cardNumber = $('#stripe-cc-number');
-        $inputs.cardExpiry = $('#stripe-cc-exp');
-        $inputs.cardCVC = $('#stripe-cc-cvc');
-        $inputs.cardToken = $('#stripe-token');
+        $inputs.cardNumber = $('#stripe_cc_number');
+        $inputs.cardExpiry = $('#stripe_cc_exp');
+        $inputs.cardCVC = $('#stripe_cc_cvc');
+        $inputs.cardToken = $('#stripe_token');
         $inputs.savedCard = $('#stripe-saved-card');
 
         //Set input mask for each field

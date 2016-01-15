@@ -50,7 +50,7 @@
     margin: 0;
 }
 
-#payment_form_stripe #stripe-cc-number {
+#payment_form_stripe #stripe_cc_number {
     width: 200px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
@@ -58,19 +58,19 @@
     background-size: 32px 20px;
 }
 
-#payment_form_stripe #stripe-cc-exp {
+#payment_form_stripe #stripe_cc_exp {
     width: 100px;
     border-top-right-radius: 0;
     border-top-left-radius: 0;
     border-bottom-right-radius: 0;
 }
 
-#payment_form_stripe #stripe-cc-cvc {
+#payment_form_stripe #stripe_cc_cvc {
     width: 101px;
     border-top-right-radius: 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
-    margin-left: -4px;
+    margin-left: -4px !important; /* For IWD onepage */
 }
 
 .district-cc-visa,
@@ -135,4 +135,15 @@
     background-color: #eee;
     box-shadow: 0 1px 1px #ccc;
     text-indent: -999em;
+}
+
+/* IWD Onepage overrides */
+
+.opc-index-index #payment_form_stripe #stripe-cards-info {
+    position: static;
+    padding: 10px 0;
+}
+
+.opc-index-index #payment_form_stripe label {
+    font-size: 1em;
 }

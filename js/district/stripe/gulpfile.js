@@ -3,7 +3,7 @@ var gulp = require('gulp'),
 
 gulp.task('js', function() {
 
-    return gulp.src('stripe.js')
+    return gulp.src(['stripe.js', 'stripe.onepage.js'])
         .pipe(uglify({
             mangle: false
         }))
@@ -13,7 +13,7 @@ gulp.task('js', function() {
 
 gulp.task('watch', function() {
 
-    gulp.watch('stripe.js', ['js']);
+    gulp.watch(['stripe.js', 'stripe.onepage.js'], ['js']);
 
 });
 
