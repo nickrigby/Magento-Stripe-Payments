@@ -25,23 +25,28 @@ district.stripeCc = (function($) {
             MC: 'mastercard',
             VI: 'visa'
         },
-        allowedCards = [];
+        allowedCards = [],
+        tokenValues = {
+            cardNumber: '',
+            cardExpiry: '',
+            cardCVC: ''
+        };
 
     /*
-   * Initialize the form
-   *
-   */
+    * Initialize the form
+    *
+    */
     self.init = function(enabledCards) {
 
         //Setup enabled cards (specified in Magento Stripe config)
         self.setupEnabledCards(enabledCards);
 
         //Shortcut to fields
-        $inputs.cardNumber = $('#stripe_cc_number');
-        $inputs.cardExpiry = $('#stripe_cc_exp');
-        $inputs.cardCVC = $('#stripe_cc_cvc');
-        $inputs.cardToken = $('#stripe_token');
-        $inputs.savedCard = $('#stripe-saved-card');
+        $inputs.cardNumber = $('input#stripe_cc_number');
+        $inputs.cardExpiry = $('input#stripe_cc_exp');
+        $inputs.cardCVC = $('input#stripe_cc_cvc');
+        $inputs.cardToken = $('input#stripe_token');
+        $inputs.savedCard = $('select#stripe-saved-card');
 
         //Set input mask for each field
         $inputs.cardNumber.payment('formatCardNumber');
@@ -55,7 +60,7 @@ district.stripeCc = (function($) {
         };
 
         //Toggle new card form
-        $('#stripe-saved-card').change(function() {
+        $inputs.savedCard.change(function() {
             if($(this).val() === '') {
                 $('#stripe-cards-select-new').show();
                 $inputs.cardNumber.focus();
@@ -68,10 +73,17 @@ district.stripeCc = (function($) {
         if(typeof Payment !== 'undefined') {
 
             //Get billing address
-            self.getBillingAddressFrontend();
+            if(typeof billing !== 'undefined') {
+                self.getBillingAddressFrontend();
+            }
+
+            //Validate card (and get stripe token) on keyup
+            $('body').on('keyup', 'input#stripe_cc_number, input#stripe_cc_exp, input#stripe_cc_cvc', function() {
+                self.delay(self.cardEntryListener, 1000);
+            });
 
             //Wrap the payment save method
-            Payment.prototype.save = Payment.prototype.save.wrap(self.validateForm);
+            Payment.prototype.save = Payment.prototype.save.wrap(self.paymentSave);
 
         } else if(typeof AdminOrder !== 'undefined') { //Admin payment
 
@@ -85,6 +97,90 @@ district.stripeCc = (function($) {
 
     };
 
+    /*
+    * Delay function
+    *
+    */
+    self.delay = (function() {
+        var timer = 0;
+        return function(callback, ms){
+            clearTimeout (timer);
+            timer = setTimeout(callback, ms);
+        };
+    })();
+
+    /*
+    * Listener for when card is being entered
+    *
+    */
+    self.cardEntryListener = function() {
+
+        //If card is valid and we need a new token
+        if(self.validCard() && self.newTokenRequired()) {
+            self.createToken();
+        }
+
+    };
+
+    /*
+    * Check if card is valid
+    *
+    */
+    self.validCard = function() {
+
+        //All fields set to false
+        var validCardNumber = false,
+            validCardExpiry = false,
+            validCardCVC = false;
+
+        //If card number is filled out
+        if($.trim($inputs.cardNumber.val()) !== '') {
+            validCardNumber = $.payment.validateCardNumber($inputs.cardNumber.val());
+            $inputs.cardNumber.toggleInputError(!validCardNumber);
+        }
+
+        //If expiry is filled out
+        if($.trim($inputs.cardExpiry.val()) !== '') {
+            validCardExpiry = $.payment.validateCardExpiry($.payment.cardExpiryVal($inputs.cardExpiry.val()));
+            $inputs.cardExpiry.toggleInputError(!validCardExpiry);
+        }
+
+        //If CVC is filled out
+        if($.trim($inputs.cardCVC.val()) !== '') {
+            validCardCVC = $.payment.validateCardCVC($inputs.cardCVC.val(), $.payment.cardType($inputs.cardNumber.val()));
+            $inputs.cardCVC.toggleInputError(!validCardCVC);
+        }
+
+        //If valid, create the token
+        if(validCardNumber && validCardExpiry && validCardCVC) {
+            return true;
+        } else {
+            return false;
+        }
+
+    };
+
+    /*
+    * Determine if a new token is needed
+    *
+    */
+    self.newTokenRequired = function() {
+
+        //If any value is different from previous token values, it's a new card
+        if( $.trim($inputs.cardNumber.val()) !== tokenValues.cardNumber ||
+            $.trim($inputs.cardExpiry.val()) !== tokenValues.cardExpiry ||
+            $.trim($inputs.cardCVC.val()) !== tokenValues.cardCVC) {
+            return true;
+        } else {
+            return false;
+        }
+
+    };
+
+    /*
+    * Stores enabled cards based on module settings
+    *
+    */
     self.setupEnabledCards = function(enabledCards) {
 
         //Split string of cards into array
@@ -100,9 +196,9 @@ district.stripeCc = (function($) {
     };
 
     /*
-   * Runs when updating payment form in admin
-   *
-   */
+    * Runs when updating payment form in admin
+    *
+    */
     self.paymentDataChange = function(getPaymentData) {
 
         self.getBillingAddressAdmin();
@@ -112,9 +208,9 @@ district.stripeCc = (function($) {
     };
 
     /*
-   * Get billing address in frontend
-   *
-   */
+    * Get billing address in frontend
+    *
+    */
     self.getBillingAddressFrontend = function() {
 
         //Get billing address select element
@@ -140,9 +236,9 @@ district.stripeCc = (function($) {
     };
 
     /*
-   * Get billing address in admin
-   *
-   */
+    * Get billing address in admin
+    *
+    */
     self.getBillingAddressAdmin = function() {
 
         address.line1 = $('#order-billing_address_street0').val();
@@ -153,19 +249,25 @@ district.stripeCc = (function($) {
     };
 
     /*
-   * Validate the form
-   *
-   */
-    self.validateForm = function(validateParent) {
+    * Validate the form
+    *
+    */
+    self.paymentSave = function(validateParent) {
 
         //Save ref to magento parent function (we need it in stripe callback)
         mageValidateParent = validateParent;
 
         if($inputs.savedCard.length && $inputs.savedCard.val() !== '') { //Existing card to be used
 
+            //Run Magento payment save function
             mageValidateParent();
 
         } else { //New card to be used
+
+            //Check card is valid
+            if(!self.validCard()) {
+                return false;
+            }
 
             //Check card type is allowed
             var cardType = $.payment.cardType($inputs.cardNumber.val());
@@ -174,31 +276,16 @@ district.stripeCc = (function($) {
                 return false;
             }
 
-            //Check that credit card details are valid
-            var validCardNumber = $.payment.validateCardNumber($inputs.cardNumber.val());
-            var validCardExpiry = $.payment.validateCardExpiry($.payment.cardExpiryVal($inputs.cardExpiry.val()));
-            var validCardCVC = $.payment.validateCardCVC($inputs.cardCVC.val(), $.payment.cardType($inputs.cardNumber.val()));
-
-            //Toggle error class for invalid fields
-            $inputs.cardNumber.toggleInputError(!validCardNumber);
-            $inputs.cardExpiry.toggleInputError(!validCardExpiry);
-            $inputs.cardCVC.toggleInputError(!validCardCVC);
-
-            //If valid, create the token, else return
-            if(validCardNumber && validCardExpiry && validCardCVC) {
-                self.createToken();
-            } else {
-                return false;
-            }
-
+            //Run Magento payment save function
+            mageValidateParent();
         }
 
     };
 
     /*
-   * Creates stripe token
-   *
-   */
+    * Creates stripe token
+    *
+    */
     self.createToken = function() {
 
         Stripe.card.createToken({
@@ -214,16 +301,18 @@ district.stripeCc = (function($) {
     };
 
     /*
-   * Handle response from stripe
-   *
-   */
+    * Handle response from stripe
+    *
+    */
     self.stripeResponseHandler = function(status, response) {
 
         if(response.error) {
             $errorMsg.html(response.error.message);
         } else {
+            tokenValues.cardNumber = $.trim($inputs.cardNumber.val());
+            tokenValues.cardExpiry = $.trim($inputs.cardExpiry.val());
+            tokenValues.cardCVC = $.trim($inputs.cardCVC.val());
             $inputs.cardToken.val(response.id);
-            mageValidateParent();
         }
 
     };
