@@ -42,13 +42,11 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
         if($token = Mage::helper('stripe')->getCustomer()->getToken())
         {
             try {
-                $customer = \Stripe\Customer::retrieve(Mage::helper('core')->decrypt($token));
+                return \Stripe\Customer::retrieve(Mage::helper('core')->decrypt($token));
             } catch(Exception $e) {
                 //Fail gracefully
                 Mage::log($this->__('Could not retrieve customer'));
             }
-
-            return $customer;
         }
 
         return false;
