@@ -95,7 +95,7 @@ if($cust = Mage::helper('stripe')->retrieveCustomer()) {
             </li>
             <?php if(Mage::getSingleton('customer/session')->isLoggedIn() && Mage::getStoreConfig('payment/stripe/save_cc_enabled')): ?>
             <li class="checkbox">
-                <label><input type="checkbox" name="stripeSaveCard" /> <?php echo $this->__('Save card for future purchases'); ?></label>
+                <label><input type="checkbox" name="stripeSaveCard" /> <?php echo $this->__('Save card'); ?></label>
             </li>
             <?php endif; ?>
         </ol>
