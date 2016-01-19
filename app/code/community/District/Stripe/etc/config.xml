@@ -99,8 +99,8 @@
     </global>
     <default>
         <payment>
-            <stripe>
-                <model>stripe/method_cc</model>
+            <stripe_cc>
+                <model>stripe/cc</model>
                 <title>Stripe</title>
                 <api_secret_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <api_publishable_key backend_model="adminhtml/system_config_backend_encrypted" />
@@ -109,7 +109,7 @@
                 <save_cc_enabled>1</save_cc_enabled>
                 <jquery_enabled>1</jquery_enabled>
                 <jquery_admin_enabled>1</jquery_admin_enabled>
-            </stripe>
+            </stripe_cc>
         </payment>
     </default>
     <frontend>

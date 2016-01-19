@@ -22,7 +22,7 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     public function setApiKey()
     {
         try {
-            \Stripe\Stripe::setApiKey(Mage::getStoreConfig('payment/stripe/api_secret_key'));
+            \Stripe\Stripe::setApiKey(Mage::getStoreConfig('payment/stripe_cc/api_secret_key'));
         } catch (Exception $e) {
             Mage::throwException($this->__('Cannot set Stripe API key'));
         }

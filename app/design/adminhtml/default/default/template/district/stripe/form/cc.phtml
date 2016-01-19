@@ -32,7 +32,7 @@
 
 <script>
 
-    Stripe.setPublishableKey('<?php echo Mage::getStoreConfig('payment/stripe/api_publishable_key'); ?>');
+    Stripe.setPublishableKey('<?php echo Mage::getStoreConfig('payment/stripe_cc/api_publishable_key'); ?>');
 
     (function() {
         district.stripeCc.init();

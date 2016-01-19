@@ -14,7 +14,7 @@
     <sections>
         <payment>
             <groups>
-                <stripe translate="label" module="stripe">
+                <stripe_cc translate="label" module="stripe">
                     <label>Stripe Credit Card</label>
                     <sort_order>1000</sort_order>
                     <show_in_default>1</show_in_default>
@@ -125,7 +125,7 @@
                             <comment><![CDATA[If another module/theme is including jQuery, set to no]]></comment>
                         </jquery_admin_enabled>
                     </fields>
-                </stripe>
+                </stripe_cc>
             </groups>
         </payment>
     </sections>

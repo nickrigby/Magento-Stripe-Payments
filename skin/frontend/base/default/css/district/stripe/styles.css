@@ -8,22 +8,22 @@
 *
 */
 
-#payment_form_stripe {
+#payment_form_stripe_cc {
     position: relative;
     padding-left: 0;
 }
 
-#payment_form_stripe #stripe-cards-info {
+#payment_form_stripe_cc #stripe-cards-info {
     position: absolute;
     right: 0;
     top: -20px;
 }
 
-#payment_form_stripe #stripe-cards-select-saved {
+#payment_form_stripe_cc #stripe-cards-select-saved {
     margin-bottom: .5em;
 }
 
-#payment_form_stripe .reader-visible {
+#payment_form_stripe_cc .reader-visible {
     position: absolute;
     left: -10000px;
     top: auto;
@@ -32,7 +32,7 @@
     overflow: hidden;
 }
 
-#payment_form_stripe input[type=tel] {
+#payment_form_stripe_cc input[type=tel] {
     position: relative;
     height: 37px;
     border-radius: 4px;
@@ -44,13 +44,18 @@
     border: 1px solid #ccc;
     background-repeat: no-repeat;
     background-position: 97% 50%;
+    max-width: none;
 }
 
-#payment_form_stripe ol li {
+#payment_form_stripe_cc input[type=tel]:focus {
+    outline: 0;
+}
+
+#payment_form_stripe_cc ol li {
     margin: 0;
 }
 
-#payment_form_stripe #stripe_cc_number {
+#payment_form_stripe_cc #stripe_cc_number {
     width: 200px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
@@ -58,14 +63,14 @@
     background-size: 32px 20px;
 }
 
-#payment_form_stripe #stripe_cc_exp {
+#payment_form_stripe_cc #stripe_cc_exp {
     width: 100px;
     border-top-right-radius: 0;
     border-top-left-radius: 0;
     border-bottom-right-radius: 0;
 }
 
-#payment_form_stripe #stripe_cc_cvc {
+#payment_form_stripe_cc #stripe_cc_cvc {
     width: 101px;
     border-top-right-radius: 0;
     border-top-left-radius: 0;
@@ -74,45 +79,46 @@
 }
 
 .district-cc-visa,
-#payment_form_stripe input.visa {
+#payment_form_stripe_cc input.visa {
     background-image: url(../../../images/district/stripe/visa.png);
 }
 
 .district-cc-mastercard,
-#payment_form_stripe input.mastercard {
+#payment_form_stripe_cc input.mastercard {
     background-image: url(../../../images/district/stripe/mastercard.png);
 }
 
 .district-cc-amex,
-#payment_form_stripe input.amex {
+#payment_form_stripe_cc input.amex {
     background-image: url(../../../images/district/stripe/amex.png);
 }
 
 .district-cc-discover,
-#payment_form_stripe input.discover {
+#payment_form_stripe_cc input.discover {
     background-image: url(../../../images/district/stripe/discover.png);
 }
 
 .district-cc-jcb,
-#payment_form_stripe input.jcb {
+#payment_form_stripe_cc input.jcb {
     background-image: url(../../../images/district/stripe/jcb.png);
 }
 
 .district-cc-dinersclub,
-#payment_form_stripe input.dinersclub {
+#payment_form_stripe_cc input.dinersclub {
     background-image: url(../../../images/district/stripe/dinersclub.png);
 }
 
-#payment_form_stripe .has-error input {
+#payment_form_stripe_cc .has-error input {
     border-color: #f00 !important;
     z-index: 10;
 }
 
-#payment_form_stripe .float {
+#payment_form_stripe_cc .float {
     display: inline-block;
 }
 
-#payment_form_stripe .checkbox {
+#payment_form_stripe_cc .checkbox {
+    display: block;
     width: 200px;
     box-sizing: border-box;
     border: 1px solid #ccc;
@@ -121,7 +127,7 @@
     border-radius: 4px;
 }
 
-#payment_form_stripe .checkbox label {
+#payment_form_stripe_cc .checkbox label {
     font-weight: 400;
 }
 
@@ -139,11 +145,11 @@
 
 /* IWD Onepage overrides */
 
-.opc-index-index #payment_form_stripe #stripe-cards-info {
+.opc-index-index #payment_form_stripe_cc #stripe-cards-info {
     position: static;
     padding: 10px 0;
 }
 
-.opc-index-index #payment_form_stripe label {
+.opc-index-index #payment_form_stripe_cc label {
     font-size: 1em;
 }
