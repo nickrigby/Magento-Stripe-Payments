@@ -70,7 +70,7 @@
             <action method="addJs" ifconfig="payment/stripe/jquery_enabled"><script>district/stripe/jquery.min.js</script></action>
             <action method="addJs"><script>district/stripe/jquery.noconflict.js</script></action>
             <action method="addJs"><script>district/stripe/jquery.payment.min.js</script></action>
-            <action method="addJs"><script>district/stripe/build/stripe.onepage.js</script></action>
+            <action method="addJs"><script>district/stripe/build/stripe.js</script></action>
         </reference>
     </opc_index_index>
 
