@@ -155,15 +155,23 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     * Get Declined Orders Count
     *
     * @param   string $orderId
+    * @param   boolean $fraudelent
     * @return  District_Stripe_Model_Mysql4_Order_Failed_Collection
     */
-    public function getDeclinedOrdersCount($orderId)
+    public function getDeclinedOrdersCount($orderId, $fraudulent = false)
     {
+        //Get any declined, or only fraudelent declined
+        if($fraudulent) {
+            $code = 'card_declined_fraudulent';
+        } else {
+            $code = '%card_declined%';
+        }
+
         //Count failed orders
         return Mage::getModel('stripe/order_failed')
             ->getCollection()
             ->addFieldToFilter('order_id', array('eq' => $orderId))
-            ->addFieldToFilter('code', array('like' => '%card_declined%'))
+            ->addFieldToFilter('code', array('like' => $code))
             ->getSize();
     }
 
