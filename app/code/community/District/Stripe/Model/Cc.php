@@ -217,6 +217,11 @@ class District_Stripe_Model_Cc extends Mage_Payment_Model_Method_Abstract {
         $payment->setcc_avs_status($charge->source->address_line1_check . '/' . $charge->source->address_zip_check);
         $payment->setcc_cid_status($charge->source->cvc_check); //CID = CVC
 
+        //Did we detect fraud on this order?
+        if(Mage::helper('stripe')->getDeclinedOrdersCount($payment->getOrder()->getIncrementId(), true) > 0) {
+            $payment->setIsFraudDetected(true);
+        }
+
         //Add any additional information
         $payment->setadditional_information(array(
             'funding' => $charge->source->funding,
