@@ -30,7 +30,7 @@ class District_Stripe_Model_Cc extends Mage_Payment_Model_Method_Abstract {
     protected $_canUseCheckout              = true;
     protected $_canUseForMultishipping      = true;
     protected $_isInitializeNeeded          = false;
-    protected $_canFetchTransactionInfo     = true;
+    protected $_canFetchTransactionInfo     = false; //Removes "get payment update" button for orders under review
     protected $_canReviewPayment            = true;
     protected $_canCreateBillingAgreement   = false;
     protected $_canManageRecurringProfiles  = true;
@@ -131,7 +131,7 @@ class District_Stripe_Model_Cc extends Mage_Payment_Model_Method_Abstract {
     public function refund(Varien_Object $payment, $amount)
     {
         //Get transaction id
-        $transactionId = $payment->getLastTransId();
+        $transactionId = $payment->getCcTransId();
 
         //Create the refund
         $refund = $this->_createRefund($transactionId, $amount, $payment);
@@ -189,6 +189,38 @@ class District_Stripe_Model_Cc extends Mage_Payment_Model_Method_Abstract {
         }
 
         return $this;
+    }
+
+    /**
+     * Attempt to accept a payment that us under review
+     *
+     * @param Mage_Payment_Model_Info $payment
+     * @return bool
+     * @throws Mage_Core_Exception
+     */
+    public function acceptPayment(Mage_Payment_Model_Info $payment)
+    {
+        parent::acceptPayment($payment);
+
+        $payment->getOrder()->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true)->save();
+
+        return true;
+    }
+
+    /**
+     * Attempt to deny a payment that is under review
+     *
+     * @param Mage_Payment_Model_Info $payment
+     * @return bool
+     * @throws Mage_Core_Exception
+     */
+    public function denyPayment(Mage_Payment_Model_Info $payment)
+    {
+        parent::denyPayment($payment);
+
+        $this->refund($payment, $payment->getBaseAmountAuthorized());
+
+        return true;
     }
 
     /**
