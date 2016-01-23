@@ -202,8 +202,6 @@ class District_Stripe_Model_Cc extends Mage_Payment_Model_Method_Abstract {
     {
         parent::acceptPayment($payment);
 
-        $payment->getOrder()->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true)->save();
-
         return true;
     }
 
