@@ -24,7 +24,7 @@ class District_Stripe_Model_Cc extends Mage_Payment_Model_Method_Abstract {
     protected $_canAuthorize                = true;
     protected $_canCapture                  = true;
     protected $_canRefund                   = true;
-    protected $_canRefundInvoicePartial     = false;
+    protected $_canRefundInvoicePartial     = true;
     protected $_canVoid                     = false; //No void through Stripe, use cancel instead
     protected $_canUseInternal              = true;
     protected $_canUseCheckout              = true;
