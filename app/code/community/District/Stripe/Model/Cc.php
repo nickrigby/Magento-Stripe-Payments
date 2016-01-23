@@ -19,7 +19,7 @@ class District_Stripe_Model_Cc extends Mage_Payment_Model_Method_Abstract {
    * Payment Method features
    * @var bool
    */
-    protected $_isGateway                   = false;
+    protected $_isGateway                   = true;
     protected $_canOrder                    = true;
     protected $_canAuthorize                = true;
     protected $_canCapture                  = true;
