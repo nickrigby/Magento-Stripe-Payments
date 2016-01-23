@@ -192,7 +192,7 @@ class District_Stripe_Model_Cc extends Mage_Payment_Model_Method_Abstract {
     }
 
     /**
-     * Attempt to accept a payment that us under review
+     * Attempt to accept a payment that is under review
      *
      * @param Mage_Payment_Model_Info $payment
      * @return bool
