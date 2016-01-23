@@ -28,7 +28,7 @@ class District_Stripe_Model_Cc extends Mage_Payment_Model_Method_Abstract {
     protected $_canVoid                     = false; //No void through Stripe, use cancel instead
     protected $_canUseInternal              = true;
     protected $_canUseCheckout              = true;
-    protected $_canUseForMultishipping      = true;
+    protected $_canUseForMultishipping      = false; //Would require multiple tokens
     protected $_isInitializeNeeded          = false;
     protected $_canFetchTransactionInfo     = false; //Removes "get payment update" button for orders under review
     protected $_canReviewPayment            = true;
