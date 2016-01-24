@@ -11,7 +11,7 @@
 
 class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract {
 
-    protected $_code = 'stripe';
+    protected $_code = 'stripe_cc';
     protected $_formBlockType = 'stripe/form_cc';
     protected $_infoBlockType = 'stripe/info_cc';
 
@@ -19,18 +19,18 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
    * Payment Method features
    * @var bool
    */
-    protected $_isGateway                   = false;
+    protected $_isGateway                   = true;
     protected $_canOrder                    = true;
     protected $_canAuthorize                = true;
     protected $_canCapture                  = true;
     protected $_canRefund                   = true;
-    protected $_canRefundInvoicePartial     = false;
+    protected $_canRefundInvoicePartial     = true;
     protected $_canVoid                     = false; //No void through Stripe, use cancel instead
     protected $_canUseInternal              = true;
     protected $_canUseCheckout              = true;
-    protected $_canUseForMultishipping      = true;
+    protected $_canUseForMultishipping      = false; //Would require multiple tokens
     protected $_isInitializeNeeded          = false;
-    protected $_canFetchTransactionInfo     = true;
+    protected $_canFetchTransactionInfo     = false; //Removes "get payment update" button for orders under review
     protected $_canReviewPayment            = true;
     protected $_canCreateBillingAgreement   = false;
     protected $_canManageRecurringProfiles  = true;
@@ -131,7 +131,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     public function refund(Varien_Object $payment, $amount)
     {
         //Get transaction id
-        $transactionId = $payment->getLastTransId();
+        $transactionId = $payment->getCcTransId();
 
         //Create the refund
         $refund = $this->_createRefund($transactionId, $amount, $payment);
@@ -192,6 +192,36 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
+     * Attempt to accept a payment that is under review
+     *
+     * @param Mage_Payment_Model_Info $payment
+     * @return bool
+     * @throws Mage_Core_Exception
+     */
+    public function acceptPayment(Mage_Payment_Model_Info $payment)
+    {
+        parent::acceptPayment($payment);
+
+        return true;
+    }
+
+    /**
+     * Attempt to deny a payment that is under review
+     *
+     * @param Mage_Payment_Model_Info $payment
+     * @return bool
+     * @throws Mage_Core_Exception
+     */
+    public function denyPayment(Mage_Payment_Model_Info $payment)
+    {
+        parent::denyPayment($payment);
+
+        $this->refund($payment, $payment->getBaseAmountAuthorized());
+
+        return true;
+    }
+
+    /**
     * Sets the order payment information
     *
     * @param   Varien_Object $payment
@@ -216,6 +246,11 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         //Add payment fraud information
         $payment->setcc_avs_status($charge->source->address_line1_check . '/' . $charge->source->address_zip_check);
         $payment->setcc_cid_status($charge->source->cvc_check); //CID = CVC
+
+        //Did we detect fraud on this order?
+        if(Mage::helper('stripe')->getDeclinedOrdersCount($payment->getOrder()->getIncrementId(), true) > 0) {
+            $payment->setIsFraudDetected(true);
+        }
 
         //Add any additional information
         $payment->setadditional_information(array(
@@ -429,10 +464,9 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
                 'charge' => $transactionId,
                 'amount' => Mage::helper('stripe')->calculateCurrencyAmount($amount, $payment->getOrder()->getBaseCurrencyCode()),
             ));
-        } catch (\Stripe\Error\InvalidRequest $e) {
-            Mage::throwException($e);
-        } catch (\Stripe\Error\Card $e) {
-            Mage::throwException($e);
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+            Mage::throwException($message);
         }
 
         return $refund;

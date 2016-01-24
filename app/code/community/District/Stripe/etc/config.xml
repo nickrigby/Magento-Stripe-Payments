@@ -100,7 +100,7 @@
     <default>
         <payment>
             <stripe_cc>
-                <model>stripe/cc</model>
+                <model>stripe/method_cc</model>
                 <title>Stripe</title>
                 <api_secret_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <api_publishable_key backend_model="adminhtml/system_config_backend_encrypted" />
