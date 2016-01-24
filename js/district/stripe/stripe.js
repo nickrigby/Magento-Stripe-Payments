@@ -41,12 +41,13 @@ district.stripeCc = (function($) {
         //Setup enabled cards (specified in Magento Stripe config)
         self.setupEnabledCards(enabledCards);
 
-        //Shortcut to fields
+        //Shortcut to elements
         $inputs.cardNumber = $('input#stripe_cc_number');
         $inputs.cardExpiry = $('input#stripe_cc_exp');
         $inputs.cardCVC = $('input#stripe_cc_cvc');
         $inputs.cardToken = $('input#stripe_token');
         $inputs.savedCard = $('select#stripe-saved-card');
+        $inputs.continueBtn = $('#payment-buttons-container button:first');
 
         //Set input mask for each field
         $inputs.cardNumber.payment('formatCardNumber');
@@ -59,13 +60,20 @@ district.stripeCc = (function($) {
             return this;
         };
 
+        //If no saved cards available, disable continue button by default
+        if(!$inputs.savedCard.length) {
+            self.disableContinueBtn(true);
+        }
+
         //Toggle new card form
         $inputs.savedCard.change(function() {
             if($(this).val() === '') {
                 $('#stripe-cards-select-new').show();
                 $inputs.cardNumber.focus();
+                self.disableContinueBtn(true);
             } else {
                 $('#stripe-cards-select-new').hide();
+                self.disableContinueBtn(false);
             }
         });
 
@@ -79,6 +87,7 @@ district.stripeCc = (function($) {
 
             //Validate card (and get stripe token) on keyup
             $('body').on('keyup', 'input#stripe_cc_number, input#stripe_cc_exp, input#stripe_cc_cvc', function() {
+                self.disableContinueBtn(true);
                 self.delay(self.cardEntryListener, 1000);
             });
 
@@ -115,8 +124,18 @@ district.stripeCc = (function($) {
         //If card is valid and we need a new token
         if(self.validCard() && self.newTokenRequired()) {
             self.createToken();
+        } else if(self.validCard() && !self.newTokenRequired()) {
+            self.disableContinueBtn(false);
         }
 
+    };
+
+    /*
+    * Disable continue button
+    *
+    */
+    self.disableContinueBtn = function(state) {
+        $inputs.continueBtn.prop('disabled', state);
     };
 
     /*
@@ -286,6 +305,7 @@ district.stripeCc = (function($) {
     */
     self.createToken = function() {
 
+        //Get the token
         Stripe.card.createToken({
             number: $inputs.cardNumber.val(),
             exp: $inputs.cardExpiry.val(),
@@ -304,6 +324,7 @@ district.stripeCc = (function($) {
     */
     self.stripeResponseHandler = function(status, response) {
 
+        //Handle response
         if(response.error) {
             $errorMsg.html(response.error.message);
         } else {
@@ -312,6 +333,9 @@ district.stripeCc = (function($) {
             tokenValues.cardCVC = $.trim($inputs.cardCVC.val());
             $inputs.cardToken.val(response.id);
         }
+
+        //Enable continue button
+        self.disableContinueBtn(false);
 
     };
 
