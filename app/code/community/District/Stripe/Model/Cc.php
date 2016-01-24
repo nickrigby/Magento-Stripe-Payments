@@ -464,10 +464,9 @@ class District_Stripe_Model_Cc extends Mage_Payment_Model_Method_Abstract {
                 'charge' => $transactionId,
                 'amount' => Mage::helper('stripe')->calculateCurrencyAmount($amount, $payment->getOrder()->getBaseCurrencyCode()),
             ));
-        } catch (\Stripe\Error\InvalidRequest $e) {
-            Mage::throwException($e);
-        } catch (\Stripe\Error\Card $e) {
-            Mage::throwException($e);
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+            Mage::throwException($message);
         }
 
         return $refund;
