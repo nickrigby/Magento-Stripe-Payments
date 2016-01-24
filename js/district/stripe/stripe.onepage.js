@@ -60,4 +60,4 @@ district.stripeCc = (function($) {
 
     return self;
 
-}(district.$));
+}(window.district.$||window.jQuery));

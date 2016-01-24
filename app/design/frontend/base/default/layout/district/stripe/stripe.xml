@@ -52,7 +52,7 @@
             </block>
             <action method="addItem"><type>js</type><name>district/stripe/placeholders.js</name><params /><if>lte IE 8</if></action>
             <action method="addJs" ifconfig="payment/stripe_cc/jquery_enabled"><script>district/stripe/jquery.min.js</script></action>
-            <action method="addJs"><script>district/stripe/jquery.noconflict.js</script></action>
+            <action method="addJs" ifconfig="payment/stripe_cc/jquery_enabled"><script>district/stripe/jquery.noconflict.js</script></action>
             <action method="addJs"><script>district/stripe/jquery.payment.min.js</script></action>
             <action method="addJs"><script>district/stripe/build/stripe.js</script></action>
         </reference>
@@ -68,7 +68,7 @@
             </block>
             <action method="addItem"><type>js</type><name>district/stripe/placeholders.js</name><params /><if>lte IE 8</if></action>
             <action method="addJs" ifconfig="payment/stripe_cc/jquery_enabled"><script>district/stripe/jquery.min.js</script></action>
-            <action method="addJs"><script>district/stripe/jquery.noconflict.js</script></action>
+            <action method="addJs" ifconfig="payment/stripe_cc/jquery_enabled"><script>district/stripe/jquery.noconflict.js</script></action>
             <action method="addJs"><script>district/stripe/jquery.payment.min.js</script></action>
             <action method="addJs"><script>district/stripe/build/stripe.js</script></action>
         </reference>
