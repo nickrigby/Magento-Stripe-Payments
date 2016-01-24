@@ -87,9 +87,6 @@ district.stripeCc = (function($) {
 
         } else if(typeof AdminOrder !== 'undefined') { //Admin payment
 
-            //Wrap submit method
-            AdminOrder.prototype.submit = AdminOrder.prototype.submit.wrap(self.validateForm);
-
             //Wrap get payment data method
             AdminOrder.prototype.getPaymentData = AdminOrder.prototype.getPaymentData.wrap(self.paymentDataChange);
 
@@ -201,6 +198,7 @@ district.stripeCc = (function($) {
     */
     self.paymentDataChange = function(getPaymentData) {
 
+        self.cardEntryListener();
         self.getBillingAddressAdmin();
 
         getPaymentData();

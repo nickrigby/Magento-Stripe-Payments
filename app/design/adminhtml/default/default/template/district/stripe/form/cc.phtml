@@ -8,6 +8,8 @@
  * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
  *
  */
+
+$acceptedCards = Mage::getStoreConfig('payment/stripe_cc/cctype');
 ?>
 
 <link rel="stylesheet" href="/skin/frontend/base/default/css/district/stripe/styles.css">
@@ -35,7 +37,7 @@
     Stripe.setPublishableKey('<?php echo Mage::getStoreConfig('payment/stripe_cc/api_publishable_key'); ?>');
 
     (function() {
-        district.stripeCc.init();
+        district.stripeCc.init('<?php echo $acceptedCards; ?>');
     })();
 
 </script>
