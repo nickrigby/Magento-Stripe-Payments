@@ -143,6 +143,11 @@
     text-indent: -999em;
 }
 
+/* Admin order create overrides */
+.adminhtml-sales-order-create-index #payment_form_stripe_cc {
+    margin-left: -20px;
+}
+
 /* IWD Onepage overrides */
 
 .opc-index-index #payment_form_stripe_cc #stripe-cards-info {
