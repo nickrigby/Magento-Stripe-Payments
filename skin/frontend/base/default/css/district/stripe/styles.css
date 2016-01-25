@@ -16,7 +16,7 @@
 #payment_form_stripe_cc #stripe-cards-info {
     position: absolute;
     right: 0;
-    top: -20px;
+    top: -2em;
 }
 
 #payment_form_stripe_cc #stripe-cards-select-saved {
@@ -45,6 +45,7 @@
     background-repeat: no-repeat;
     background-position: 97% 50%;
     max-width: none;
+    transition: border .25s ease-in-out;
 }
 
 #payment_form_stripe_cc input[type=tel]:focus {

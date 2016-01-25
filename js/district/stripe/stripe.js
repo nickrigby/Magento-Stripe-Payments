@@ -55,8 +55,8 @@ district.stripeCc = (function($) {
         $inputs.cardCVC.payment('formatCardCVC');
 
         //Toggles error class based on validation result
-        $.fn.toggleInputError = function(error) {
-            this.parent().toggleClass('has-error', error);
+        $.fn.toggleInputError = function(valid) {
+            this.parent().toggleClass('has-error', !valid);
             return this;
         };
 
@@ -77,6 +77,9 @@ district.stripeCc = (function($) {
             }
         });
 
+        //Validation Listener
+        self.cardValidationListener();
+
         //If frontend payment
         if(typeof Payment !== 'undefined') {
 
@@ -88,7 +91,7 @@ district.stripeCc = (function($) {
             //Validate card (and get stripe token) on keyup
             $('body').on('keyup', 'input#stripe_cc_number, input#stripe_cc_exp, input#stripe_cc_cvc', function() {
                 self.disableContinueBtn(true);
-                self.delay(self.cardEntryListener, 1000);
+                self.delay(self.cardEntryListener, 750);
             });
 
             //Wrap the payment save method
@@ -121,12 +124,35 @@ district.stripeCc = (function($) {
     */
     self.cardEntryListener = function() {
 
-        //If card is valid and we need a new token
-        if(self.validCard() && self.newTokenRequired()) {
-            self.createToken();
-        } else if(self.validCard() && !self.newTokenRequired()) {
-            self.disableContinueBtn(false);
+        //If card is valid and if we need a new token
+        if(self.validCard()) {
+            $('#payment_form_stripe_cc .has-error').removeClass('has-error');
+            if(self.newTokenRequired()) {
+                self.createToken();
+            } else {
+                self.disableContinueBtn(false);
+            }
         }
+
+    };
+
+    /*
+    * Show validation errors
+    *
+    */
+    self.cardValidationListener = function() {
+
+        $('body').on('blur', 'input#stripe_cc_number', function() {
+            $(this).toggleInputError(self.validateCardNumber());
+        });
+
+        $('body').on('blur', 'input#stripe_cc_exp', function() {
+            $(this).toggleInputError(self.validateCardExpiry());
+        });
+
+        $('body').on('blur', 'input#stripe_cc_cvc', function() {
+            $(this).toggleInputError(self.validateCardCVC());
+        });
 
     };
 
@@ -135,7 +161,7 @@ district.stripeCc = (function($) {
     *
     */
     self.disableContinueBtn = function(state) {
-        $inputs.continueBtn.prop('disabled', state);
+        $inputs.continueBtn.prop('disabled', state).toggleClass('disabled', state);
     };
 
     /*
@@ -144,35 +170,68 @@ district.stripeCc = (function($) {
     */
     self.validCard = function() {
 
-        //All fields set to false
-        var validCardNumber = false,
-            validCardExpiry = false,
-            validCardCVC = false;
-
-        //If card number is filled out
-        if($.trim($inputs.cardNumber.val()) !== '') {
-            validCardNumber = $.payment.validateCardNumber($inputs.cardNumber.val());
-            $inputs.cardNumber.toggleInputError(!validCardNumber);
-        }
-
-        //If expiry is filled out
-        if($.trim($inputs.cardExpiry.val()) !== '') {
-            validCardExpiry = $.payment.validateCardExpiry($.payment.cardExpiryVal($inputs.cardExpiry.val()));
-            $inputs.cardExpiry.toggleInputError(!validCardExpiry);
-        }
-
-        //If CVC is filled out
-        if($.trim($inputs.cardCVC.val()) !== '') {
-            validCardCVC = $.payment.validateCardCVC($inputs.cardCVC.val(), $.payment.cardType($inputs.cardNumber.val()));
-            $inputs.cardCVC.toggleInputError(!validCardCVC);
-        }
-
-        //If valid, create the token
-        if(validCardNumber && validCardExpiry && validCardCVC) {
+        //Final check
+        if(self.validateCardNumber() && self.validateCardExpiry() && self.validateCardCVC()) {
             return true;
         } else {
             return false;
         }
+
+    };
+
+    /*
+    * Validate card number
+    *
+    */
+    self.validateCardNumber = function() {
+
+        //Set vars
+        var cardNumber = $.trim($inputs.cardNumber.val()),
+            valid = false;
+
+        //Validate
+        if(cardNumber !== '' && cardNumber.replace(/ /g,'').length > 12) {
+            valid = $.payment.validateCardNumber(cardNumber);
+        }
+
+        return valid;
+    };
+
+    /*
+    * Validate card expiry
+    *
+    */
+    self.validateCardExpiry = function() {
+
+        //Set vars
+        var cardExpiry = $.trim($inputs.cardExpiry.val()),
+            valid = false;
+
+        //Validate
+        if(cardExpiry !== '' && cardExpiry.length > 6) {
+            valid = $.payment.validateCardExpiry($.payment.cardExpiryVal(cardExpiry));
+        }
+
+        return valid;
+
+    };
+
+    /*
+    * Validate card CVC
+    *
+    */
+    self.validateCardCVC = function() {
+
+        //Set vars
+        var cardCVC = $.trim($inputs.cardCVC.val()),
+            valid = false;
+
+        //Validate
+        if(cardCVC !== '' && cardCVC.length > 2) {
+            valid = $.payment.validateCardCVC(cardCVC, $.payment.cardType($inputs.cardNumber.val()));
+        }
+
+        return valid;
 
     };
 
