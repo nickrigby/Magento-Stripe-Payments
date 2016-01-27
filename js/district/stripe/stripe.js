@@ -13,7 +13,6 @@ var district = district || {};
 district.stripeCc = (function($) {
 
     var self = {},
-        $errorMsg = $('#stripe-error-messages'),
         $inputs = {},
         mageValidateParent,
         address = {},
@@ -385,16 +384,20 @@ district.stripeCc = (function($) {
 
         //Handle response
         if(response.error) {
-            $errorMsg.html(response.error.message);
+            $('#stripe-error-messages').html(response.error.message);
         } else {
+
+            //Save token values
             tokenValues.cardNumber = $.trim($inputs.cardNumber.val());
             tokenValues.cardExpiry = $.trim($inputs.cardExpiry.val());
             tokenValues.cardCVC = $.trim($inputs.cardCVC.val());
-            $inputs.cardToken.val(response.id);
-        }
 
-        //Enable continue button
-        self.disableContinueBtn(false);
+            //Add token to form
+            $inputs.cardToken.val(response.id);
+
+            //Enable continue button
+            self.disableContinueBtn(false);
+        }
 
     };
 
