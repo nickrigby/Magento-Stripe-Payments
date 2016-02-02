@@ -14,9 +14,18 @@
 }
 
 #payment_form_stripe_cc #stripe-cards-info {
-    position: absolute;
-    right: 0;
-    top: -2em;
+    display: none;
+}
+
+@media screen and (min-width:600px) {
+
+    #payment_form_stripe_cc #stripe-cards-info {
+        display: block;
+        position: absolute;
+        right: 0;
+        top: -2em;
+    }
+
 }
 
 #payment_form_stripe_cc #stripe-cards-select-saved {
@@ -143,11 +152,6 @@
     border-radius: 4px;
     border-top-right-radius: 0;
     border-top-left-radius: 0;
-
-}
-
-#payment_form_stripe_cc .checkbox label {
-    font-weight: 400;
 }
 
 .district-cc {

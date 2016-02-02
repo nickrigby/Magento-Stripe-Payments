@@ -94,7 +94,7 @@ if($cust = Mage::helper('stripe')->retrieveCustomer()) {
                 <input id="stripe_cc_cvc" type="tel" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('CVC'); ?>" data-stripe="cvc" size="4" maxlength="4">
             </li>
             <?php if(Mage::getSingleton('customer/session')->isLoggedIn() && Mage::getStoreConfig('payment/stripe_cc/save_cc_enabled')): ?>
-            <li class="checkbox">
+            <li id="stripe-cards-select-save">
                 <label><input type="checkbox" name="stripeSaveCard" /> <?php echo $this->__('Save card'); ?></label>
             </li>
             <?php endif; ?>
