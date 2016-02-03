@@ -67,6 +67,10 @@
     outline: 0;
 }
 
+#payment_form_stripe_cc input[type=tel]::-ms-clear {
+    display: none;
+}
+
 #payment_form_stripe_cc ol li {
     margin: 0;
 }
