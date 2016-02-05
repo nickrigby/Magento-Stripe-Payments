@@ -53,6 +53,12 @@ class District_Stripe_Block_Adminhtml_Orderfailed_Grid extends Mage_Adminhtml_Bl
             'type' => 'datetime',
         ));
 
+        $this->addColumn('customer_id', array(
+            'header'=> $this->__('Customer'),
+            'index' => 'customer_id',
+            'width' => '150px',
+        ));
+
         $this->addColumn('code', array(
             'header'=> $this->__('Code'),
             'index' => 'code',

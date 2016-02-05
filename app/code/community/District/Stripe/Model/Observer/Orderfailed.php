@@ -39,6 +39,10 @@ class District_Stripe_Model_Observer_Orderfailed extends Varien_Event_Observer
             $model->setCcLast4($payment->getCcLast4());
             $model->setAmount($quote->getBaseGrandTotal());
 
+            if($customer = Mage::getSingleton('customer/session')->getCustomer()) {
+                $model->setCustomerId($customer->getId());
+            }
+
             if(isset($info['type'])) {
                 $model->setType($info['type']);
             }

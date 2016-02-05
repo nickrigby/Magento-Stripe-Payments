@@ -23,6 +23,7 @@ $installer->run("
         `id` int(10) unsigned NOT NULL auto_increment,
         `date` datetime NOT NULL default '0000-00-00 00:00:00',
         `order_id` int(10) unsigned NOT NULL,
+        `customer_id` int(10) unsigned default NULL,
         `cc_type` varchar(255),
         `cc_last4` varchar(10),
         `amount` decimal(12,4),
