@@ -27,6 +27,8 @@ class District_Stripe_SavedcardsController extends Mage_Core_Controller_Front_Ac
         } else {
             Mage::getSingleton('core/session')->addError($this->__('Card could not be deleted.'));
         }
+
+        $this->_redirect('*/*/');
     }
 
     public function editAction()
@@ -74,6 +76,6 @@ class District_Stripe_SavedcardsController extends Mage_Core_Controller_Front_Ac
             Mage::getSingleton('core/session')->addError($this->__('Card does not exist.'));
         }
 
-         $this->_redirect('*/*/');
+        $this->_redirect('*/*/');
     }
 }

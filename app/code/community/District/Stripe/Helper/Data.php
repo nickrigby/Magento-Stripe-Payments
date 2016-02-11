@@ -185,8 +185,14 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     {
         if($customer = $this->retrieveCustomer())
         {
-            return $customer->sources->retrieve($cardId)->delete();
+            try {
+                $customer->sources->retrieve($cardId)->delete();
+            } catch(Exception $e) {
+                return false;
+            }
         }
+
+        return true;
     }
 
     /**
