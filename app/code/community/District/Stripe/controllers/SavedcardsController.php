@@ -1,6 +1,9 @@
 <?php
 class District_Stripe_SavedcardsController extends Mage_Core_Controller_Front_Action
 {
+    /**
+     * Authenticate user
+     */
     public function preDispatch()
     {
         parent::preDispatch();
@@ -9,12 +12,18 @@ class District_Stripe_SavedcardsController extends Mage_Core_Controller_Front_Ac
         }
     }
 
+    /**
+     * View cards
+     */
     public function indexAction()
     {
         $this->loadLayout();
         $this->renderLayout();
     }
 
+    /**
+     * Delete card
+     */
     public function deleteAction()
     {
         //Get id of card
@@ -31,6 +40,9 @@ class District_Stripe_SavedcardsController extends Mage_Core_Controller_Front_Ac
         $this->_redirect('*/*/');
     }
 
+    /**
+     * Edit card
+     */
     public function editAction()
     {
         //Get id of card
@@ -53,6 +65,9 @@ class District_Stripe_SavedcardsController extends Mage_Core_Controller_Front_Ac
         }
     }
 
+    /**
+     * Save card
+     */
     public function saveAction()
     {
         //Get id of card

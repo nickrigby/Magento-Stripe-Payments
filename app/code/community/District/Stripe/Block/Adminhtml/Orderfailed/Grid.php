@@ -11,6 +11,9 @@
 
 class District_Stripe_Block_Adminhtml_Orderfailed_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
+    /**
+     * District_Stripe_Block_Adminhtml_Orderfailed_Grid constructor.
+     */
     public function __construct()
     {
         parent::__construct();
@@ -21,16 +24,26 @@ class District_Stripe_Block_Adminhtml_Orderfailed_Grid extends Mage_Adminhtml_Bl
         $this->setSaveParametersInSession(true);
     }
 
+    /**
+     * @return string
+     */
     protected function _getCollectionClass()
     {
         return 'stripe/order_failed_collection';
     }
 
+    /**
+     * @param $row
+     * @return string
+     */
     public function getRowUrl($row)
     {
         return Mage::helper('stripe')->getPaymentsDashboardUrl() . Mage::helper('core')->decrypt($row->getToken());
     }
 
+    /**
+     * @return mixed
+     */
     protected function _prepareCollection()
     {
         $collection = Mage::getResourceModel($this->_getCollectionClass());
@@ -39,6 +52,9 @@ class District_Stripe_Block_Adminhtml_Orderfailed_Grid extends Mage_Adminhtml_Bl
         return parent::_prepareCollection();
     }
 
+    /**
+     * @return mixed
+     */
     protected function _prepareColumns()
     {
         $this->addColumn('order_id', array(

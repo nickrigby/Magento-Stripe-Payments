@@ -15,10 +15,6 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     protected $_formBlockType = 'stripe/form_cc';
     protected $_infoBlockType = 'stripe/info_cc';
 
-    /**
-   * Payment Method features
-   * @var bool
-   */
     protected $_isGateway                   = true;
     protected $_canOrder                    = true;
     protected $_canAuthorize                = true;
@@ -40,19 +36,21 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     //Charge data
     private $_chargeData = array();
 
+    /**
+     * District_Stripe_Model_Method_Cc constructor.
+     */
     public function __construct()
     {
         parent::__construct();
     }
 
     /**
-    * Capture the payment
-    *
-    * @param Varien_Object $payment
-    * @param float $amount
-    *
-    * @return Mage_Payment_Model_Abstract
-    */
+     * Capture payment
+     *
+     * @param Varien_Object $payment
+     * @param $amount
+     * @return $this
+     */
     public function capture(Varien_Object $payment, $amount)
     {
         //Call parent capture function
@@ -90,13 +88,12 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Authorize payment method
-    *
-    * @param Varien_Object $payment
-    * @param float $amount
-    *
-    * @return Mage_Payment_Model_Abstract
-    */
+     * Authorize payment method
+     *
+     * @param Varien_Object $payment
+     * @param $amount
+     * @return $this
+     */
     public function authorize(Varien_Object $payment, $amount)
     {
         //Call parent authorize function
@@ -121,13 +118,12 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Refund
-    *
-    * @param Varien_Object $payment
-    * @param float $amount
-    *
-    * @return  Mage_Payment_Model_Abstract
-    */
+     * Refund
+     *
+     * @param Varien_Object $payment
+     * @param $amount
+     * @return $this
+     */
     public function refund(Varien_Object $payment, $amount)
     {
         //Get transaction id
@@ -143,12 +139,10 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Validate payment method
-    *
-    * @param   none
-    *
-    * @return  Mage_Payment_Model_Abstract
-    */
+     * Validate payment method
+     *
+     * @return $this
+     */
     public function validate()
     {
         //Call parent validate
@@ -192,11 +186,10 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-     * Attempt to accept a payment that is under review
+     * Accept a payment that is under review
      *
      * @param Mage_Payment_Model_Info $payment
      * @return bool
-     * @throws Mage_Core_Exception
      */
     public function acceptPayment(Mage_Payment_Model_Info $payment)
     {
@@ -210,7 +203,6 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
      *
      * @param Mage_Payment_Model_Info $payment
      * @return bool
-     * @throws Mage_Core_Exception
      */
     public function denyPayment(Mage_Payment_Model_Info $payment)
     {
@@ -222,14 +214,12 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Sets the order payment information
-    *
-    * @param   Varien_Object $payment
-    * @param   Stripe_Charge $charge
-    * @param   float $amount
-    *
-    * @return  none
-    */
+     * Set order payment information
+     *
+     * @param Varien_Object $payment
+     * @param $charge
+     * @param $amount
+     */
     protected function _createOrderPayment(Varien_Object $payment, $charge, $amount)
     {
         //Set amount
@@ -260,16 +250,14 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Creates payment transaction
-    *
-    * @param   Varien_Object $payment
-    * @param   Mage_Sales_Model_Order_Payment_Transaction $requestType
-    * @param   string $transactionId
-    * @param   boolean $close
-    * @param   boolean $closeParent
-    *
-    * @return  none
-    */
+     * Creates payment transaction
+     *
+     * @param Varien_Object $payment
+     * @param $requestType
+     * @param $transactionId
+     * @param bool $close
+     * @param bool $closeParent
+     */
     protected function _createTransaction(Varien_Object $payment, $requestType, $transactionId, $close = false, $closeParent = false)
     {
         //Set attributes
@@ -285,12 +273,10 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Add card details to quote
-    *
-    * @param   Stripe_Object $card
-    *
-    * @return  none
-    */
+     * Add card details to quote
+     *
+     * @param $card
+     */
     protected function _addCardToQuote($card)
     {
         Mage::getSingleton('checkout/session')->getQuote()->getPayment()->addData(array(
@@ -302,12 +288,11 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Get the token from Stripe based on passed in tokenString
-    *
-    * @param   string $tokenString
-    *
-    * @return  Stripe_Token $token
-    */
+     * Retrieve Stripe Token
+     *
+     * @param $tokenString
+     * @return bool|\Stripe\Token
+     */
     protected function _retrieveToken($tokenString)
     {
         Mage::helper('stripe')->setApiKey();
@@ -322,14 +307,13 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Create a charge
-    *
-    * @param   Varien_Object $payment
-    * @param   float $amount
-    * @param   boolean $capture
-    *
-    * @return  Stripe_Charge $charge
-    */
+     * Create charge
+     *
+     * @param Varien_Object $payment
+     * @param $amount
+     * @param bool $capture
+     * @return \Stripe\Charge
+     */
     protected function _createCharge(Varien_Object $payment, $amount, $capture = true)
     {
         //Set API key
@@ -426,12 +410,11 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Retrieve a charge
-    *
-    * @param   string $transactionId
-    *
-    * @return  Stripe_Charge $charge
-    */
+     * Retrieve charge
+     *
+     * @param $transactionId
+     * @return bool|\Stripe\Charge
+     */
     protected function _retrieveCharge($transactionId)
     {
         Mage::helper('stripe')->setApiKey();
@@ -447,14 +430,13 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Create a refund
-    *
-    * @param   string $transactionId
-    * @param   float $amount
-    * @param   Varien_Object $payment
-    *
-    * @return  Stripe_Refund $refund
-    */
+     * Create refund
+     *
+     * @param $transactionId
+     * @param $amount
+     * @param $payment
+     * @return bool|\Stripe\Refund
+     */
     protected function _createRefund($transactionId, $amount, $payment)
     {
         Mage::helper('stripe')->setApiKey();
@@ -473,12 +455,11 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Save a card
-    *
-    * @param   Stripe_Customer $customer
-    *
-    * @return  Stripe_Card $card
-    */
+     * Save card
+     *
+     * @param $customer
+     * @return bool
+     */
     protected function _saveCard($customer)
     {
         Mage::helper('stripe')->setApiKey();
@@ -501,13 +482,12 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Retrieve a card
-    *
-    * @param   Stripe_Customer $customer
-    * @param   string $card
-    *
-    * @return  Stripe_Card $card
-    */
+     * Retrieve card
+     *
+     * @param $customer
+     * @param $card
+     * @return bool
+     */
     protected function _retrieveCard($customer, $card)
     {
         Mage::helper('stripe')->setApiKey();

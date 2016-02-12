@@ -14,11 +14,8 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     const DASHBOARD_PAYMENTS_URL = 'https://dashboard.stripe.com/payments/';
 
     /**
-    * Sets the API key for interfacing with Stripe API
-    *
-    * @param   none
-    * @return  none
-    */
+     * Set Stripe API key
+     */
     public function setApiKey()
     {
         try {
@@ -29,11 +26,10 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-    * Retrieve a customer from Stripe
-    *
-    * @param   string $token
-    * @return  Stripe_Customer $customer
-    */
+     * Retrieve customer from Stripe
+     *
+     * @return bool|\Stripe\Customer
+     */
     public function retrieveCustomer()
     {
         $this->setApiKey();
@@ -53,11 +49,10 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-    * Get a customer from District Stripe Database
-    *
-    * @param   none
-    * @return  District_Stripe_Model_Customer
-    */
+     * Get customer from database
+     *
+     * @return mixed
+     */
     public function getCustomer()
     {
         $customer = Mage::getSingleton('customer/session')->getCustomer();
@@ -67,24 +62,23 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-    * Get payments dashboard URL
-    *
-    * @param   none
-    * @return  string DASHBOARD_PAYMENTS_URL
-    */
+     * Get payments dashboard URL
+     *
+     * @return string
+     */
     public function getPaymentsDashboardUrl()
     {
         return self::DASHBOARD_PAYMENTS_URL;
     }
 
     /**
-    * Calculates amount based on currency
-    * https://support.stripe.com/questions/which-zero-decimal-currencies-does-stripe-support
-    *
-    * @param float $amount
-    * @param string $currencyCode
-    * @return float $amount
-    */
+     * Calculates amount based on currency
+     * https://support.stripe.com/questions/which-zero-decimal-currencies-does-stripe-support
+     *
+     * @param $amount
+     * @param $currencyCode
+     * @return float
+     */
     public function calculateCurrencyAmount($amount, $currencyCode)
     {
         $zeroDecimalCurrencies = array(
@@ -115,11 +109,11 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-    * Create a customer
-    *
-    * @param   string $token
-    * @return  Stripe_Customer $stripeCustomer
-    */
+     * Create customer
+     *
+     * @param $token
+     * @return \Stripe\Customer
+     */
     public function createCustomer($token)
     {
         //Set API Key
@@ -152,12 +146,12 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-    * Get Declined Orders Count
-    *
-    * @param   string $orderId
-    * @param   boolean $fraudelent
-    * @return  District_Stripe_Model_Mysql4_Order_Failed_Collection
-    */
+     * Get Declined Orders Count
+     *
+     * @param $orderId
+     * @param bool $fraudulent
+     * @return mixed
+     */
     public function getDeclinedOrdersCount($orderId, $fraudulent = false)
     {
         //Get any declined, or only fraudelent declined
@@ -176,11 +170,11 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-    * Delete a stored card
-    *
-    * @param   string $cardId
-    * @return  Stripe_Object
-    */
+     * Delete card
+     *
+     * @param $cardId
+     * @return bool
+     */
     public function deleteCard($cardId)
     {
         if($customer = $this->retrieveCustomer())
@@ -196,17 +190,18 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-    * Retrieve a stored card
-    *
-    * @param   string $cardId
-    * @return  Stripe_Object
-    */
+     * Retrieve card
+     *
+     * @param $cardId
+     * @return mixed
+     */
     public function retrieveCard($cardId)
     {
         if($customer = $this->retrieveCustomer())
         {
             return $customer->sources->retrieve($cardId);
         }
+
         return false;
     }
 

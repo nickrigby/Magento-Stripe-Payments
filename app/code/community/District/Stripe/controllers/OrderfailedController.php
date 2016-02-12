@@ -16,6 +16,9 @@ class District_Stripe_OrderfailedController extends Mage_Adminhtml_Controller_Ac
         $this->_initAction()->renderLayout();
     }
 
+    /**
+     * @return $this
+     */
     protected function _initAction()
     {
         $this->loadLayout()
@@ -26,6 +29,9 @@ class District_Stripe_OrderfailedController extends Mage_Adminhtml_Controller_Ac
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
     protected function _isAllowed()
     {
         return Mage::getSingleton('admin/session')->isAllowed('district/orderfailed');

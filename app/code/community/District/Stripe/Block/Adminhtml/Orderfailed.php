@@ -11,6 +11,9 @@
 
 class District_Stripe_Block_Adminhtml_Orderfailed extends Mage_Adminhtml_Block_Widget_Grid_Container
 {
+    /**
+     * District_Stripe_Block_Adminhtml_Orderfailed constructor.
+     */
     public function __construct()
     {
         $this->_blockGroup = 'stripe';
