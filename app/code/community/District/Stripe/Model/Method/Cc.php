@@ -313,12 +313,12 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         Mage::helper('stripe')->setApiKey();
 
         try {
-            $token = \Stripe\Token::retrieve(trim($tokenString));
+            return \Stripe\Token::retrieve(trim($tokenString));
         } catch (Exception $e) {
             Mage::throwException(Mage::helper('stripe')->__('Invalid token. Please try again.'));
         }
 
-        return $token;
+        return false;
     }
 
     /**
