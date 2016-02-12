@@ -437,13 +437,13 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         Mage::helper('stripe')->setApiKey();
 
         try {
-            $charge = \Stripe\Charge::retrieve($transactionId);
+            return \Stripe\Charge::retrieve($transactionId);
         } catch (Exception $e) {
             $message = $e->getMessage();
             Mage::throwException($message);
         }
 
-        return $charge;
+        return false;
     }
 
     /**
@@ -460,7 +460,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         Mage::helper('stripe')->setApiKey();
 
         try {
-            $refund = \Stripe\Refund::create(array(
+            return \Stripe\Refund::create(array(
                 'charge' => $transactionId,
                 'amount' => Mage::helper('stripe')->calculateCurrencyAmount($amount, $payment->getOrder()->getBaseCurrencyCode()),
             ));
@@ -469,7 +469,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
             Mage::throwException($message);
         }
 
-        return $refund;
+        return false;
     }
 
     /**
@@ -481,15 +481,14 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     */
     protected function _saveCard($customer)
     {
+        Mage::helper('stripe')->setApiKey();
+
         try {
 
             //Save the card
-            $card = $customer->sources->create(array(
+            return $customer->sources->create(array(
                 'source' => $this->_chargeData['source']
             ));
-
-            //Return the card
-            return $card;
 
         } catch (Exception $e) {
 
@@ -511,10 +510,12 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     */
     protected function _retrieveCard($customer, $card)
     {
+        Mage::helper('stripe')->setApiKey();
+
         try {
 
             //Get card info
-            $card = $customer->sources->retrieve($card);
+            return $customer->sources->retrieve($card);
 
         } catch (Exception $e) {
 
@@ -522,6 +523,6 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
 
         }
 
-        return $card;
+        return false;
     }
 }
