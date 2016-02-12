@@ -207,6 +207,7 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
         {
             return $customer->sources->retrieve($cardId);
         }
+        return false;
     }
 
 }
