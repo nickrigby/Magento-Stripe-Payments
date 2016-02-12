@@ -336,7 +336,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         Mage::helper('stripe')->setApiKey();
 
         //Save card?
-        if(isset($_POST['stripeSaveCard'])) {
+        if(isset($_POST['stripeSaveCard']) && $_POST['stripeSavedCard'] === '') {
 
             if(isset($_POST['isStripeCustomer'])) { //Stripe customer
 
@@ -344,11 +344,11 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
                 $customer = Mage::helper('stripe')->retrieveCustomer();
 
                 //Save the card
-                $card = $this->_saveCard($customer);
-
-                //Set charge data
-                $this->_chargeData['customer'] = $customer->id;
-                $this->_chargeData['source'] = $card->id;
+                if($card = $this->_saveCard($customer)) {
+                    //Set charge data
+                    $this->_chargeData['customer'] = $customer->id;
+                    $this->_chargeData['source'] = $card->id;
+                }
 
             } else {
 
@@ -488,6 +488,9 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
                 'source' => $this->_chargeData['source']
             ));
 
+            //Return the card
+            return $card;
+
         } catch (Exception $e) {
 
             //Fail gracefully, don't stop transaction
@@ -495,7 +498,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
 
         }
 
-        return $card;
+        return false;
     }
 
     /**
