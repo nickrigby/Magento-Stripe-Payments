@@ -83,7 +83,9 @@ district.stripeCc = function ($) {
             if ($(this).val() === '') {
                 $('#stripe-cards-select-new').show();
                 $inputs.cardNumber.focus();
-                self.disableContinueBtn(true);
+                if(self.newTokenRequired()) {
+                    self.disableContinueBtn(true);
+                }
             } else {
                 $('#stripe-cards-select-new').hide();
                 self.disableContinueBtn(false);

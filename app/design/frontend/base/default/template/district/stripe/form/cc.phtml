@@ -43,9 +43,9 @@ if($cust = Mage::helper('stripe')->retrieveCustomer()) {
         <ol id="stripe-cards-select-saved">
             <li>
                 <?php foreach($cards as $card): ?>
-                <label class="district-label"><input type="radio" name="stripeSavedCard" value="<?php echo $card->id; ?>"> <span class="district-cc district-cc-<?php echo $helper->getClassByName($card->brand); ?>" title="<?php echo $card->brand; ?>"><?php echo $card->brand; ?></span> <strong><?php echo $card->brand; ?></strong> ending in <?php echo $card->last4; ?> (<?php echo $card->exp_month . '/' . substr($card->exp_year, 2); ?>)</label>
+                <label class="district-label"><input type="radio" name="stripeSavedCard" value="<?php echo $card->id; ?>"> <span class="district-cc district-cc-<?php echo $helper->getClassByName($card->brand); ?>" title="<?php echo $card->brand; ?>"><?php echo $card->brand; ?></span> Ending in <strong><?php echo $card->last4; ?></strong> (<?php echo $card->exp_month . '/' . substr($card->exp_year, 2); ?>)</label>
                 <?php endforeach; ?>
-                <label class="district-label"><input type="radio" name="stripeSavedCard" value=""> <strong>New card</strong></label>
+                <label class="district-label"><input type="radio" name="stripeSavedCard" value=""> <span class="district-cc">New card</span> <strong>New card</strong></label>
             </li>
         </ol>
         <?php endif; ?>
