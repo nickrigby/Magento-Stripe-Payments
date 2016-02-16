@@ -13,33 +13,7 @@ $isStripeCustomer = false;
 $savedCards = false;
 $acceptedCards = Mage::getStoreConfig('payment/stripe_cc/cctype');
 $acceptedCardsArr = explode(',', $acceptedCards);
-$cardsMap = array(
-    'VI' => array(
-        'label' => 'Visa',
-        'class' => 'visa',
-    ),
-    'MC' => array(
-        'label' => 'Mastercard',
-        'class' => 'mastercard',
-    ),
-    'AE' => array(
-        'label' => 'American Express',
-        'class' => 'amex',
-    ),
-    'DI' => array(
-        'label' => 'Discover',
-        'class' => 'discover',
-    ),
-    'DC' => array(
-        'label' => 'Diners Club',
-        'class' => 'dinersclub',
-    ),
-    'JCB' => array(
-        'label' => 'JCB',
-        'class' => 'jcb',
-    ),
-
-);
+$helper = Mage::helper('stripe');
 
 //If customer exists in Stripe
 if($cust = Mage::helper('stripe')->retrieveCustomer()) {
@@ -68,29 +42,24 @@ if($cust = Mage::helper('stripe')->retrieveCustomer()) {
         <?php if($savedCards): ?>
         <ol id="stripe-cards-select-saved">
             <li>
-                <label for="stripe-saved-card" class="reader-visible"><?php echo $this->__('Choose card'); ?></label>
-                <select id="stripe-saved-card" name="stripeSavedCard">
-                    <?php foreach($cards as $card): ?>
-                    <option value="<?php echo $card->id; ?>">
-                        <?php echo $card->brand; ?> ****<?php echo $card->last4; ?> (<?php echo $card->exp_month . '/' . $card->exp_year; ?>)
-                    </option>
-                    <?php endforeach; ?>
-                    <option value=""><?php echo $this->__('New card'); ?></option>
-                </select>
+                <?php foreach($cards as $card): ?>
+                <label class="district-label"><input type="radio" name="stripeSavedCard" value="<?php echo $card->id; ?>"> <span class="district-cc district-cc-<?php echo $helper->getClassByName($card->brand); ?>" title="<?php echo $card->brand; ?>"><?php echo $card->brand; ?></span> <strong><?php echo $card->brand; ?></strong> ending in <?php echo $card->last4; ?> (<?php echo $card->exp_month . '/' . substr($card->exp_year, 2); ?>)</label>
+                <?php endforeach; ?>
+                <label class="district-label"><input type="radio" name="stripeSavedCard" value=""> <strong>New card</strong></label>
             </li>
         </ol>
         <?php endif; ?>
         <ol id="stripe-cards-select-new" <?php if($savedCards): ?> style="display:none;"<?php endif; ?>>
             <li>
-                <label for="stripe_cc_number" class="reader-visible"><?php echo $this->__('Card Number'); ?></label>
+                <label for="stripe_cc_number" class="district-label_placeholder"><?php echo $this->__('Card Number'); ?></label>
                 <input id="stripe_cc_number" type="tel" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('Card Number'); ?>" data-stripe="number" size="20">
             </li>
-            <li class="float">
-                <label for="stripe_cc_exp" class="reader-visible"><?php echo $this->__('Expiry Date'); ?></label>
+            <li class="district-float">
+                <label for="stripe_cc_exp" class="district-label_placeholder"><?php echo $this->__('Expiry'); ?></label>
                 <input id="stripe_cc_exp" type="tel" x-autocompletetype="off" autocompletetype="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="MM / YY" size="5" data-stripe="exp">
             </li>
-            <li class="float">
-                <label for="stripe_cc_cvc" class="reader-visible"><?php echo $this->__('CVC'); ?></label>
+            <li class="district-float">
+                <label for="stripe_cc_cvc" class="district-label_placeholder"><?php echo $this->__('CVC'); ?></label>
                 <input id="stripe_cc_cvc" type="tel" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('CVC'); ?>" data-stripe="cvc" size="4" maxlength="4">
             </li>
             <?php if(Mage::getSingleton('customer/session')->isLoggedIn() && Mage::getStoreConfig('payment/stripe_cc/save_cc_enabled')): ?>
@@ -103,9 +72,9 @@ if($cust = Mage::helper('stripe')->retrieveCustomer()) {
 
     <?php if(sizeof($acceptedCardsArr) > 0): ?>
     <div id="stripe-cards-info">
-    <?php foreach($cardsMap as $cardKey => $cardInfo): ?>
-    <?php if(in_array($cardKey, $acceptedCardsArr)): ?>
-        <span class="district-cc district-cc-<?php echo $cardInfo['class']; ?>" title="<?php echo $cardInfo['label']; ?>"><?php echo $cardInfo['label']; ?></span>
+    <?php foreach($acceptedCardsArr as $code): ?>
+    <?php if($card = $helper->getCardInfoByCode($code)): ?>
+        <span class="district-cc district-cc-<?php echo $card['class']; ?>" title="<?php echo $card['label']; ?>"><?php echo $card['label']; ?></span>
     <?php endif ;?>
     <?php endforeach; ?>
     </div>

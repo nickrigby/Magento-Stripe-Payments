@@ -18,15 +18,15 @@ $acceptedCards = Mage::getStoreConfig('payment/stripe_cc/cctype');
     <div id="stripe-error-messages"></div>
     <ol id="stripe-cards-select-new">
         <li>
-            <label for="stripe_cc_number" class="reader-visible"><?php echo $this->__('Card Number'); ?></label>
+            <label for="stripe_cc_number" class="district-label_placeholder"><?php echo $this->__('Card Number'); ?></label>
             <input id="stripe_cc_number" type="tel" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('Card Number'); ?>" data-stripe="number" size="20">
         </li>
-        <li class="float">
-            <label for="stripe_cc_exp" class="reader-visible"><?php echo $this->__('Expiry Date'); ?></label>
+        <li class="district-float">
+            <label for="stripe_cc_exp" class="district-label_placeholder"><?php echo $this->__('Expiry Date'); ?></label>
             <input id="stripe_cc_exp" type="tel" x-autocompletetype="off" autocompletetype="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="MM / YY" size="5" data-stripe="exp">
         </li>
-        <li class="float">
-            <label for="stripe_cc_cvc" class="reader-visible"><?php echo $this->__('CVC'); ?></label>
+        <li class="district-float">
+            <label for="stripe_cc_cvc" class="district-label_placeholder"><?php echo $this->__('CVC'); ?></label>
             <input id="stripe_cc_cvc" type="tel" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('CVC'); ?>" data-stripe="cvc" size="4" maxlength="4">
         </li>
     </ol>

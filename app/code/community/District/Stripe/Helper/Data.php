@@ -205,4 +205,62 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
         return false;
     }
 
+    /**
+     * Get card description and class based on Magento card code
+     *
+     * @param $code
+     * @return mixed
+     */
+    public function getCardInfoByCode($code)
+    {
+        $cards = array(
+            'VI' => array(
+                'label' => 'Visa',
+                'class' => 'visa',
+            ),
+            'MC' => array(
+                'label' => 'Mastercard',
+                'class' => 'mastercard',
+            ),
+            'AE' => array(
+                'label' => 'American Express',
+                'class' => 'amex',
+            ),
+            'DI' => array(
+                'label' => 'Discover',
+                'class' => 'discover',
+            ),
+            'DC' => array(
+                'label' => 'Diners Club',
+                'class' => 'dinersclub',
+            ),
+            'JCB' => array(
+                'label' => 'JCB',
+                'class' => 'jcb',
+            ),
+        );
+
+        return (isset($cards[$code])) ? $cards[$code] : false;
+    }
+
+    /**
+     * @param $name
+     * @return string
+     */
+    public function getClassByName($name)
+    {
+        $name = strtolower($name);
+
+        $cards = array(
+            'visa' => 'visa',
+            'mastercard' => 'mastercard',
+            'american express' => 'amex',
+            'discover' => 'discover',
+            'diners club' => 'dinersclub',
+            'jcb' => 'jcb',
+        );
+
+        return (isset($cards[$name])) ? $cards[$name] : '';
+    }
+
 }

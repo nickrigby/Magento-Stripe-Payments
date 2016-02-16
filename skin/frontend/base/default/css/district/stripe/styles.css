@@ -32,13 +32,19 @@
     margin-bottom: .5em;
 }
 
+#payment_form_stripe_cc #stripe-cards-select-new {
+    padding: 10px;
+    background: #fafafa;
+    margin-top: -6px;
+}
+
 #payment_form_stripe_cc #stripe-cards-select-new:after {
     content: "";
     display: table;
     clear: both;
 }
 
-#payment_form_stripe_cc .reader-visible {
+#payment_form_stripe_cc .district-reader_visible {
     position: absolute;
     left: -10000px;
     top: auto;
@@ -47,24 +53,37 @@
     overflow: hidden;
 }
 
+#payment_form_stripe_cc .district-label_placeholder {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    color: #bbb;
+    z-index: 10;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity .25s ease-in-out;
+}
+
 #payment_form_stripe_cc input[type=tel] {
     position: relative;
-    height: 37px;
+    height: auto;
     border-radius: 4px;
-    padding: 0 6px 2px 6px;
+    padding: 13px 10px 13px 10px;
     font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
-    font-size: 15px;
+    font-size: 14px;
+    line-height: 18px;
     box-sizing: border-box;
     background: #fff;
-    border: 1px solid #ccc;
+    border: 1px solid #d9d9d9;
     background-repeat: no-repeat;
-    background-position: 97% 50%;
+    background-position: 97% 78%;
     max-width: none;
     transition: border .25s ease-in-out;
 }
 
 #payment_form_stripe_cc input[type=tel]:focus {
     outline: 0;
+    border-color: #000;
 }
 
 #payment_form_stripe_cc input[type=tel]::-ms-clear {
@@ -72,30 +91,27 @@
 }
 
 #payment_form_stripe_cc ol li {
+    position: relative;
     margin: 0;
 }
 
+#payment_form_stripe_cc .district-show_label label {
+    opacity: 1;
+}
+
+#payment_form_stripe_cc .district-show_label input[type=tel] {
+    padding-top: 21px;
+    padding-bottom: 5px;
+}
+
 #payment_form_stripe_cc #stripe_cc_number {
-    width: 200px;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    margin-bottom: -1px;
+    width: 205px;
     background-size: 32px 20px;
 }
 
-#payment_form_stripe_cc #stripe_cc_exp {
-    width: 100px;
-    border-top-right-radius: 0;
-    border-top-left-radius: 0;
-    border-bottom-right-radius: 0;
-}
-
+#payment_form_stripe_cc #stripe_cc_exp,
 #payment_form_stripe_cc #stripe_cc_cvc {
-    width: 101px;
-    border-top-right-radius: 0;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    margin-left: -1px !important; /* For IWD onepage */
+    width: 100px;
 }
 
 .district-cc-visa,
@@ -128,34 +144,50 @@
     background-image: url(../../../images/district/stripe/dinersclub.png);
 }
 
-#payment_form_stripe_cc .has-error input {
-    border-color: #f00 !important;
-    z-index: 5 !important;
+#payment_form_stripe_cc .district-has-error {
+    animation: shake 0.5s ease-in-out;
 }
 
-#payment_form_stripe_cc .float {
+#payment_form_stripe_cc .district-has-error label {
+    color: #c00;
+}
+
+#payment_form_stripe_cc .district-float {
     position: relative;
     float: left;
     z-index: 2;
+    margin-top: 5px;
 }
 
-#payment_form_stripe_cc .has-error {
-    z-index: 5 !important;
+#payment_form_stripe_cc .district-float + .district-float {
+    margin-left: 5px;
+}
+
+#payment_form_stripe_cc .district-label {
+    display: block;
+    margin: 6px 0;
+    font-weight: 400;
+    border: 1px solid #eee;
+    padding: 10px;
+}
+
+#payment_form_stripe_cc .district-label.district-label-active {
+    border-color: #d9d9d9;
+    background-color: #f9f9f9;
+}
+
+#payment_form_stripe_cc .district-label input {
+    margin-right: 3px;
 }
 
 #payment_form_stripe_cc #stripe-cards-select-save {
     display: block;
-    position: relative;
-    top: -4px;
-    z-index: 1;
     clear: both;
-    width: 200px;
-    box-sizing: border-box;
-    padding: 10px 6px 6px;
-    background: #f1f1f1;
-    border-radius: 4px;
-    border-top-right-radius: 0;
-    border-top-left-radius: 0;
+    padding: 7px 3px 0;
+}
+
+#payment_form_stripe_cc #stripe-cards-select-save input {
+    margin-right: 3px;
 }
 
 .district-cc {
@@ -184,4 +216,30 @@
 
 .opc-index-index #payment_form_stripe_cc label {
     font-size: 1em;
+}
+
+@keyframes shake {
+    0% {
+        transform: translateX(0)
+    }
+
+    20% {
+        transform: translateX(-7px)
+    }
+
+    40% {
+        transform: translateX(7px)
+    }
+
+    60% {
+        transform: translateX(-7px)
+    }
+
+    80% {
+        transform: translateX(7px)
+    }
+
+    100% {
+        transform: translateX(0)
+    }
 }

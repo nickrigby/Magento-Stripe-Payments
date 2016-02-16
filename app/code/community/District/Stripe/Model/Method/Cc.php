@@ -1,4 +1,5 @@
 <?php
+
 /**
  * District Commerce
  *
@@ -8,30 +9,30 @@
  * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
  *
  */
-
-class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract {
+class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
+{
 
     protected $_code = 'stripe_cc';
     protected $_formBlockType = 'stripe/form_cc';
     protected $_infoBlockType = 'stripe/info_cc';
 
-    protected $_isGateway                   = true;
-    protected $_canOrder                    = true;
-    protected $_canAuthorize                = true;
-    protected $_canCapture                  = true;
-    protected $_canRefund                   = true;
-    protected $_canRefundInvoicePartial     = true;
-    protected $_canVoid                     = false; //No void through Stripe, use cancel instead
-    protected $_canUseInternal              = true;
-    protected $_canUseCheckout              = true;
-    protected $_canUseForMultishipping      = false; //Would require multiple tokens
-    protected $_isInitializeNeeded          = false;
-    protected $_canFetchTransactionInfo     = false; //Removes "get payment update" button for orders under review
-    protected $_canReviewPayment            = true;
-    protected $_canCreateBillingAgreement   = false;
-    protected $_canManageRecurringProfiles  = true;
-    protected $_canSaveCc                   = false;
-    protected $_isAvailable                 = true;
+    protected $_isGateway = true;
+    protected $_canOrder = true;
+    protected $_canAuthorize = true;
+    protected $_canCapture = true;
+    protected $_canRefund = true;
+    protected $_canRefundInvoicePartial = true;
+    protected $_canVoid = false; //No void through Stripe, use cancel instead
+    protected $_canUseInternal = true;
+    protected $_canUseCheckout = true;
+    protected $_canUseForMultishipping = false; //Would require multiple tokens
+    protected $_isInitializeNeeded = false;
+    protected $_canFetchTransactionInfo = false; //Removes "get payment update" button for orders under review
+    protected $_canReviewPayment = true;
+    protected $_canCreateBillingAgreement = false;
+    protected $_canManageRecurringProfiles = true;
+    protected $_canSaveCc = false;
+    protected $_isAvailable = true;
 
     //Charge data
     private $_chargeData = array();
@@ -65,7 +66,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         $lastTransaction = $payment->getTransaction($payment->getLastTransId());
 
         //Create the charge
-        if($lastTransaction && $lastTransaction->getTxnType() == Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH) { //If previously authorized
+        if ($lastTransaction && $lastTransaction->getTxnType() == Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH) { //If previously authorized
             $charge = $this->_retrieveCharge($payment->getCcTransId());
 
             try {
@@ -149,7 +150,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         parent::validate();
 
         //Are we validating a new card or saved card?
-        if(isset($_POST['stripeSavedCard']) && !empty($_POST['stripeSavedCard'])) { //Saved card
+        if (isset($_POST['stripeSavedCard']) && !empty($_POST['stripeSavedCard'])) { //Saved card
 
             //Get customer
             $customer = Mage::helper('stripe')->retrieveCustomer();
@@ -164,7 +165,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
             //Add card details to quote
             $this->_addCardToQuote($card);
 
-        } else if(isset($_POST['stripeToken']) && !empty($_POST['stripeToken'])) { //New card
+        } elseif (isset($_POST['stripeToken']) && !empty($_POST['stripeToken'])) { //New card
 
             //Token was set with stripe.js, so retrieve it
             $token = $this->_retrieveToken($_POST['stripeToken']);
@@ -238,7 +239,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         $payment->setcc_cid_status($charge->source->cvc_check); //CID = CVC
 
         //Did we detect fraud on this order?
-        if(Mage::helper('stripe')->getDeclinedOrdersCount($payment->getOrder()->getIncrementId(), true) > 0) {
+        if (Mage::helper('stripe')->getDeclinedOrdersCount($payment->getOrder()->getIncrementId(), true) > 0) {
             $payment->setIsFraudDetected(true);
         }
 
@@ -320,15 +321,15 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         Mage::helper('stripe')->setApiKey();
 
         //Save card?
-        if(isset($_POST['stripeSaveCard']) && $_POST['stripeSavedCard'] === '') {
+        if (isset($_POST['stripeSaveCard']) && $_POST['stripeSavedCard'] === '') {
 
-            if(isset($_POST['isStripeCustomer'])) { //Stripe customer
+            if (isset($_POST['isStripeCustomer'])) { //Stripe customer
 
                 //Get the customer
                 $customer = Mage::helper('stripe')->retrieveCustomer();
 
                 //Save the card
-                if($card = $this->_saveCard($customer)) {
+                if ($card = $this->_saveCard($customer)) {
                     //Set charge data
                     $this->_chargeData['customer'] = $customer->id;
                     $this->_chargeData['source'] = $card->id;
@@ -367,32 +368,32 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
             $additionalInfo = array();
 
             //Set error type
-            if(isset($error['type'])) {
+            if (isset($error['type'])) {
                 $additionalInfo['type'] = $error['type'];
             }
 
             //Set error code
-            if(isset($error['code'])) {
+            if (isset($error['code'])) {
                 $additionalInfo['code'] = $error['code'];
 
                 //Append _fraudulent to code if decline code is set
-                if(isset($error['decline_code']) && $error['decline_code'] === 'fraudulent') {
+                if (isset($error['decline_code']) && $error['decline_code'] === 'fraudulent') {
                     $additionalInfo['code'] .= '_fraudulent';
                 }
             }
 
             //Set charge token
-            if(isset($error['charge'])) {
+            if (isset($error['charge'])) {
                 $additionalInfo['token'] = $error['charge'];
             }
 
             //Set message
-            if(isset($error['message'])) {
+            if (isset($error['message'])) {
                 $additionalInfo['message'] = $error['message'];
             }
 
             //Save error in additional info column
-            if(!empty($additionalInfo)) {
+            if (!empty($additionalInfo)) {
                 Mage::getSingleton('checkout/session')->getQuote()->getPayment()->setAdditionalInformation($additionalInfo);
             }
 
