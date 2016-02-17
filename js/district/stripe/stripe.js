@@ -438,9 +438,12 @@ district.stripeCc = function ($) {
     self.stripeResponseHandler = function (status, response) {
 
         //Handle response
-        if (response.error) {
-            $('#stripe-error-messages').html(response.error.message);
+        if (status !== 200 || response.error) {
+            $('#stripe-cards-select-new').prepend('<p class="district-error">'+response.error.message+'</p>');
         } else {
+
+            //Remove any previous errors
+            $('#stripe-cards-select-new .district-error').remove();
 
             //Save token values
             tokenValues.cardNumber = $.trim($inputs.cardNumber.val());

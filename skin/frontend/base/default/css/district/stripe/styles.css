@@ -28,10 +28,6 @@
 
 }
 
-#payment_form_stripe_cc #stripe-cards-select-saved {
-    margin-bottom: .5em;
-}
-
 #payment_form_stripe_cc #stripe-cards-select-new {
     padding: 10px;
     background: #fafafa;
@@ -148,6 +144,7 @@
     animation: shake 0.5s ease-in-out;
 }
 
+#payment_form_stripe_cc .district-error,
 #payment_form_stripe_cc .district-has-error label {
     color: #c00;
 }

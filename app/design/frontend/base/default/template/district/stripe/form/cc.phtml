@@ -38,7 +38,6 @@ if($cust = Mage::helper('stripe')->retrieveCustomer()) {
         <?php if($isStripeCustomer): ?>
         <input type="hidden" name="isStripeCustomer" value="1">
         <?php endif; ?>
-        <div id="stripe-error-messages"></div>
         <?php if($savedCards): ?>
         <ol id="stripe-cards-select-saved">
             <li>
@@ -50,6 +49,7 @@ if($cust = Mage::helper('stripe')->retrieveCustomer()) {
         </ol>
         <?php endif; ?>
         <div id="stripe-cards-select-new" <?php if($savedCards): ?> style="display:none;"<?php endif; ?>>
+            <p id="stripe-error-messages"></p>
             <ol>
                 <li>
                     <label for="stripe_cc_number" class="district-label_placeholder"><?php echo $this->__('Card Number'); ?></label>
