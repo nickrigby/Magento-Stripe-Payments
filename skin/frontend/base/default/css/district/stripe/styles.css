@@ -207,12 +207,7 @@
 /* IWD Onepage overrides */
 
 .opc-index-index #payment_form_stripe_cc #stripe-cards-info {
-    position: static;
-    padding: 10px 0;
-}
-
-.opc-index-index #payment_form_stripe_cc label {
-    font-size: 1em;
+    display: none;
 }
 
 @keyframes shake {
