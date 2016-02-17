@@ -49,25 +49,27 @@ if($cust = Mage::helper('stripe')->retrieveCustomer()) {
             </li>
         </ol>
         <?php endif; ?>
-        <ol id="stripe-cards-select-new" <?php if($savedCards): ?> style="display:none;"<?php endif; ?>>
-            <li>
-                <label for="stripe_cc_number" class="district-label_placeholder"><?php echo $this->__('Card Number'); ?></label>
-                <input id="stripe_cc_number" type="tel" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('Card Number'); ?>" data-stripe="number" size="20">
-            </li>
-            <li class="district-float">
-                <label for="stripe_cc_exp" class="district-label_placeholder"><?php echo $this->__('Expiry'); ?></label>
-                <input id="stripe_cc_exp" type="tel" x-autocompletetype="off" autocompletetype="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="MM / YY" size="5" data-stripe="exp">
-            </li>
-            <li class="district-float">
-                <label for="stripe_cc_cvc" class="district-label_placeholder"><?php echo $this->__('CVC'); ?></label>
-                <input id="stripe_cc_cvc" type="tel" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('CVC'); ?>" data-stripe="cvc" size="4" maxlength="4">
-            </li>
-            <?php if(Mage::getSingleton('customer/session')->isLoggedIn() && Mage::getStoreConfig('payment/stripe_cc/save_cc_enabled')): ?>
-            <li id="stripe-cards-select-save">
-                <label><input type="checkbox" name="stripeSaveCard" /> <?php echo $this->__('Save card'); ?></label>
-            </li>
-            <?php endif; ?>
-        </ol>
+        <div id="stripe-cards-select-new" <?php if($savedCards): ?> style="display:none;"<?php endif; ?>>
+            <ol>
+                <li>
+                    <label for="stripe_cc_number" class="district-label_placeholder"><?php echo $this->__('Card Number'); ?></label>
+                    <input id="stripe_cc_number" type="tel" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('Card Number'); ?>" data-stripe="number" size="20">
+                </li>
+                <li class="district-float">
+                    <label for="stripe_cc_exp" class="district-label_placeholder"><?php echo $this->__('Expiry'); ?></label>
+                    <input id="stripe_cc_exp" type="tel" x-autocompletetype="off" autocompletetype="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="MM / YY" size="5" data-stripe="exp">
+                </li>
+                <li class="district-float">
+                    <label for="stripe_cc_cvc" class="district-label_placeholder"><?php echo $this->__('CVC'); ?></label>
+                    <input id="stripe_cc_cvc" type="tel" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('CVC'); ?>" data-stripe="cvc" size="4" maxlength="4">
+                </li>
+                <?php if(Mage::getSingleton('customer/session')->isLoggedIn() && Mage::getStoreConfig('payment/stripe_cc/save_cc_enabled')): ?>
+                    <li id="stripe-cards-select-save">
+                        <label><input type="checkbox" name="stripeSaveCard" /> <?php echo $this->__('Save card'); ?></label>
+                    </li>
+                <?php endif; ?>
+            </ol>
+        </div>
     </div>
 
     <?php if(sizeof($acceptedCardsArr) > 0): ?>
