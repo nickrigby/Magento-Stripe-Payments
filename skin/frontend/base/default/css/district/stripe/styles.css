@@ -161,6 +161,7 @@
 }
 
 #payment_form_stripe_cc .district-label {
+    float: none;
     display: block;
     margin: 3px 0;
     font-weight: 400;
