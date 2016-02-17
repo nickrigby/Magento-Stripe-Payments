@@ -321,7 +321,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         Mage::helper('stripe')->setApiKey();
 
         //Save card?
-        if (isset($_POST['stripeSaveCard']) && $_POST['stripeSavedCard'] === '') {
+        if (isset($_POST['stripeSaveCard']) && ($_POST['stripeSavedCard'] === '' || !isset($_POST['stripeSavedCard']) )) {
 
             if (isset($_POST['isStripeCustomer'])) { //Stripe customer
 
