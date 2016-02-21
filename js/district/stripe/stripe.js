@@ -82,9 +82,11 @@ district.stripeCc = function ($) {
 
             if ($(this).val() === '') {
                 $('#stripe-cards-select-new').show();
-                $inputs.cardNumber.focus();
                 if(self.newTokenRequired()) {
                     self.disableContinueBtn(true);
+                }
+                if(!self.isIE()) {
+                    $inputs.cardNumber.focus();
                 }
             } else {
                 $('#stripe-cards-select-new').hide();
@@ -458,6 +460,10 @@ district.stripeCc = function ($) {
         }
 
     };
+
+    self.isIE = function() {
+        return (window.navigator.userAgent.indexOf('MSIE ') > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) ? true : false;
+    }
 
     return self;
 
