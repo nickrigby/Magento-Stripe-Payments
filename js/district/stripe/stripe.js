@@ -441,7 +441,11 @@ district.stripeCc = function ($) {
 
         //Handle response
         if (status !== 200 || response.error) {
-            $('#stripe-cards-select-new').prepend('<p class="district-error">'+response.error.message+'</p>');
+            $('#stripe-cards-select-new')
+                .find('.district-error')
+                .remove()
+                .end()
+                .prepend('<p class="district-error">'+response.error.message+'</p>');
         } else {
 
             //Remove any previous errors
