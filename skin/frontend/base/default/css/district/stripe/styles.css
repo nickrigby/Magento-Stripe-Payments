@@ -56,6 +56,7 @@
     color: #bbb;
     z-index: 10;
     font-size: 12px;
+    font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
     opacity: 0;
     transition: opacity .25s ease-in-out;
 }
