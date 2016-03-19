@@ -151,6 +151,17 @@
         </routers>
     </admin>
     <adminhtml>
+        <events>
+            <core_block_abstract_to_html_before>
+                <observers>
+                    <sales_order_grid_transaction_state>
+                        <type>model</type>
+                        <class>District_Stripe_Model_Observer</class>
+                        <method>addStatusToSalesOrderGrid</method>
+                    </sales_order_grid_transaction_state>
+                </observers>
+            </core_block_abstract_to_html_before>
+        </events>
         <layout>
             <updates>
                 <stripe>
