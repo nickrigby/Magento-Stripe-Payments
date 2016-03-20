@@ -397,13 +397,13 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
                 Mage::getSingleton('checkout/session')->getQuote()->getPayment()->setAdditionalInformation($additionalInfo);
             }
 
-            //Throw the error
-            Mage::throwException(Mage::helper('stripe')->__($error['message']));
+            //Throw payment error
+            throw new Mage_Payment_Model_Info_Exception(Mage::helper('stripe')->__($error['message']));
 
         } catch (Exception $e) {
 
-            //Throw the error
-            Mage::throwException(Mage::helper('stripe')->__($e->getMessage()));
+            //Throw payment error
+            throw new Mage_Payment_Model_Info_Exception(Mage::helper('stripe')->__($e->getMessage()));
 
         }
 
