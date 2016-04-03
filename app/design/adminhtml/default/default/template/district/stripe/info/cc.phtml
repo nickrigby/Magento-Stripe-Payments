@@ -20,7 +20,7 @@
 $payment = $this->getInfo();
 
 //Get order info
-$order = Mage::getModel('sales/order')->load($payment->getEntityId());
+$order = $payment->getOrder();
 
 //Address verification is stored in two parts (line1/zip)
 $avsStatus = explode('/', $payment->getCcAvsStatus());
