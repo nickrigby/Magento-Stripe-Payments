@@ -398,20 +398,12 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
             }
 
             //Throw payment error
-            if (version_compare(Mage::getVersion(), '1.5', '>=')) {
-                throw new Mage_Payment_Model_Info_Exception(Mage::helper('stripe')->__($error['message']));
-            } else {
-                Mage::throwException(Mage::helper('stripe')->__($error['message']));
-            }
+            throw new Mage_Payment_Model_Info_Exception(Mage::helper('stripe')->__($error['message']));
 
         } catch (Exception $e) {
 
             //Throw payment error
-            if (version_compare(Mage::getVersion(), '1.5', '>=')) {
-                throw new Mage_Payment_Model_Info_Exception(Mage::helper('stripe')->__($error['message']));
-            } else {
-                Mage::throwException(Mage::helper('stripe')->__($error['message']));
-            }
+            throw new Mage_Payment_Model_Info_Exception(Mage::helper('stripe')->__($error['message']));
 
         }
 
