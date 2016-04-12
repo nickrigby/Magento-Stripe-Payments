@@ -15,7 +15,6 @@ district.stripeCc = function ($) {
     var self = {},
         $inputs = {},
         inputsStr = '',
-        mageValidateParent,
         address = {},
         cardsMap = {
             AE: 'amex',
@@ -25,15 +24,10 @@ district.stripeCc = function ($) {
             MC: 'mastercard',
             VI: 'visa'
         },
-        allowedCards = [],
-        tokenValues = {
-            cardNumber: '',
-            cardExpiry: '',
-            cardCVC: ''
-        };
+        allowedCards = [];
 
     /**
-     * Initialize the form
+     * Initialize the module
      *
      * @param enabledCards
      */
@@ -42,60 +36,31 @@ district.stripeCc = function ($) {
         //Setup enabled cards (specified in Magento Stripe config)
         self.setupEnabledCards(enabledCards);
 
-        //Shortcut to elements
-        $inputs.cardNumber = $('input#stripe_cc_number');
-        $inputs.cardExpiry = $('input#stripe_cc_exp');
-        $inputs.cardCVC = $('input#stripe_cc_cvc');
-        $inputs.cardToken = $('input#stripe_token');
-        $inputs.savedCard = $('input[name=stripeSavedCard]');
-        $inputs.continueBtn = $('#payment-buttons-container button:first');
+        //Initialize variables
+        self.initVars();
 
-        //Set input mask for each field
-        $inputs.cardNumber.payment('formatCardNumber');
-        $inputs.cardExpiry.payment('formatCardExpiry');
-        $inputs.cardCVC.payment('formatCardCVC');
+        //Set input mask for card fields
+        self.createInputMasks();
 
-        //Inputs String
-        inputsStr = 'input#stripe_cc_number, input#stripe_cc_exp, input#stripe_cc_cvc';
+        //Listener for payment method toggle
+        self.paymentMethodListener();
 
-        //Toggles error class based on validation result
-        $.fn.toggleInputError = function (valid) {
-            if(this.val().length) {
-                this.parent().toggleClass('district-has-error', !valid);
-            }
-            return this;
-        };
-
-        //If no saved cards available, disable continue button by default
-        if (!$inputs.savedCard.length) {
-            self.disableContinueBtn(true);
-        }
-
-        //Toggle new card form
-        $inputs.savedCard.change(function () {
-
-            $inputs.savedCard
-                .parent()
-                .removeClass('district-label-active')
-                .end()
-                .filter($(this)).parent().addClass('district-label-active');
-
-            if ($(this).val() === '') {
-                $('#stripe-cards-select-new').show();
-                if(self.newTokenRequired()) {
-                    self.disableContinueBtn(true);
-                }
-                if(!self.isIE()) {
-                    $inputs.cardNumber.focus();
-                }
-            } else {
-                $('#stripe-cards-select-new').hide();
-                self.disableContinueBtn(false);
-            }
-        });
+        //Toggles new card form
+        self.toggleNewCard();
 
         //Validation Listener
         self.cardValidationListener();
+
+        //Setup payment controller
+        self.paymentController();
+
+    };
+
+    /**
+     * Controller for payment
+     *
+     */
+    self.paymentController = function() {
 
         //If frontend payment
         if (typeof Payment !== 'undefined') {
@@ -120,6 +85,102 @@ district.stripeCc = function ($) {
             AdminOrder.prototype.getPaymentData = AdminOrder.prototype.getPaymentData.wrap(self.paymentDataChange);
 
         }
+
+    };
+
+    /**
+     * Validation error function
+     *
+     * @param valid
+     * @returns {$.fn}
+     */
+    $.fn.toggleInputError = function (valid) {
+        if(this.val().length) {
+            this.parent().toggleClass('district-has-error', !valid);
+        }
+        return this;
+    };
+
+    /**
+     * Toggles new card form
+     *
+     */
+    self.toggleNewCard = function() {
+
+        //Toggle new card form
+        $inputs.savedCard.change(function () {
+
+            $inputs.savedCard
+                .parent()
+                .removeClass('district-label-active')
+                .end()
+                .filter($(this)).parent().addClass('district-label-active');
+
+            if ($(this).val() === '') {
+                $('#stripe-cards-select-new').show();
+                if(self.newTokenRequired()) {
+                    self.disableContinueBtn(true);
+                }
+                if(!self.isIE()) {
+                    $inputs.cardNumber.focus();
+                }
+            } else {
+                $('#stripe-cards-select-new').hide();
+                self.disableContinueBtn(false);
+            }
+        });
+
+    };
+
+    /**
+     * Listens for payment method change
+     *
+     */
+    self.paymentMethodListener = function() {
+
+        //On initial load
+        if(self.newTokenRequired()) {
+            self.disableContinueBtn(true);
+        }
+
+        //Toggle continue button on payment method change
+        $('input[name=payment\\[method\\]]').click(function() {
+            self.disableContinueBtn(true);
+        });
+
+    };
+
+    /**
+     * Initialize class variables
+     *
+     */
+    self.initVars = function() {
+
+        //Elements
+        $inputs.cardNumber = $('input#stripe_cc_number');
+        $inputs.cardExpiry = $('input#stripe_cc_exp');
+        $inputs.cardCVC = $('input#stripe_cc_cvc');
+        $inputs.cardToken = $('input#stripe_token');
+        $inputs.savedCard = $('input[name=stripeSavedCard]');
+        $inputs.continueBtn = $('#payment-buttons-container button:first');
+
+        //Inputs String
+        inputsStr = 'input#stripe_cc_number, input#stripe_cc_exp, input#stripe_cc_cvc';
+
+        //Token
+        self.tokenValues = {
+            cardNumber: 0,
+            cardExpiry: 0,
+            cardCVC: 0
+        };
+
+    };
+
+    self.createInputMasks = function() {
+
+        $inputs.cardNumber.payment('formatCardNumber');
+        $inputs.cardExpiry.payment('formatCardExpiry');
+        $inputs.cardCVC.payment('formatCardCVC');
 
     };
 
@@ -201,11 +262,17 @@ district.stripeCc = function ($) {
     };
 
     /**
-     * Disable continue button
+     * Toggle continue button
      *
      * @param state
      */
     self.disableContinueBtn = function (state) {
+
+        //If not stripe payment method, enable the continue button
+        if(typeof payment === 'undefined' || payment.currentMethod !== 'stripe_cc') {
+            state = false;
+        }
+
         $inputs.continueBtn.prop('disabled', state).toggleClass('disabled', state);
     };
 
@@ -291,10 +358,10 @@ district.stripeCc = function ($) {
      */
     self.newTokenRequired = function () {
 
-        //If any value is different from previous token values, it's a new card
-        if ($.trim($inputs.cardNumber.val()) !== tokenValues.cardNumber ||
-            $.trim($inputs.cardExpiry.val()) !== tokenValues.cardExpiry ||
-            $.trim($inputs.cardCVC.val()) !== tokenValues.cardCVC) {
+       //If any value is different from previous token values, it's a new card
+        if ($.trim($inputs.cardNumber.val()) !== self.tokenValues.cardNumber ||
+            $.trim($inputs.cardExpiry.val()) !== self.tokenValues.cardExpiry ||
+            $.trim($inputs.cardCVC.val()) !== self.tokenValues.cardCVC) {
             return true;
         } else {
             return false;
@@ -384,31 +451,27 @@ district.stripeCc = function ($) {
      */
     self.paymentSave = function (validateParent) {
 
-        //Save ref to magento parent function (we need it in stripe callback)
-        mageValidateParent = validateParent;
-
-        if ($inputs.savedCard.length && $inputs.savedCard.val() !== '') { //Existing card to be used
-
-            //Run Magento payment save function
-            mageValidateParent();
-
-        } else { //New card to be used
+        //If a new stripe card is being used
+        if (payment.currentMethod === 'stripe_cc' &&
+            $inputs.savedCard.length <= 0 &&
+            ($inputs.savedCard.val() == null || $inputs.savedCard.val() === '')) {
 
             //Check card is valid
-            if (!self.validCard()) {
-                return false;
+            if (self.validCard()) {
+
+                //Check card type is allowed
+                var cardType = $.payment.cardType($inputs.cardNumber.val());
+                if ($.inArray(cardType, allowedCards) < 0) {
+                    window.alert(Translator.translate('Sorry, ' + cardType + ' is not currently accepted. Please use a different card.').stripTags());
+                    return false;
+                }
+
             }
 
-            //Check card type is allowed
-            var cardType = $.payment.cardType($inputs.cardNumber.val());
-            if ($.inArray(cardType, allowedCards) < 0) {
-                window.alert(Translator.translate('Sorry, ' + cardType + ' is not currently accepted. Please use a different card.').stripTags());
-                return false;
-            }
-
-            //Run Magento payment save function
-            mageValidateParent();
         }
+
+        //Run Magento payment save function
+        validateParent();
 
     };
 
@@ -452,9 +515,9 @@ district.stripeCc = function ($) {
             $('#stripe-cards-select-new .district-error').remove();
 
             //Save token values
-            tokenValues.cardNumber = $.trim($inputs.cardNumber.val());
-            tokenValues.cardExpiry = $.trim($inputs.cardExpiry.val());
-            tokenValues.cardCVC = $.trim($inputs.cardCVC.val());
+            self.tokenValues.cardNumber = $.trim($inputs.cardNumber.val());
+            self.tokenValues.cardExpiry = $.trim($inputs.cardExpiry.val());
+            self.tokenValues.cardCVC = $.trim($inputs.cardCVC.val());
 
             //Add token to form
             $inputs.cardToken.val(response.id);
@@ -465,6 +528,11 @@ district.stripeCc = function ($) {
 
     };
 
+    /**
+     * Check if browser is IE
+     *
+     * @returns {boolean}
+     */
     self.isIE = function() {
         return (window.navigator.userAgent.indexOf('MSIE ') > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) ? true : false;
     }
