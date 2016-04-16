@@ -12,6 +12,7 @@
 class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
 {
     const DASHBOARD_PAYMENTS_URL = 'https://dashboard.stripe.com/payments/';
+    const API_VERSION = '2016-03-07';
 
     /**
      * Set Stripe API key
@@ -20,6 +21,7 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
     {
         try {
             \Stripe\Stripe::setApiKey(Mage::getStoreConfig('payment/stripe_cc/api_secret_key'));
+            \Stripe\Stripe::setApiVersion(self::API_VERSION);
         } catch (Exception $e) {
             Mage::throwException($this->__('Cannot set Stripe API key'));
         }
