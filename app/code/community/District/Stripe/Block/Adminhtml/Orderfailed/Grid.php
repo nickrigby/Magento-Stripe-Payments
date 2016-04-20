@@ -104,4 +104,17 @@ class District_Stripe_Block_Adminhtml_Orderfailed_Grid extends Mage_Adminhtml_Bl
 
         return parent::_prepareColumns();
     }
+
+    protected function _prepareMassaction()
+    {
+        $this->setMassactionIdField('order_id');
+        $this->getMassactionBlock()->setFormFieldName('failed_order_ids');
+        $this->getMassactionBlock()->addItem('delete', array(
+            'label' => $this->__('Delete'),
+            'url' => $this->getUrl('*/*/massDelete', array('' => '')),
+            'confirm' => $this->__('Are you sure?'),
+        ));
+
+        return $this;
+    }
 }
