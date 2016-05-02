@@ -60,7 +60,7 @@
                     <stripe>
                         <class>District_Stripe_Model_Observer_Orderfailed</class>
                         <type>singleton</type>
-                        <method>save</method>
+                        <method>orderFailed</method>
                     </stripe>
                 </observers>
             </sales_model_service_quote_submit_failure>
