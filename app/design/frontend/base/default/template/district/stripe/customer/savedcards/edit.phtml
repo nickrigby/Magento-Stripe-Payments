@@ -1,0 +1,48 @@
+<?php
+/**
+ * District Commerce
+ *
+ * @category    District
+ * @package     Stripe
+ * @author      District Commerce <support@districtcommerce.com>
+ * @copyright   Copyright (c) 2016 District Commerce (http://districtcommerce.com)
+ * @license     http://store.districtcommerce.com/license
+ *
+ */
+?>
+
+<div class="page-title">
+    <h1><?php echo $this->__('Edit Credit Card Address') ?></h1>
+</div>
+
+<form action="<?php echo $this->getSaveUrl() ?>" method="post" id="form-validate">
+    <div class="fieldset">
+        <?php echo $this->getBlockHtml('formkey')?>
+        <ul class="form-list">
+            <li class="fields">
+                <div class="field">
+                    <label for="address_line1" class="required"><em>*</em><?php echo $this->__('Address Line 1') ?></label>
+                    <div class="input-box">
+                        <input type="text" name="address_line1" value="<?php echo $card->address_line1; ?>" class="input-text required-entry" id="address_line1" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="address_zip" class="required"><em>*</em><?php echo $this->__('Zip') ?></label>
+                    <div class="input-box">
+                        <input type="text" name="address_zip" value="<?php echo $card->address_zip; ?>" class="input-text validate-zip-international required-entry" id="address_zip" />
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <div class="buttons-set">
+            <p class="required"><?php echo $this->__('* Required Fields') ?></p>
+            <p class="back-link"><a href="<?php echo $this->escapeUrl($this->getBackUrl()) ?>"><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+            <button data-action="save-customer-address" type="submit" title="<?php echo Mage::helper('core')->quoteEscape($this->__('Save Card Address')) ?>" class="button"><span><span><?php echo $this->__('Save Card Address') ?></span></span></button>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+//<![CDATA[
+    var dataForm = new VarienForm('form-validate');
+//]]>
+</script>

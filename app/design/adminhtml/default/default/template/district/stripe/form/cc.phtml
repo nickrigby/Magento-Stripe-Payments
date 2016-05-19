@@ -1,0 +1,44 @@
+<?php
+/**
+ * District Commerce
+ *
+ * @category    District
+ * @package     Stripe
+ * @author      District Commerce <support@districtcommerce.com>
+ * @copyright   Copyright (c) 2016 District Commerce (http://districtcommerce.com)
+ * @license     http://store.districtcommerce.com/license
+ *
+ */
+
+$acceptedCards = Mage::getStoreConfig('payment/stripe_cc/cctype');
+?>
+
+<link rel="stylesheet" href="/skin/frontend/base/default/css/district/stripe/styles.css">
+<div class="form-list" id="payment_form_<?php echo $this->getMethodCode() ?>" style="display:none;">
+    <input type="hidden" name="stripeToken" id="stripe_token">
+    <div id="stripe-error-messages"></div>
+    <ol id="stripe-cards-select-new">
+        <li>
+            <label for="stripe_cc_number" class="district-label_placeholder"><?php echo $this->__('Card Number'); ?></label>
+            <input id="stripe_cc_number" type="tel" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('Card Number'); ?>" data-stripe="number" size="20">
+        </li>
+        <li class="district-float">
+            <label for="stripe_cc_exp" class="district-label_placeholder"><?php echo $this->__('Expiry Date'); ?></label>
+            <input id="stripe_cc_exp" type="tel" x-autocompletetype="off" autocompletetype="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="MM / YY" size="5" data-stripe="exp">
+        </li>
+        <li class="district-float">
+            <label for="stripe_cc_cvc" class="district-label_placeholder"><?php echo $this->__('CVC'); ?></label>
+            <input id="stripe_cc_cvc" type="tel" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('CVC'); ?>" data-stripe="cvc" size="4" maxlength="4">
+        </li>
+    </ol>
+</div>
+
+<script>
+
+    Stripe.setPublishableKey('<?php echo Mage::getStoreConfig('payment/stripe_cc/api_publishable_key'); ?>');
+
+    (function() {
+        district.stripeCc.init('<?php echo $acceptedCards; ?>');
+    })();
+
+</script>

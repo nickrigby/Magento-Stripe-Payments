@@ -1,0 +1,22 @@
+<jstranslator>
+    <!-- stripe.js -->
+    <validate-payment-accepted-card-type-visa translate="message" module="stripe">
+        <message>Sorry, visa is not currently accepted. Please use a different card.</message>
+    </validate-payment-accepted-card-type-visa>
+    <validate-payment-accepted-card-type-mastercard translate="message" module="stripe">
+        <message>Sorry, mastercard is not currently accepted. Please use a different card.</message>
+    </validate-payment-accepted-card-type-mastercard>
+    <validate-payment-accepted-card-type-americanexpress translate="message" module="stripe">
+        <message>Sorry, americanexpress is not currently accepted. Please use a different card.</message>
+    </validate-payment-accepted-card-type-americanexpress>
+    <validate-payment-accepted-card-type-discover translate="message" module="stripe">
+        <message>Sorry, discover is not currently accepted. Please use a different card.</message>
+    </validate-payment-accepted-card-type-discover>
+    <validate-payment-accepted-card-type-dinersclub translate="message" module="stripe">
+        <message>Sorry, dinersclub is not currently accepted. Please use a different card.</message>
+    </validate-payment-accepted-card-type-dinersclub>
+    <validate-payment-accepted-card-type-jcb translate="message" module="stripe">
+        <message>Sorry, jcb is not currently accepted. Please use a different card.</message>
+    </validate-payment-accepted-card-type-jcb>
+    <!-- end stripe.js -->
+</jstranslator>

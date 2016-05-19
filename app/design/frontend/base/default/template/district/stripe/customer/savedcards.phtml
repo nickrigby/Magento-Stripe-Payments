@@ -1,0 +1,56 @@
+<?php
+/**
+ * District Commerce
+ *
+ * @category    District
+ * @package     Stripe
+ * @author      District Commerce <support@districtcommerce.com>
+ * @copyright   Copyright (c) 2016 District Commerce (http://districtcommerce.com)
+ * @license     http://store.districtcommerce.com/license
+ *
+ */
+?>
+
+<div class="page-title">
+    <h1><?php echo $this->__('My Credit Cards') ?></h1>
+</div>
+<?php if($cards = $this->getCards()): ?>
+<table class="data-table" id="district-stripe-savedcards">
+    <thead>
+        <tr class="first last">
+            <th>Type</th>
+            <th>Number</th>
+            <th>Expiry</th>
+            <th>Address/Zip</th>
+            <th>&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($cards as $card): ?>
+        <?php
+
+        switch(strtolower($card->brand)) {
+            case 'american express':
+                $cardbrand = 'amex';
+                break;
+             case 'diners club':
+                $cardbrand = 'dinersclub';
+                break;
+            default:
+                $cardbrand = $card->brand;
+        }
+
+        ?>
+        <tr>
+            <td><span class="district-cc district-cc-<?php echo strtolower($cardbrand); ?>" title="<?php echo $card->brand; ?>"><?php echo $card->brand; ?></span></td>
+            <td>****<?php echo $card->last4; ?></td>
+            <td><?php echo $card->exp_month; ?>/<?php echo $card->exp_year; ?></td>
+            <td><?php echo $card->address_line1; ?> / <?php echo $card->address_zip; ?> (<a href="<?php echo $this->getUrl('*/*/edit', array('id' => $card->id)); ?>">Edit</a>)</td>
+            <td><a href="<?php echo $this->getUrl('*/*/delete', array('id' => $card->id)); ?>">Delete</a></td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+<?php else: ?>
+<?php echo $this->__('You have no saved credit cards.'); ?>
+<?php endif; ?>

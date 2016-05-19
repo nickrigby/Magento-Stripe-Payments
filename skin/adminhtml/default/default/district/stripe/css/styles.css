@@ -1,0 +1,83 @@
+/**
+ * District Commerce
+ *
+ * @category    District
+ * @package     Stripe
+ * @author      District Commerce <support@districtcommerce.com>
+ * @copyright   Copyright (c) 2016 District Commerce (http://districtcommerce.com)
+ * @license     http://store.districtcommerce.com/license
+ *
+ */
+
+@font-face {
+  font-family: 'fontello';
+  src: url('../font/fontello.eot?14245941');
+  src: url('../font/fontello.eot?14245941#iefix') format('embedded-opentype'),
+       url('../font/fontello.woff?14245941') format('woff'),
+       url('../font/fontello.ttf?14245941') format('truetype'),
+       url('../font/fontello.svg?14245941#fontello') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: 0;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  font-size: 140%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-pass:before { content: '\e800'; }
+.icon-fail:before { content: '\e801'; }
+.icon-unavailable:before, .icon-:before { content: '\e802'; }
+.icon-cc-stripe:before { content: '\e805'; }
+.icon-warning:before { content: '\e809'; }
+
+.icon-pass {
+  color: #693;
+}
+
+.icon-fail {
+  color: #c00;
+}
+
+.icon-,
+.icon-unavailable,
+.icon-warning {
+  color: #c90;
+}
+
+.icon-cc-stripe {
+  color: #666e73;
+  float: right;
+  font-size: 200%;
+  margin-right: 4px;
+}
+
+.form-list .security-info li span {
+  position: relative;
+  background: #eee;
+  display: inline-block;
+  font-weight: 700;
+  margin: 0;
+  padding: 0 7px 0 20px;
+  border-radius: 10px;
+}
+
+.security-info li i {
+  position: absolute;
+  top: 2px;
+  left: 1px;
+}

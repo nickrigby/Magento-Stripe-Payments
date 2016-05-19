@@ -1,0 +1,240 @@
+/**
+* District Commerce
+*
+* @category    District
+* @package     Stripe
+* @author      District Commerce <support@districtcommerce.com>
+* @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
+*
+*/
+
+#payment_form_stripe_cc {
+    position: relative;
+    padding-left: 0;
+}
+
+#payment_form_stripe_cc #stripe-cards-info {
+    display: none;
+}
+
+@media screen and (min-width:600px) {
+
+    #payment_form_stripe_cc #stripe-cards-info {
+        display: block;
+        position: absolute;
+        right: 0;
+        top: -2em;
+    }
+
+}
+
+#payment_form_stripe_cc #stripe-cards-select-new {
+    padding: 10px;
+    background: #fafafa;
+    margin-top: -3px;
+}
+
+#payment_form_stripe_cc #stripe-cards-select-new:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+#payment_form_stripe_cc .district-reader_visible {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+#payment_form_stripe_cc .district-label_placeholder {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    color: #bbb;
+    z-index: 10;
+    font-size: 12px;
+    font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
+    font-weight: 400;
+    opacity: 0;
+    transition: opacity .25s ease-in-out;
+}
+
+#payment_form_stripe_cc input[type=tel] {
+    position: relative;
+    height: auto;
+    max-width: none;
+    box-sizing: border-box;
+    padding: 13px 10px 13px 10px;
+    font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 18px;
+    background: #fff;
+    border-radius: 4px;
+    border: 1px solid #d9d9d9;
+    background-repeat: no-repeat;
+    background-position: 97% 78%;
+    transition: border .25s ease-in-out;
+}
+
+#payment_form_stripe_cc input[type=tel]:focus {
+    outline: 0;
+    border-color: #000;
+}
+
+#payment_form_stripe_cc input[type=tel]::-ms-clear {
+    display: none;
+}
+
+#payment_form_stripe_cc ol li {
+    position: relative;
+    margin: 0;
+}
+
+#payment_form_stripe_cc .district-show_label label {
+    opacity: 1;
+}
+
+#payment_form_stripe_cc .district-show_label input[type=tel] {
+    padding-top: 21px;
+    padding-bottom: 5px;
+}
+
+#payment_form_stripe_cc #stripe_cc_number {
+    width: 205px;
+    background-size: 32px 20px;
+}
+
+#payment_form_stripe_cc #stripe_cc_exp,
+#payment_form_stripe_cc #stripe_cc_cvc {
+    width: 100px;
+}
+
+.district-cc-visa,
+#payment_form_stripe_cc input.visa {
+    background-image: url(../../../images/district/stripe/visa.png);
+}
+
+.district-cc-mastercard,
+#payment_form_stripe_cc input.mastercard {
+    background-image: url(../../../images/district/stripe/mastercard.png);
+}
+
+.district-cc-amex,
+#payment_form_stripe_cc input.amex {
+    background-image: url(../../../images/district/stripe/amex.png);
+}
+
+.district-cc-discover,
+#payment_form_stripe_cc input.discover {
+    background-image: url(../../../images/district/stripe/discover.png);
+}
+
+.district-cc-jcb,
+#payment_form_stripe_cc input.jcb {
+    background-image: url(../../../images/district/stripe/jcb.png);
+}
+
+.district-cc-dinersclub,
+#payment_form_stripe_cc input.dinersclub {
+    background-image: url(../../../images/district/stripe/dinersclub.png);
+}
+
+#payment_form_stripe_cc .district-has-error {
+    animation: shake 0.5s ease-in-out;
+}
+
+#payment_form_stripe_cc .district-error,
+#payment_form_stripe_cc .district-has-error label {
+    color: #c00;
+}
+
+#payment_form_stripe_cc .district-float {
+    position: relative;
+    float: left;
+    z-index: 2;
+    margin-top: 5px;
+}
+
+#payment_form_stripe_cc .district-float + .district-float {
+    margin-left: 5px;
+}
+
+#payment_form_stripe_cc .district-label {
+    float: none;
+    display: block;
+    margin: 3px 0;
+    font-weight: 400;
+    border: 1px solid #eee;
+    padding: 10px;
+}
+
+#payment_form_stripe_cc .district-label.district-label-active {
+    border-color: #d9d9d9;
+    background-color: #fafafa;
+}
+
+#payment_form_stripe_cc .district-label input {
+    margin-right: 3px;
+}
+
+#payment_form_stripe_cc #stripe-cards-select-save {
+    display: block;
+    clear: both;
+    padding: 7px 3px 0;
+}
+
+#payment_form_stripe_cc #stripe-cards-select-save input {
+    margin-right: 3px;
+}
+
+.district-cc {
+    display: inline-block;
+    width: 32px;
+    height: 20px;
+    border-radius: 2px;
+    background-size: 32px 20px;
+    background-repeat: no-repeat;
+    background-color: #eee;
+    box-shadow: 0 1px 1px #ccc;
+    text-indent: -999em;
+}
+
+/* Admin order create overrides */
+.adminhtml-sales-order-create-index #payment_form_stripe_cc {
+    margin-left: -20px;
+}
+
+/* IWD Onepage overrides */
+
+.opc-index-index #payment_form_stripe_cc #stripe-cards-info {
+    display: none;
+}
+
+@keyframes shake {
+    0% {
+        transform: translateX(0)
+    }
+
+    20% {
+        transform: translateX(-7px)
+    }
+
+    40% {
+        transform: translateX(7px)
+    }
+
+    60% {
+        transform: translateX(-7px)
+    }
+
+    80% {
+        transform: translateX(7px)
+    }
+
+    100% {
+        transform: translateX(0)
+    }
+}

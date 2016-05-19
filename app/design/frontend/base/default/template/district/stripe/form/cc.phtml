@@ -1,64 +1,95 @@
 <?php
-
 /**
  * District Commerce
  *
  * @category    District
  * @package     Stripe
  * @author      District Commerce <support@districtcommerce.com>
- * @copyright   District Commerce (http://districtcommerce.com)
- * 
+ * @copyright   Copyright (c) 2016 District Commerce (http://districtcommerce.com)
+ * @license     http://store.districtcommerce.com/license
+ *
  */
+
+$isStripeCustomer = false;
+$savedCards = false;
+$acceptedCards = Mage::getStoreConfig('payment/stripe_cc/cctype');
+$acceptedCardsArr = explode(',', $acceptedCards);
+$helper = Mage::helper('stripe');
+
+//If customer exists in Stripe
+if($cust = Mage::helper('stripe')->retrieveCustomer()) {
+
+    //Set customer flag
+    $isStripeCustomer = true;
+
+    //Get stored cards
+    $cards = $cust->sources->data;
+
+    //If there are stored cards, set saved cards flag
+    if(sizeof($cards) > 0) {
+        $savedCards = true;
+    }
+}
+
 ?>
 
-<style>
-  #payment_form_stripe .has-error input {
-    border-color: #f00;
-  }
-</style>
-
 <div class="form-list" id="payment_form_<?php echo $this->getMethodCode() ?>" style="display:none;">
-  <input type="hidden" name="stripeToken" id="stripe-token">
-  <div id="stripe-error-messages"></div>
-  <ol>
-    <li>
-      <label for="stripe-card-number">Card Number</label>
-      <input id="stripe-card-number" type="tel" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="Card number" data-stripe="number" size="20">
-    </li>
-    <li class="float">
-      <label for="stripe-cc-exp">Expiry Date</label>
-      <input id="stripe-cc-exp" type="tel" x-autocompletetype="off" autocompletetype="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="MM / YY" size="5" data-stripe="exp">
-    </li>
-    <li class="float">
-      <label for="stripe-cc-cvc">CVC</label>
-      <input id="stripe-cc-cvc" type="tel" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="CVC" data-stripe="cvc" size="4" maxlength="4">
-    </li>
-  </ol>
+    <div id="stripe-cards-select">
+        <input type="hidden" name="stripeToken" id="stripe_token">
+        <?php if($isStripeCustomer): ?>
+        <input type="hidden" name="isStripeCustomer" value="1">
+        <?php endif; ?>
+        <?php if($savedCards): ?>
+        <ol id="stripe-cards-select-saved">
+            <li>
+                <?php foreach($cards as $card): ?>
+                <label class="district-label"><input type="radio" name="stripeSavedCard" value="<?php echo $card->id; ?>"> <span class="district-cc district-cc-<?php echo $helper->getClassByName($card->brand); ?>" title="<?php echo $card->brand; ?>"><?php echo $card->brand; ?></span> Ending in <strong><?php echo $card->last4; ?></strong> (<?php echo $card->exp_month . '/' . substr($card->exp_year, 2); ?>)</label>
+                <?php endforeach; ?>
+                <label class="district-label"><input type="radio" name="stripeSavedCard" value=""> <span class="district-cc">New card</span> <strong>New card</strong></label>
+            </li>
+        </ol>
+        <?php endif; ?>
+        <div id="stripe-cards-select-new" <?php if($savedCards): ?> style="display:none;"<?php endif; ?>>
+            <ol>
+                <li>
+                    <label for="stripe_cc_number" class="district-label_placeholder"><?php echo $this->__('Card Number'); ?></label>
+                    <input id="stripe_cc_number" type="tel" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('Card Number'); ?>" data-stripe="number" size="20">
+                </li>
+                <li class="district-float">
+                    <label for="stripe_cc_exp" class="district-label_placeholder"><?php echo $this->__('Expiry'); ?></label>
+                    <input id="stripe_cc_exp" type="tel" x-autocompletetype="off" autocompletetype="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="MM / YY" size="5" data-stripe="exp">
+                </li>
+                <li class="district-float">
+                    <label for="stripe_cc_cvc" class="district-label_placeholder"><?php echo $this->__('CVC'); ?></label>
+                    <input id="stripe_cc_cvc" type="tel" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" placeholder="<?php echo $this->__('CVC'); ?>" data-stripe="cvc" size="4" maxlength="4">
+                </li>
+                <?php if(Mage::getSingleton('customer/session')->isLoggedIn() && Mage::getStoreConfig('payment/stripe_cc/save_cc_enabled')): ?>
+                    <li id="stripe-cards-select-save">
+                        <label><input type="checkbox" name="stripeSaveCard" /> <?php echo $this->__('Save card'); ?></label>
+                    </li>
+                <?php endif; ?>
+            </ol>
+        </div>
+    </div>
+
+    <?php if(sizeof($acceptedCardsArr) > 0): ?>
+    <div id="stripe-cards-info">
+    <?php foreach($acceptedCardsArr as $code): ?>
+    <?php if($card = $helper->getCardInfoByCode($code)): ?>
+        <span class="district-cc district-cc-<?php echo $card['class']; ?>" title="<?php echo $card['label']; ?>"><?php echo $card['label']; ?></span>
+    <?php endif ;?>
+    <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+
 </div>
 
 <script>
 
-Stripe.setPublishableKey('<?php echo Mage::getStoreConfig('payment/stripe/api_publishable_key'); ?>');
-  
-(function() {
-  
-  var scripts = document.getElementsByTagName('script'),
-      districtStripeAdded = false,
-      districtStripeSrc = '<?php echo Mage::getBaseUrl('js') . 'district/stripe/stripe.js'; ?>';
-  
-  for (var i=0;i<scripts.length;i++) {
-    if(scripts[i].src == districtStripeSrc) {
-      districtStripeAdded = true;
-    }
-  }
-  
-  if (!districtStripeAdded) {
-    var head = document.getElementsByTagName('head')[0];
-    var script = document.createElement('script');
-    script.src = districtStripeSrc;
-    head.appendChild(script);
-  }
-  
-})();
-  
+    Stripe.setPublishableKey('<?php echo Mage::getStoreConfig('payment/stripe_cc/api_publishable_key'); ?>');
+
+    (function() {
+        district.stripeCc.init('<?php echo $acceptedCards; ?>');
+    })();
+
 </script>

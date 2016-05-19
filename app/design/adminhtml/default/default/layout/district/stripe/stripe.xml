@@ -1,0 +1,33 @@
+<!--
+/**
+ * District Commerce
+ *
+ * @category    District
+ * @package     Stripe
+ * @author      District Commerce <support@districtcommerce.com>
+ * @copyright   Copyright (c) 2016 District Commerce (http://districtcommerce.com)
+ * @license     http://store.districtcommerce.com/license
+ *
+ */
+-->
+<layout version="0.1.0">
+    <default>
+        <reference name="head">
+            <action method="addCss"><stylesheet>district/stripe/css/styles.css</stylesheet></action>
+        </reference>
+    </default>
+    <adminhtml_sales_order_create_index>
+        <reference name="head">
+            <action method="addJs"><script>district/stripe/stripe.api.js</script></action>
+            <action method="addJs" ifconfig="payment/stripe_cc/jquery_admin_enabled"><script>district/stripe/jquery.min.js</script></action>
+            <action method="addJs" ifconfig="payment/stripe_cc/jquery_admin_enabled"><script>district/stripe/jquery.noconflict.js</script></action>
+            <action method="addJs"><script>district/stripe/jquery.payment.min.js</script></action>
+            <action method="addJs"><script>district/stripe/build/stripe.js</script></action>
+        </reference>
+    </adminhtml_sales_order_create_index>
+    <adminhtml_orderfailed_index>
+        <reference name="content">
+            <block type="stripe/adminhtml_orderfailed" name="district_stripe_orderfailed" />
+        </reference>
+    </adminhtml_orderfailed_index>
+</layout>
