@@ -1,6 +1,20 @@
 <?php
+/**
+ * District Commerce
+ *
+ * @category    District
+ * @package     Stripe
+ * @author      District Commerce <support@districtcommerce.com>
+ * @copyright   Copyright (c) 2016 District Commerce (http://districtcommerce.com)
+ * @license     http://store.districtcommerce.com/license
+ *
+ */
+
 class District_Stripe_SavedcardsController extends Mage_Core_Controller_Front_Action
 {
+    /**
+     * Authenticate user
+     */
     public function preDispatch()
     {
         parent::preDispatch();
@@ -9,12 +23,18 @@ class District_Stripe_SavedcardsController extends Mage_Core_Controller_Front_Ac
         }
     }
 
+    /**
+     * View cards
+     */
     public function indexAction()
     {
         $this->loadLayout();
         $this->renderLayout();
     }
 
+    /**
+     * Delete card
+     */
     public function deleteAction()
     {
         //Get id of card
@@ -27,8 +47,13 @@ class District_Stripe_SavedcardsController extends Mage_Core_Controller_Front_Ac
         } else {
             Mage::getSingleton('core/session')->addError($this->__('Card could not be deleted.'));
         }
+
+        $this->_redirect('*/*/');
     }
 
+    /**
+     * Edit card
+     */
     public function editAction()
     {
         //Get id of card
@@ -51,6 +76,9 @@ class District_Stripe_SavedcardsController extends Mage_Core_Controller_Front_Ac
         }
     }
 
+    /**
+     * Save card
+     */
     public function saveAction()
     {
         //Get id of card
@@ -74,6 +102,6 @@ class District_Stripe_SavedcardsController extends Mage_Core_Controller_Front_Ac
             Mage::getSingleton('core/session')->addError($this->__('Card does not exist.'));
         }
 
-         $this->_redirect('*/*/');
+        $this->_redirect('*/*/');
     }
 }

@@ -1,58 +1,59 @@
 <?php
+
 /**
  * District Commerce
  *
  * @category    District
  * @package     Stripe
  * @author      District Commerce <support@districtcommerce.com>
- * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
+ * @copyright   Copyright (c) 2016 District Commerce (http://districtcommerce.com)
+ * @license     http://store.districtcommerce.com/license
  *
  */
 
-class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract {
+class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
+{
 
-    protected $_code = 'stripe';
+    protected $_code = 'stripe_cc';
     protected $_formBlockType = 'stripe/form_cc';
     protected $_infoBlockType = 'stripe/info_cc';
 
-    /**
-   * Payment Method features
-   * @var bool
-   */
-    protected $_isGateway                   = false;
-    protected $_canOrder                    = true;
-    protected $_canAuthorize                = true;
-    protected $_canCapture                  = true;
-    protected $_canRefund                   = true;
-    protected $_canRefundInvoicePartial     = false;
-    protected $_canVoid                     = false; //No void through Stripe, use cancel instead
-    protected $_canUseInternal              = true;
-    protected $_canUseCheckout              = true;
-    protected $_canUseForMultishipping      = true;
-    protected $_isInitializeNeeded          = false;
-    protected $_canFetchTransactionInfo     = true;
-    protected $_canReviewPayment            = true;
-    protected $_canCreateBillingAgreement   = false;
-    protected $_canManageRecurringProfiles  = true;
-    protected $_canSaveCc                   = false;
-    protected $_isAvailable                 = true;
+    protected $_isGateway = true;
+    protected $_canOrder = true;
+    protected $_canAuthorize = true;
+    protected $_canCapture = true;
+    protected $_canRefund = true;
+    protected $_canRefundInvoicePartial = true;
+    protected $_canVoid = false; //No void through Stripe, use cancel instead
+    protected $_canUseInternal = true;
+    protected $_canUseCheckout = true;
+    protected $_canUseForMultishipping = false; //Would require multiple tokens
+    protected $_isInitializeNeeded = false;
+    protected $_canFetchTransactionInfo = false; //Removes "get payment update" button for orders under review
+    protected $_canReviewPayment = true;
+    protected $_canCreateBillingAgreement = false;
+    protected $_canManageRecurringProfiles = true;
+    protected $_canSaveCc = false;
+    protected $_isAvailable = true;
 
     //Charge data
     private $_chargeData = array();
 
+    /**
+     * District_Stripe_Model_Method_Cc constructor.
+     */
     public function __construct()
     {
         parent::__construct();
     }
 
     /**
-    * Capture the payment
-    *
-    * @param Varien_Object $payment
-    * @param float $amount
-    *
-    * @return Mage_Payment_Model_Abstract
-    */
+     * Capture payment
+     *
+     * @param Varien_Object $payment
+     * @param $amount
+     * @return $this
+     */
     public function capture(Varien_Object $payment, $amount)
     {
         //Call parent capture function
@@ -63,9 +64,12 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
             Mage::throwException(Mage::helper('payment')->__('Invalid amount for authorization.'));
         }
 
+        //Get last transaction for this payment
+        $lastTransaction = $payment->getTransaction($payment->getLastTransId());
+
         //Create the charge
-        if($payment->getLastTransId()) { //If previously authorized
-            $charge = $this->_retrieveCharge($payment->getLastTransId());
+        if ($lastTransaction && $lastTransaction->getTxnType() == Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH) { //If previously authorized
+            $charge = $this->_retrieveCharge($payment->getCcTransId());
 
             try {
                 $charge->capture();
@@ -75,25 +79,24 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
 
         } else { //Auth and capture
             $charge = $this->_createCharge($payment, $amount, true);
+
+            //Create the payment in Magento
+            $this->_createOrderPayment($payment, $charge, $amount);
         }
 
-        //Create the payment in Magento
-        $this->_createPayment($payment, $charge, $amount, Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE);
-
-        //Skip transaction creation
-        $payment->setSkipTransactionCreation(true);
+        //Create the transaction
+        $this->_createTransaction($payment, Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE, $charge->id, false, true);
 
         return $this;
     }
 
     /**
-    * Authorize payment abstract method
-    *
-    * @param Varien_Object $payment
-    * @param float $amount
-    *
-    * @return Mage_Payment_Model_Abstract
-    */
+     * Authorize payment method
+     *
+     * @param Varien_Object $payment
+     * @param $amount
+     * @return $this
+     */
     public function authorize(Varien_Object $payment, $amount)
     {
         //Call parent authorize function
@@ -108,51 +111,48 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         $charge = $this->_createCharge($payment, $amount, false);
 
         //Create the payment in Magento
-        $this->_createPayment($payment, $charge, $amount, Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH);
+        $this->_createOrderPayment($payment, $charge, $amount);
 
-        //Skip transaction creation
-        $payment->setSkipTransactionCreation(true);
+        //Create the transaction
+        //Append -auth to txn id, since transaction table needs unique txn id, and capture id is the same
+        $this->_createTransaction($payment, Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH, $charge->id . '-auth');
 
         return $this;
     }
 
     /**
-    * Refund
-    *
-    * @param Varien_Object $payment
-    * @param float $amount
-    */
+     * Refund
+     *
+     * @param Varien_Object $payment
+     * @param $amount
+     * @return $this
+     */
     public function refund(Varien_Object $payment, $amount)
     {
         //Get transaction id
-        $transactionId = $payment->getLastTransId();
+        $transactionId = $payment->getCcTransId();
 
         //Create the refund
-        $refund = $this->_createRefund($transactionId, $amount);
+        $refund = $this->_createRefund($transactionId, $amount, $payment);
 
-        //Close payment
-        $this->_closePayment($payment, $refund, Mage_Sales_Model_Order_Payment_Transaction::TYPE_REFUND);
-
-        //Skip transaction creation
-        $payment->setSkipTransactionCreation(true);
+        //Create transaction
+        $this->_createTransaction($payment, Mage_Sales_Model_Order_Payment_Transaction::TYPE_REFUND, $refund->id, true, true);
 
         return $this;
     }
 
     /**
-    * Validate payment method
-    *
-    * @param   none
-    *
-    * @return  Mage_Payment_Model_Abstract
-    */
+     * Validate payment method
+     *
+     * @return $this
+     */
     public function validate()
     {
         //Call parent validate
         parent::validate();
 
         //Are we validating a new card or saved card?
-        if(isset($_POST['stripeSavedCard']) && !empty($_POST['stripeSavedCard'])) { //Saved card
+        if (isset($_POST['stripeSavedCard']) && !empty($_POST['stripeSavedCard'])) { //Saved card
 
             //Get customer
             $customer = Mage::helper('stripe')->retrieveCustomer();
@@ -167,7 +167,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
             //Add card details to quote
             $this->_addCardToQuote($card);
 
-        } else if(isset($_POST['stripeToken']) && !empty($_POST['stripeToken'])) { //New card
+        } elseif (isset($_POST['stripeToken']) && !empty($_POST['stripeToken'])) { //New card
 
             //Token was set with stripe.js, so retrieve it
             $token = $this->_retrieveToken($_POST['stripeToken']);
@@ -189,20 +189,43 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Sets the payment information
-    *
-    * @param   Varien_Object $payment
-    * @param   Stripe_Charge $charge
-    * @param   float $amount
-    * @param   Mage_Sales_Model_Order_Payment_Transaction $requestType
-    *
-    * @return  none
-    */
-    protected function _createPayment(Varien_Object $payment, $charge, $amount, $requestType)
+     * Accept a payment that is under review
+     *
+     * @param Mage_Payment_Model_Info $payment
+     * @return bool
+     */
+    public function acceptPayment(Mage_Payment_Model_Info $payment)
     {
-        //Transaction id
-        $payment->setTransactionId($charge->id);
-        $payment->setIsTransactionClosed(0);
+        parent::acceptPayment($payment);
+
+        return true;
+    }
+
+    /**
+     * Attempt to deny a payment that is under review
+     *
+     * @param Mage_Payment_Model_Info $payment
+     * @return bool
+     */
+    public function denyPayment(Mage_Payment_Model_Info $payment)
+    {
+        parent::denyPayment($payment);
+
+        $this->refund($payment, $payment->getBaseAmountAuthorized());
+
+        return true;
+    }
+
+    /**
+     * Set order payment information
+     *
+     * @param Varien_Object $payment
+     * @param $charge
+     * @param $amount
+     */
+    protected function _createOrderPayment(Varien_Object $payment, $charge, $amount)
+    {
+        //Set amount
         $payment->setAmount($amount);
 
         //Add payment cc information
@@ -211,29 +234,52 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         $payment->setcc_last4($charge->source->last4);
         $payment->setcc_owner($charge->source->name);
         $payment->setcc_type($charge->source->brand);
-        $payment->setcc_trans_id($charge->source->id);
+        $payment->setcc_trans_id($charge->id);
 
         //Add payment fraud information
         $payment->setcc_avs_status($charge->source->address_line1_check . '/' . $charge->source->address_zip_check);
         $payment->setcc_cid_status($charge->source->cvc_check); //CID = CVC
+
+        //Did we detect fraud on this order?
+        if (Mage::helper('stripe')->getDeclinedOrdersCount($payment->getOrder()->getIncrementId(), true) > 0) {
+            $payment->setIsFraudDetected(true);
+        }
 
         //Add any additional information
         $payment->setadditional_information(array(
             'funding' => $charge->source->funding,
             'country' => $charge->source->country
         ));
-
-        //Add the transaction
-        $payment->addTransaction($requestType, null, true);
     }
 
     /**
-    * Add card details to quote
-    *
-    * @param   Stripe_Object $card
-    *
-    * @return  none
-    */
+     * Creates payment transaction
+     *
+     * @param Varien_Object $payment
+     * @param $requestType
+     * @param $transactionId
+     * @param bool $close
+     * @param bool $closeParent
+     */
+    protected function _createTransaction(Varien_Object $payment, $requestType, $transactionId, $close = false, $closeParent = false)
+    {
+        //Set attributes
+        $payment->setTransactionId($transactionId);
+        $payment->setIsTransactionClosed($close);
+        $payment->setShouldCloseParentTransaction($closeParent);
+
+        //Add the transaction
+        $payment->addTransaction($requestType, null, true);
+
+        //Skip transaction creation
+        $payment->setSkipTransactionCreation(true);
+    }
+
+    /**
+     * Add card details to quote
+     *
+     * @param $card
+     */
     protected function _addCardToQuote($card)
     {
         Mage::getSingleton('checkout/session')->getQuote()->getPayment()->addData(array(
@@ -245,72 +291,51 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Closes a payment
-    *
-    * @param   Varien_Object $payment
-    * @param   Stripe_Refund $refund
-    * @param   Mage_Sales_Model_Order_Payment_Transaction $requestType
-    *
-    * @return  none
-    */
-    protected function _closePayment(Varien_Object $payment, $refund, $requestType)
-    {
-        $payment->setTransactionId($refund->id);
-        $payment->setIsTransactionClosed(true);
-        $payment->setShouldCloseParentTransaction(true);
-
-        //Add the transaction
-        $payment->addTransaction($requestType, null, true);
-    }
-
-    /**
-    * Get the token from Stripe based on passed in tokenString
-    *
-    * @param   string $tokenString
-    *
-    * @return  Stripe_Token $token
-    */
+     * Retrieve Stripe Token
+     *
+     * @param $tokenString
+     * @return bool|\Stripe\Token
+     */
     protected function _retrieveToken($tokenString)
     {
         Mage::helper('stripe')->setApiKey();
 
         try {
-            $token = \Stripe\Token::retrieve(trim($tokenString));
+            return \Stripe\Token::retrieve(trim($tokenString));
         } catch (Exception $e) {
             Mage::throwException(Mage::helper('stripe')->__('Invalid token. Please try again.'));
         }
 
-        return $token;
+        return false;
     }
 
     /**
-    * Create a charge
-    *
-    * @param   Varien_Object $payment
-    * @param   float $amount
-    * @param   boolean $capture
-    *
-    * @return  Stripe_Charge $charge
-    */
+     * Create charge
+     *
+     * @param Varien_Object $payment
+     * @param $amount
+     * @param bool $capture
+     * @return \Stripe\Charge
+     */
     protected function _createCharge(Varien_Object $payment, $amount, $capture = true)
     {
         //Set API key
         Mage::helper('stripe')->setApiKey();
 
         //Save card?
-        if(isset($_POST['stripeSaveCard'])) {
+        if (isset($_POST['stripeSaveCard']) && ($_POST['stripeSavedCard'] === '' || !isset($_POST['stripeSavedCard']) )) {
 
-            if(isset($_POST['isStripeCustomer'])) { //Stripe customer
+            if (isset($_POST['isStripeCustomer'])) { //Stripe customer
 
                 //Get the customer
                 $customer = Mage::helper('stripe')->retrieveCustomer();
 
                 //Save the card
-                $card = $this->_saveCard($customer);
-
-                //Set charge data
-                $this->_chargeData['customer'] = $customer->id;
-                $this->_chargeData['source'] = $card->id;
+                if ($card = $this->_saveCard($customer)) {
+                    //Set charge data
+                    $this->_chargeData['customer'] = $customer->id;
+                    $this->_chargeData['source'] = $card->id;
+                }
 
             } else {
 
@@ -325,7 +350,7 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
         }
 
         //Set charge data
-        $this->_chargeData['amount'] = $amount * 100;
+        $this->_chargeData['amount'] = Mage::helper('stripe')->calculateCurrencyAmount($amount, $payment->getOrder()->getBaseCurrencyCode());
         $this->_chargeData['currency'] = $payment->getOrder()->getBaseCurrencyCode();
         $this->_chargeData['capture'] = $capture;
         $this->_chargeData['description'] = sprintf('Payment for order #%s on %s', $payment->getOrder()->getIncrementId(), $payment->getOrder()->getStore()->getFrontendName());
@@ -345,42 +370,42 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
             $additionalInfo = array();
 
             //Set error type
-            if(isset($error['type'])) {
+            if (isset($error['type'])) {
                 $additionalInfo['type'] = $error['type'];
             }
 
             //Set error code
-            if(isset($error['code'])) {
+            if (isset($error['code'])) {
                 $additionalInfo['code'] = $error['code'];
 
                 //Append _fraudulent to code if decline code is set
-                if(isset($error['decline_code']) && $error['decline_code'] === 'fraudulent') {
+                if (isset($error['decline_code']) && $error['decline_code'] === 'fraudulent') {
                     $additionalInfo['code'] .= '_fraudulent';
                 }
             }
 
             //Set charge token
-            if(isset($error['charge'])) {
+            if (isset($error['charge'])) {
                 $additionalInfo['token'] = $error['charge'];
             }
 
             //Set message
-            if(isset($error['message'])) {
+            if (isset($error['message'])) {
                 $additionalInfo['message'] = $error['message'];
             }
 
             //Save error in additional info column
-            if(!empty($additionalInfo)) {
+            if (!empty($additionalInfo)) {
                 Mage::getSingleton('checkout/session')->getQuote()->getPayment()->setAdditionalInformation($additionalInfo);
             }
 
-            //Throw the error
-            Mage::throwException(Mage::helper('stripe')->__($error['message']));
+            //Throw payment error
+            throw new Mage_Payment_Model_Info_Exception(Mage::helper('stripe')->__($error['message']));
 
         } catch (Exception $e) {
 
-            //Throw the error
-            Mage::throwException(Mage::helper('stripe')->__($e->getMessage()));
+            //Throw payment error
+            throw new Mage_Payment_Model_Info_Exception(Mage::helper('stripe')->__($error['message']));
 
         }
 
@@ -388,65 +413,64 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-    * Retrieve a charge
-    *
-    * @param   string $transactionId
-    *
-    * @return  Stripe_Charge $charge
-    */
+     * Retrieve charge
+     *
+     * @param $transactionId
+     * @return bool|\Stripe\Charge
+     */
     protected function _retrieveCharge($transactionId)
     {
         Mage::helper('stripe')->setApiKey();
 
         try {
-            $charge = \Stripe\Charge::retrieve($transactionId);
+            return \Stripe\Charge::retrieve($transactionId);
         } catch (Exception $e) {
             $message = $e->getMessage();
             Mage::throwException($message);
         }
 
-        return $charge;
+        return false;
     }
 
     /**
-    * Create a refund
-    *
-    * @param   string $transactionId
-    * @param   float amount
-    *
-    * @return  Stripe_Refund $refund
-    */
-    protected function _createRefund($transactionId, $amount)
+     * Create refund
+     *
+     * @param $transactionId
+     * @param $amount
+     * @param $payment
+     * @return bool|\Stripe\Refund
+     */
+    protected function _createRefund($transactionId, $amount, $payment)
     {
         Mage::helper('stripe')->setApiKey();
 
         try {
-            $refund = \Stripe\Refund::create(array(
+            return \Stripe\Refund::create(array(
                 'charge' => $transactionId,
-                'amount' => $amount * 100
+                'amount' => Mage::helper('stripe')->calculateCurrencyAmount($amount, $payment->getOrder()->getBaseCurrencyCode()),
             ));
-        } catch (\Stripe\Error\InvalidRequest $e) {
-            Mage::throwException($e);
-        } catch (\Stripe\Error\Card $e) {
-            Mage::throwException($e);
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+            Mage::throwException($message);
         }
 
-        return $refund;
+        return false;
     }
 
     /**
-    * Save a card
-    *
-    * @param   Stripe_Customer $customer
-    *
-    * @return  Stripe_Card $card
-    */
+     * Save card
+     *
+     * @param $customer
+     * @return bool
+     */
     protected function _saveCard($customer)
     {
+        Mage::helper('stripe')->setApiKey();
+
         try {
 
             //Save the card
-            $card = $customer->sources->create(array(
+            return $customer->sources->create(array(
                 'source' => $this->_chargeData['source']
             ));
 
@@ -457,23 +481,24 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
 
         }
 
-        return $card;
+        return false;
     }
 
     /**
-    * Retrieve a card
-    *
-    * @param   Stripe_Customer $customer
-    * @param   string $card
-    *
-    * @return  Stripe_Card $card
-    */
+     * Retrieve card
+     *
+     * @param $customer
+     * @param $card
+     * @return bool
+     */
     protected function _retrieveCard($customer, $card)
     {
+        Mage::helper('stripe')->setApiKey();
+
         try {
 
             //Get card info
-            $card = $customer->sources->retrieve($card);
+            return $customer->sources->retrieve($card);
 
         } catch (Exception $e) {
 
@@ -481,6 +506,6 @@ class District_Stripe_Model_Method_Cc extends Mage_Payment_Model_Method_Abstract
 
         }
 
-        return $card;
+        return false;
     }
 }

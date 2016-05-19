@@ -6,7 +6,8 @@
  * @category    District
  * @package     Stripe
  * @author      District Commerce <support@districtcommerce.com>
- * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
+ * @copyright   Copyright (c) 2016 District Commerce (http://districtcommerce.com)
+ * @license     http://store.districtcommerce.com/license
  *
  */
 -->
@@ -14,8 +15,8 @@
     <sections>
         <payment>
             <groups>
-                <stripe translate="label" module="stripe">
-                    <label>Stripe Credit Card</label>
+                <stripe_cc translate="label" module="stripe">
+                    <label>Stripe Credit Cards</label>
                     <sort_order>1000</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
@@ -125,7 +126,7 @@
                             <comment><![CDATA[If another module/theme is including jQuery, set to no]]></comment>
                         </jquery_admin_enabled>
                     </fields>
-                </stripe>
+                </stripe_cc>
             </groups>
         </payment>
     </sections>

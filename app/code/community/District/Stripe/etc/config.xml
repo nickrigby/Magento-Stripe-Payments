@@ -6,7 +6,8 @@
  * @category    District
  * @package     Stripe
  * @author      District Commerce <support@districtcommerce.com>
- * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
+ * @copyright   Copyright (c) 2016 District Commerce (http://districtcommerce.com)
+ * @license     http://store.districtcommerce.com/license
  *
  */
 -->
@@ -59,7 +60,7 @@
                     <stripe>
                         <class>District_Stripe_Model_Observer_Orderfailed</class>
                         <type>singleton</type>
-                        <method>save</method>
+                        <method>orderFailed</method>
                     </stripe>
                 </observers>
             </sales_model_service_quote_submit_failure>
@@ -99,7 +100,7 @@
     </global>
     <default>
         <payment>
-            <stripe>
+            <stripe_cc>
                 <model>stripe/method_cc</model>
                 <title>Stripe</title>
                 <api_secret_key backend_model="adminhtml/system_config_backend_encrypted" />
@@ -109,7 +110,7 @@
                 <save_cc_enabled>1</save_cc_enabled>
                 <jquery_enabled>1</jquery_enabled>
                 <jquery_admin_enabled>1</jquery_admin_enabled>
-            </stripe>
+            </stripe_cc>
         </payment>
     </default>
     <frontend>
@@ -151,6 +152,17 @@
         </routers>
     </admin>
     <adminhtml>
+        <events>
+            <core_block_abstract_to_html_before>
+                <observers>
+                    <sales_order_grid_transaction_state>
+                        <type>model</type>
+                        <class>District_Stripe_Model_Observer</class>
+                        <method>addStatusToSalesOrderGrid</method>
+                    </sales_order_grid_transaction_state>
+                </observers>
+            </core_block_abstract_to_html_before>
+        </events>
         <layout>
             <updates>
                 <stripe>

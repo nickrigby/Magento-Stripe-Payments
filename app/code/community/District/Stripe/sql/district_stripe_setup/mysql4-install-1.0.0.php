@@ -5,7 +5,8 @@
  * @category    District
  * @package     Stripe
  * @author      District Commerce <support@districtcommerce.com>
- * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
+ * @copyright   Copyright (c) 2016 District Commerce (http://districtcommerce.com)
+ * @license     http://store.districtcommerce.com/license
  *
  */
 
@@ -23,6 +24,7 @@ $installer->run("
         `id` int(10) unsigned NOT NULL auto_increment,
         `date` datetime NOT NULL default '0000-00-00 00:00:00',
         `order_id` int(10) unsigned NOT NULL,
+        `customer_id` int(10) unsigned default NULL,
         `cc_type` varchar(255),
         `cc_last4` varchar(10),
         `amount` decimal(12,4),

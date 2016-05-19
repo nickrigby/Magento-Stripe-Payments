@@ -5,7 +5,8 @@
  * @category    District
  * @package     Stripe
  * @author      District Commerce <support@districtcommerce.com>
- * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
+ * @copyright   Copyright (c) 2016 District Commerce (http://districtcommerce.com)
+ * @license     http://store.districtcommerce.com/license
  *
  */
 -->
@@ -50,16 +51,28 @@
                     <text><![CDATA[<script src="https://js.stripe.com/v2/"></script>]]></text>
                 </action>
             </block>
-            <action method="addItem"><type>js</type><name>district/stripe/placeholders.js</name><params /><if>lte IE 8</if></action>
-            <action method="addJs" ifconfig="payment/stripe/jquery_enabled"><script>district/stripe/jquery.min.js</script></action>
-            <action method="addJs"><script>district/stripe/jquery.noconflict.js</script></action>
+            <action method="addItem"><type>js</type><name>district/stripe/placeholders.js</name><params /><if>lte IE 9</if></action>
+            <action method="addJs" ifconfig="payment/stripe_cc/jquery_enabled"><script>district/stripe/jquery.min.js</script></action>
+            <action method="addJs" ifconfig="payment/stripe_cc/jquery_enabled"><script>district/stripe/jquery.noconflict.js</script></action>
             <action method="addJs"><script>district/stripe/jquery.payment.min.js</script></action>
             <action method="addJs"><script>district/stripe/build/stripe.js</script></action>
         </reference>
     </checkout_onepage_index>
 
     <opc_index_index>
-        <reference name="head"></reference>
+        <reference name="head">
+            <action method="addCss"><stylesheet>css/district/stripe/styles.css</stylesheet></action>
+            <block type="core/text" name="district.stripe.api">
+                <action method="setText">
+                    <text><![CDATA[<script src="https://js.stripe.com/v2/"></script>]]></text>
+                </action>
+            </block>
+            <action method="addItem"><type>js</type><name>district/stripe/placeholders.js</name><params /><if>lte IE 9</if></action>
+            <action method="addJs" ifconfig="payment/stripe_cc/jquery_enabled"><script>district/stripe/jquery.min.js</script></action>
+            <action method="addJs" ifconfig="payment/stripe_cc/jquery_enabled"><script>district/stripe/jquery.noconflict.js</script></action>
+            <action method="addJs"><script>district/stripe/jquery.payment.min.js</script></action>
+            <action method="addJs"><script>district/stripe/build/stripe.js</script></action>
+        </reference>
     </opc_index_index>
 
 </layout>

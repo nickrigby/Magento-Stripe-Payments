@@ -5,7 +5,8 @@
  * @category    District
  * @package     Stripe
  * @author      District Commerce <support@districtcommerce.com>
- * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
+ * @copyright   Copyright (c) 2016 District Commerce (http://districtcommerce.com)
+ * @license     http://store.districtcommerce.com/license
  *
  */
 
@@ -16,6 +17,9 @@ class District_Stripe_OrderfailedController extends Mage_Adminhtml_Controller_Ac
         $this->_initAction()->renderLayout();
     }
 
+    /**
+     * @return $this
+     */
     protected function _initAction()
     {
         $this->loadLayout()
@@ -26,8 +30,37 @@ class District_Stripe_OrderfailedController extends Mage_Adminhtml_Controller_Ac
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
     protected function _isAllowed()
     {
         return Mage::getSingleton('admin/session')->isAllowed('district/orderfailed');
+    }
+
+    /**
+     *
+     */
+    public function massDeleteAction()
+    {
+        $failedOrderIds = $this->getRequest()->getParam('failed_order_ids');
+
+        if(!is_array($failedOrderIds)) {
+            Mage::getSingleton('adminhtml/session')->addError($this->__('Please select records to delete.'));
+        } else {
+            try {
+                $model = Mage::getModel('stripe/order_failed');
+                foreach ($failedOrderIds as $failedOrderId) {
+                    $model->load($failedOrderId)->delete();
+                }
+                Mage::getSingleton('adminhtml/session')->addSuccess(
+                    $this->__('Total of %d record(s) were deleted.', count($failedOrderIds))
+                );
+            } catch (Exception $e) {
+                Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
+            }
+        }
+
+        $this->_redirect('*/*/index');
     }
 }

@@ -5,12 +5,16 @@
  * @category    District
  * @package     Stripe
  * @author      District Commerce <support@districtcommerce.com>
- * @copyright   Copyright (c) 2015 District Commerce (http://districtcommerce.com)
+ * @copyright   Copyright (c) 2016 District Commerce (http://districtcommerce.com)
+ * @license     http://store.districtcommerce.com/license
  *
  */
 
 class District_Stripe_Block_Adminhtml_Orderfailed_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
+    /**
+     * District_Stripe_Block_Adminhtml_Orderfailed_Grid constructor.
+     */
     public function __construct()
     {
         parent::__construct();
@@ -21,16 +25,26 @@ class District_Stripe_Block_Adminhtml_Orderfailed_Grid extends Mage_Adminhtml_Bl
         $this->setSaveParametersInSession(true);
     }
 
+    /**
+     * @return string
+     */
     protected function _getCollectionClass()
     {
         return 'stripe/order_failed_collection';
     }
 
+    /**
+     * @param $row
+     * @return string
+     */
     public function getRowUrl($row)
     {
         return Mage::helper('stripe')->getPaymentsDashboardUrl() . Mage::helper('core')->decrypt($row->getToken());
     }
 
+    /**
+     * @return mixed
+     */
     protected function _prepareCollection()
     {
         $collection = Mage::getResourceModel($this->_getCollectionClass());
@@ -39,6 +53,9 @@ class District_Stripe_Block_Adminhtml_Orderfailed_Grid extends Mage_Adminhtml_Bl
         return parent::_prepareCollection();
     }
 
+    /**
+     * @return mixed
+     */
     protected function _prepareColumns()
     {
         $this->addColumn('order_id', array(
@@ -51,6 +68,12 @@ class District_Stripe_Block_Adminhtml_Orderfailed_Grid extends Mage_Adminhtml_Bl
             'header'=> $this->__('Date'),
             'index' => 'date',
             'type' => 'datetime',
+        ));
+
+        $this->addColumn('customer_id', array(
+            'header'=> $this->__('Customer'),
+            'index' => 'customer_id',
+            'width' => '150px',
         ));
 
         $this->addColumn('code', array(
@@ -81,5 +104,18 @@ class District_Stripe_Block_Adminhtml_Orderfailed_Grid extends Mage_Adminhtml_Bl
         ));
 
         return parent::_prepareColumns();
+    }
+
+    protected function _prepareMassaction()
+    {
+        $this->setMassactionIdField('order_id');
+        $this->getMassactionBlock()->setFormFieldName('failed_order_ids');
+        $this->getMassactionBlock()->addItem('delete', array(
+            'label' => $this->__('Delete'),
+            'url' => $this->getUrl('*/*/massDelete', array('' => '')),
+            'confirm' => $this->__('Are you sure?'),
+        ));
+
+        return $this;
     }
 }
