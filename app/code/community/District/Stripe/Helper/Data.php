@@ -42,6 +42,15 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
         {
             try {
                 return \Stripe\Customer::retrieve(Mage::helper('core')->decrypt($token));
+            } catch(Stripe\Error\Base $e) {
+
+                $jsonBody = $e->getJsonBody();
+
+                //If invalid request, customer doesn't exist so delete them from Magento
+                if(isset($jsonBody['error']['type']) && $jsonBody['error']['type'] === 'invalid_request_error') {
+                    $this->deleteCustomer();
+                }
+
             } catch(Exception $e) {
                 //Fail gracefully
                 Mage::log($this->__('Could not retrieve customer'));
@@ -62,6 +71,19 @@ class District_Stripe_Helper_Data extends Mage_Core_Helper_Abstract
         $model = Mage::getModel('stripe/customer');
 
         return $model->load($customer->getId(), 'customer_id');
+    }
+
+    /**
+     * Delete customer from database
+     *
+     * @return Mage_Core_Model_Abstract
+     */
+    public function deleteCustomer()
+    {
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
+        $model = Mage::getModel('stripe/customer');
+
+        return $model->load($customer->getId(), 'customer_id')->delete();
     }
 
     /**
