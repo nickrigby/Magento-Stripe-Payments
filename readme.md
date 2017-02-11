@@ -8,7 +8,7 @@ highly advised that the exntension is first installed in a test/staging environm
 
 ### Downloading the extension
 
-Download the extension zip file from the "My Account" seciton of the District Commerce website.
+Download the zip file from GitHub.
 
 ### Copying files to your Magento installation
 
@@ -30,6 +30,3 @@ Copy the conents of the zip file to your Magento installation directory taking c
  database.
  8. If you already have jQuery enabled within another extension or theme, feel free to disabled them here. If you are
  unsure about this step, leave both options set to "yes", and you should be good to go.
-
-### Questions?
-If you have any questions, do not hesitate to contact us at support@districtcommerce.com
