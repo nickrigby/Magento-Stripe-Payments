@@ -11,7 +11,7 @@ Download the zip file from GitHub.
 
 ### Copying files to your Magento installation
 
-Copy the conents of the zip file to your Magento installation directory taking care not to overwrite existing files.
+Unzip and copy the conents of the unzipped package to your Magento installation directory taking care not to overwrite existing files.
 
 ### Enabling the extension
 
