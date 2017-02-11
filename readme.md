@@ -1,5 +1,4 @@
-Stripe Credit Cards Extension for Magento One by District Commerce
-==================================================================
+# Stripe Credit Cards Extension for Magento 1
 
 ## Installation instructions
 
